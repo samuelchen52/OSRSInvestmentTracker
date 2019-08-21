@@ -674,6 +674,8 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 				});
 				res.locals.user.save();
 
+				//rebuild the url from the post request
+				//have to replace / and ? because those are special and change how url is interpreted
 				res.redirect(req.params.prevurl.split("_").join("/").split("-").join("?"));
 			}
 		});

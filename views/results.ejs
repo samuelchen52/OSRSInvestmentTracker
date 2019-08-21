@@ -35,11 +35,17 @@
         <% } %>
     </table>
 
-    <button class = "btn btn-outline-primary" id = "prev">prev</button>
-    <% for(var i = 1; i <= Math.ceil(items.length / 20); i++) { %>
-    <a class = "btn btn-outline-primary" href = "#<%=i%>"><%=i%> </a>
-    <% } %>
-    <button class = "btn btn-outline-primary" id = "next">next</button>
+    <div class = "d-flex justify-content-center">
+        <div>
+            <button class = "btn btn-outline-primary" id = "prevRow"> << </button>
+            <button class = "btn btn-outline-primary" id = "prev"> < </button>
+            <% for(var i = 1; i <= Math.ceil((items.length) / 20); i++) { %>
+            <a class = "btn btn-outline-primary d-none" href = "#<%=i%>"><%=i%> </a>
+            <% } %>
+            <button class = "btn btn-outline-primary" id = "next"> > </button>
+            <button class = "btn btn-outline-primary" id = "nextRow"> >> </button>
+        </div>
+    </div>
 </div>
 
 
@@ -92,7 +98,7 @@
 
 
 <script>
-//for pagination
+    //for pagination
     function checkHash (hash) //true if hash not a viable number
     {
         if (hash.length === 0 || hash.length === 1 || isNaN(parseInt(hash.substring(1, hash.length))) )
@@ -111,20 +117,35 @@
             $(".item:eq(" + i + ")").toggleClass("d-none");
         }
     }
+    //toggles row of pagination buttons based on hash
+    function togglePagination(hash)
+    {
+        var currentRow = Math.floor(hash / 5) + ((hash % 5) > 0 ? 1 : 0);
+        for (var i = (currentRow * 5) - 4; i < (currentRow * 5) + 1; i ++)
+        {
+            $("a[href=\"#"+ (i) +"\"]").toggleClass("d-none");
+        }
+    }
 
     var numItemsShowed = 20;
     var numPages = Math.ceil($(".item").length / numItemsShowed);
 
+    //sanitize hash
     var hash = checkHash(window.location.hash) ? 1 : parseInt(window.location.hash.substring(1, window.location.hash.length));
         hash = hash <= 0 || hash > numPages ? 1 : hash; 
     toggleItems(hash, numItemsShowed);
+    togglePagination(hash);
+    $("a[href=\"#"+ (hash) +"\"]").focus();
 
     window.onhashchange = function ()
     {
         toggleItems(hash, numItemsShowed);
+        togglePagination(hash);
         hash =  checkHash(window.location.hash) ? 1 : parseInt(window.location.hash.substring(1, window.location.hash.length));
         hash = hash <= 0 || hash > numPages ? 1 : hash; 
         toggleItems(hash, numItemsShowed);
+        togglePagination(hash);
+        $("a[href=\"#"+ (hash) +"\"]").focus();
     }
 
 
@@ -132,7 +153,7 @@
     {
         if (hash < numPages)
         {
-          window.location.hash = hash + 1;  
+            window.location.hash = hash + 1;  
         }
     });
 
@@ -142,8 +163,27 @@
         {
           window.location.hash = hash - 1;  
         }
-});
+    });
 
+    $("#nextRow").click(function ()
+    {
+        var currentRow = Math.floor(hash / 5) + ((hash % 5) > 0 ? 1 : 0);
+        if (currentRow  < Math.floor(numPages / 5))
+        {
+            window.location.hash = (currentRow * 5) + 1;
+        }
+
+    });
+
+    $("#prevRow").click(function ()
+    {
+        var currentRow = Math.floor(hash / 5) + ((hash % 5) > 0 ? 1 : 0);
+        if (currentRow  > 1)
+        {
+            window.location.hash = ((currentRow - 1)  * 5) - 4;
+        }
+       
+    });
 </script>
 
 
