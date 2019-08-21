@@ -1,0 +1,151 @@
+<% include ./partials/header.ejs %>
+
+<div class = "container">
+    <h1> <%=items.length%> results for "<%= query %>"</h1>
+	<table id = "results">
+        <tr>
+            <th></th>
+            <th>ID</th> 
+            <th>ITEM LIMIT</th> 
+            <th>CURRENT PRICE</th>
+            <th>CURRENT VOLUME</th>
+            <th>CURRENT TREND</th>
+            <th>CURRENT TREND DURATION</th>
+            <th>MEMBERS ONLY</th>
+        </tr>
+        <% for(var i=0; i<items.length; i++) { %>
+            <tr class = "item d-none">
+                <td> 
+                    <% if (user) { %>
+                        <button class = "additem" data-item-name = "<%= items[i].name %>" data-item-name-lower = "<%= items[i].name_lower %>" data-item-price = <%= items[i].statdata.currentPrice %>> 
+                            <i class = "fa fa-plus"> </i> 
+                        </button>
+                    <% } %>
+                    <a href = "/item/data/<%= items[i].name_lower %>"><%= items[i].name %> </a> 
+                    <img src = "/images/small/<%=items[i].id%>.gif">
+                 </td>
+                <td> <%= items[i].id %> </td>
+                <td> <%= items[i].limit %> </td>
+                <td> <%= items[i].statdata.currentPrice.toLocaleString() %> </td>
+                <td> <%= items[i].statdata.currentVolume.toLocaleString() %> </td>
+                <td> <%= items[i].statdata.currentTrend%> </td>
+                <td> <%= items[i].statdata.currentTrendDuration%> </td>
+                <td> <%= items[i].members %> </td>
+            </tr>
+        <% } %>
+    </table>
+
+    <button class = "btn btn-outline-primary" id = "prev">prev</button>
+    <% for(var i = 1; i <= Math.ceil(items.length / 20); i++) { %>
+    <a class = "btn btn-outline-primary" href = "#<%=i%>"><%=i%> </a>
+    <% } %>
+    <button class = "btn btn-outline-primary" id = "next">next</button>
+</div>
+
+
+<script>
+//for adding investments
+    $(".additem").click(function()
+    {
+        var itemName = $(this).data().itemName;
+        var itemNameLower = $(this).data().itemNameLower;
+        var itemPrice = $(this).data().itemPrice;
+        
+        var form = $(
+                    "<div class = 'container itemtab'>" +
+                        "<form method = 'POST' action = '/item/add/" + itemNameLower + "/" + window.location.href.split("/").join("_").split("?").join("-") + "'>" +
+                            "<h1>" + itemName + " (" + itemPrice + "gp each)</h1>" +
+                            "<h3> quantity </h3>" +
+                            "<input name = 'quantity' type = 'number' min = 1 required>" +
+                            "<h3> price </h3>" +
+                            "<input name = 'price' type = 'number' min = 1 required>" +
+                            "<input type = 'submit'>" +
+                        "</form>" +
+                    "</div>"
+                    ).appendTo($("body"));
+
+        $("input[name='quantity']").focusout(function()
+        {
+            if ($(this)[0].value !== "" && $("input[name='price']")[0].value === "")
+            {
+                $("input[name='price']").val($(this)[0].value * itemPrice);
+            }
+        });
+
+        form.focusout(function (event)
+        {
+            var form = $(this);
+            setTimeout(function () {
+                if (form.find(':focus').length === 0)
+                {
+                    form.remove();
+                }
+            }); 
+        });
+
+        $("input[name='quantity']").focus();
+
+    });
+
+
+</script>
+
+
+<script>
+//for pagination
+    function checkHash (hash) //true if hash not a viable number
+    {
+        if (hash.length === 0 || hash.length === 1 || isNaN(parseInt(hash.substring(1, hash.length))) )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    function toggleItems (hash, numItems)
+    {
+        for (var i = (hash - 1) * numItems; i < hash * numItems; i ++)
+        {
+            $(".item:eq(" + i + ")").toggleClass("d-none");
+        }
+    }
+
+    var numItemsShowed = 20;
+    var numPages = Math.ceil($(".item").length / numItemsShowed);
+
+    var hash = checkHash(window.location.hash) ? 1 : parseInt(window.location.hash.substring(1, window.location.hash.length));
+        hash = hash <= 0 || hash > numPages ? 1 : hash; 
+    toggleItems(hash, numItemsShowed);
+
+    window.onhashchange = function ()
+    {
+        toggleItems(hash, numItemsShowed);
+        hash =  checkHash(window.location.hash) ? 1 : parseInt(window.location.hash.substring(1, window.location.hash.length));
+        hash = hash <= 0 || hash > numPages ? 1 : hash; 
+        toggleItems(hash, numItemsShowed);
+    }
+
+
+    $("#next").click(function ()
+    {
+        if (hash < numPages)
+        {
+          window.location.hash = hash + 1;  
+        }
+    });
+
+    $("#prev").click(function ()
+    {
+        if (hash > 1)
+        {
+          window.location.hash = hash - 1;  
+        }
+});
+
+</script>
+
+
+
+<% include ./partials/footer.ejs %>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html> 
+<head>
+<title>Grand Exchange Tracker </title>
+
+<!-- bootstrap js-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src = "/bootstrap.js"> </script>
+<!-- bootstrap css -->
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<link rel = "stylesheet" href = "/bootstrap.css">
+
+<!-- chart.js -->
+<script src="/chart.js"></script>
+<link rel = "stylesheet" href = "/chart.css">
+
+<link rel = "stylesheet" href = "/app.css">
+
+</head>
+<body>
+	<div class = "container">
+		<div class = "row justify-content-between">
+			<div class = "col-2">
+				<a href = "/" >  GE TRACKER </a>
+			</div>
+			<div class = "col-1">
+				<% if (user !== null){ %>
+				<form action = "/logout" method = POST>
+					<button type = "submit"> logout </button>
+				</form>
+				<% } else {%>
+				<a href = "/login" > login </a>
+				<% }%>
+			</div>
+		</div>
+	</div>
+	
+	

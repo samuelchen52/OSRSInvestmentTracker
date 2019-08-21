@@ -1,0 +1,165 @@
+<% include ./partials/header.ejs %>
+
+<div class = "container">
+	<div class = "row">
+		<div class = "col-md-6 col-sm-12 border">
+			<h3 class = "text-center"> search </h3>
+			<form action = "./item/search" method = "POST">
+				<input id = "searchbox" type = "text" name = "searchQuery" placeholder= "enter item name" minlength= "3" required>
+				<button  type="submit">
+					<i class="fa fa-search"></i>
+				</button>
+			</form>
+		</div>
+		<div class = "col-md-6 col-sm-12 border">
+			<h3 class = "text-center"> sort by </h3>
+			<form id = "sortform" action = "./item/sort" method = "GET">
+				<div class = "row">
+					<div class = "col-6">
+						<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
+						<select class = "sortby" id = "firstselect" name = "sortby[0]">
+							<option value="sortByNone">none</option>
+							<option value="sortByPrice">by current price</option>
+							<option value="sortByVolume">by current volume</option>
+							<option value="sortByLimit">by item limit</option>
+						</select>
+					</div>
+					<div class = "col-6">
+						<h4> filters </h4>
+						<p> 
+							<input type="checkbox" name="filterByNonMember"> f2p only
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByTrend"> trend
+							<select name = "trendType">
+								<option value="filterByPositiveTrend">positive</option>
+								<option value="filterByNegativeTrend">negative</option>
+								<option value="filterByNeutralTrend">neutral</option>
+							</select>
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByPriceLowerBound"> minimum price
+							<input type="number" name="priceLowerBound">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByPriceUpperBound"> maximum price
+							<input type="number" name="priceUpperBound">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByVolumeLowerBound"> minimum volume
+							<input type="number" name="volumeLowerBound">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByVolumeUpperBound"> maximum volume
+							<input type="number" name="volumeUpperBound">
+						</p>
+					</div>
+				</div>
+				<input type = "submit">
+			</form>
+		</div>
+	</div>
+	<% if (user) {%>
+		<div class = "container"> 
+			<h3 class = "text-center mt-3"> investments </h3>
+			<% for (var i = 0; i < investmentResults.length; i ++) { %>
+				<div class = "row">
+					<div class = "col-2">
+						 <div class="card">
+			             <img class = "card-img-top" alt= "<%= investmentResults[i].name %>" src= "/images/big/<%=investmentResults[i].itemId%>.gif">
+			             	<div class="card-body">
+			                    <h5 class="card-title">
+			                    	<a href = "/item/data/<%=investmentResults[i].itemNameLower%>"> <%=investmentResults[i].itemName%></a>
+			                    	(id: <%=investmentResults[i].itemId%>)
+			                    </h5>
+			                </div>
+			             </div>
+					</div>
+					<div class = "col-4">
+						<h5> date invested : <%= investmentResults[i].dateInvested.toDateString() %> </h5>
+						<ul>
+							<li> quantity : <%=investmentResults[i].numInvested%></li>
+							<li> price : <%=investmentResults[i].priceInvested%></li>
+							<li> gp/item : <%=investmentResults[i].pastPricePerItem%></li>
+						</ul>
+					</div>
+					<div class = "col-4">
+						<% if (investmentResults[i].datesValid) { %>
+							<h5> latest date : <%= investmentResults[i].currentDate.toDateString() %> </h5>
+							<ul>
+								<li> price : <%=investmentResults[i].currentPrice%> </li>
+								<li> gp/item : <%=investmentResults[i].currentPricePerItem%></li>
+								<li> change : <%=investmentResults[i].approxTotalChange%> </li>
+							</ul>
+						<% } else { %>
+							<h1> N/A </h1>
+						<% } %>
+					</div>
+					<div class = "col-2">
+						<form class = "d-inline" action = "/item/delete/<%=investmentResults[i].arrayId%>" method = "POST">
+							<button type = "submit"> <i class = "fa fa-trash"> </i> </button>
+						</form>
+						<form class = "d-inline" action = "/item/data/<%=investmentResults[i].itemNameLower%>" method = "POST">
+			                <button type = "submit"> <i class = "fa fa-refresh"> </i> </button>
+			            </form>
+					</div>
+				</div>
+			<% }%>
+		</div>
+			
+	<% }%>
+</div>
+
+
+
+
+
+<script>
+var sortform = $("#sortform");
+
+var options = 
+{
+	//bn : {selected : false, string : "<option value=\"bn\">none</option>"},
+	sortByPrice : {selected : false, string : "<option value=\"sortByPrice\">by current price</option>"},
+	sortByVolume : {selected : false, string : "<option value=\"sortByVolume\">by current volume</option>"},
+	sortByLimit : {selected : false, string : "<option value=\"sortByLimit\">by item limit</option>"},
+}
+var optionIndex = 1; //number of options that have been selected, also serves as unique index for naming the new option for select element
+var optionString = "";
+
+
+sortform.on("submit", function ()
+{
+	$("#sortform select").removeAttr('disabled');
+});
+
+$("#addoption").click(function () {
+	//only add options if first select isnt selected as none and last select doesnt only have one option
+	if ( ($("#firstselect").prop("value") !== 'sortByNone') && ($("#sortform .sortby:last-of-type option").length !== 1) )
+	{
+		$("#sortform .sortby").last().prop("disabled", true);
+		options[$("#sortform .sortby").last().prop("value")].selected = true;
+		optionString = "";
+
+		for (var option in options)
+		{
+			if (!options[option].selected)
+			{
+				optionString += options[option].string;
+			}
+		}
+
+		$("#sortform .sortby").last().after(
+			"<h6> then by </h6>" +
+			"<select class = \"sortby\"name = \"sortby[" + optionIndex + "]\">" +
+				optionString +
+			"</select>" 
+			);
+		optionIndex ++;
+	}
+});
+
+
+</script>
+
+<% include ./partials/footer.ejs %>

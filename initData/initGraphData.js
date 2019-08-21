@@ -1,0 +1,317 @@
+//populates the mongodb database
+
+var item = require("./models/item.js");
+var graphdata = require("./models/graphdata.js");
+
+var mongoose = require("mongoose");
+var request = require("request");
+// jsdom does NOT support node.innerText (which gets the text nested between the tags of an element, excluding any text nested within the elements children) 
+// jsdom supports node.textContent, which gets all text, nested or not
+// https://stackoverflow.com/questions/35213147/difference-between-textcontent-vs-innertext
+var jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
+
+mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
+
+//note, for the graph json, the epoch time is in MILLISECONDS, and javascripts date object uses milliseconds as the unit for epoch date
+
+//http://services.runescape.com/m=itemdb_oldschool/api/graph/7394.json
+//http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=7394
+//http://services.runescape.com/m=itemdb_oldschool/viewitem.ws?obj=7394 <---official osrs ge
+//https://oldschool.runescape.wiki/w/Module:Exchange/Blue_wizard_hat_(g)/Data
+
+var graphurl = "http://services.runescape.com/m=itemdb_oldschool/api/graph/";
+var detailurl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=";
+
+
+// async function requestGraphData(id) //return promise object with value of parsed request body in the mongodb database, if error, returns with null value
+// {
+// 	var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + id + ".json";
+// 	var ret = null;
+
+// 	return request(url, function(error, response, body)
+// 	{
+// 		if (response.statusCode !== 200)
+// 		{
+// 			ret =  new Promise (function (resolve, reject)
+// 			{
+// 				resolve(null);
+// 			});
+// 		}
+// 		else
+// 		{
+// 			ret = new Promise (function (resolve, reject)
+// 			{
+// 				resolve(JSON.parse(body));
+// 			});
+// 		}
+// 	});
+
+// 	return await ret;
+
+// }
+
+function populate(start) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+{
+	item.find({}, function (err, allItems)
+	{
+		if (err)
+		{
+			console.log("error fetching all the document objects!");
+			process.exit();
+		}
+		else
+		{
+			makeRequests(start, allItems);
+		}
+	});
+}
+
+async function makeRequests(start, documentarr, callback)
+{
+	var reqbody = null;
+	var deletedoc = false;
+	while (start < documentarr.length)
+	{
+		//var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + documentarr[start].id + ".json";
+		var url = "https://oldschool.runescape.wiki/w/Module:Exchange/"+ documentarr[start].name.split(" ").join("_") +"/Data";
+		await new Promise (function (resolve, reject)
+		{
+			request.get({url : url},  function (error, response, body)
+			{
+				if (response.statusCode !== 200)
+				{
+					if (response.statusCode === 404)
+					{
+						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
+						process.exit();
+						deletedoc = true;
+					}
+					reqbody = null;
+					resolve();
+				}
+				else if (error)
+				{
+					console.log("error:" +  error);
+					process.exit();
+				}
+				else
+				{
+					// try 
+					// {
+					// reqbody = JSON.parse(body);
+					// resolve();
+					// }
+					// catch (err)
+					// {
+					// 	// console.log("err: " + err);
+					// 	// console.log("error:" +  error);
+					// 	// console.log("statusCode: " + response.statusCode);
+					// 	// console.log("body: " + body);
+					// 	//console.dir(response);
+					// 	// process.exit();
+					// 	reqbody = null;
+					// 	console.log("body was empty: ");
+					// 	resolve();
+					// }
+					reqbody = body;
+					resolve();
+				}
+			})
+		}).catch(function(err) 
+		{
+			console.log("this shouldnt be happening!");
+			process.exit();
+		});
+
+		if (reqbody === null) 
+		{
+			if (deletedoc)
+			{
+				deletedoc = false;
+				await new Promise (function (resolve, reject)
+				{
+					item.deleteOne({id : documentarr[start].id}, function(err)
+					{
+						if (err)
+						{
+							console.log("failed to delete item document with id " + documentarr[start].id + "!");
+							process.exit();
+						}
+						else
+						{
+							console.log("succesfully deleted item document with id " + documentarr[start].id + "!");
+						}
+						resolve();
+					});
+				});
+				await new Promise (function (resolve, reject)
+				{
+					graphdata.deleteOne({id : documentarr[start].id}, function(err)
+					{
+						if (err)
+						{
+							console.log("failed to delete graphdata document with id " + documentarr[start].id + "!");
+							process.exit();
+						}
+						else
+						{
+							console.log("succesfully deleted graphdata document with id " + documentarr[start].id + "!");
+						}
+						resolve();
+					});
+				});
+				start ++;
+			}
+			else
+			{
+				console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "! waiting 60 seconds...");
+				console.log(url);
+				await new Promise(function (resolve, reject) 
+					{
+						setTimeout(resolve, 60000);
+					});
+				console.log("60 seconds up, trying again...");
+			}
+		}
+		else
+		{
+			await new Promise (function (resolve, reject)
+			{
+				item.populate(documentarr[start], [{path: "graphdata"}], function (err, populatedDoc)
+				{
+					if (err)
+					{
+						console.log("document with id of " + documentarr[start].id + " at index " + start + " had trouble populating!");
+						console.log(err);
+						//console.dir(documentarr[start]);
+						process.exit();
+					}
+					else
+					{
+						var graphdata = populatedDoc.graphdata;
+
+						const dom = new JSDOM(reqbody);
+						var nodelist = dom.window.document.querySelectorAll(".s1");
+
+						var priceData = [];
+						var volumeData = [];
+
+						for (var i = 0; i < nodelist.length; i ++)
+						{
+							var data = nodelist[i].textContent;
+							//substring because of the apostrophes at the beginning and end
+							data = data.substring(1, data.length - 1).split(":");
+							priceData.push({date: new Date(parseInt(data[0]) * 1000), price: parseInt(data[1])});
+
+							//volume data isnt available for every date for each item
+							if (data.length === 3)
+							{
+								volumeData.push({date: new Date(parseInt(data[0]) * 1000), volume: parseInt(data[2])});
+							}
+
+						}
+						
+						graphdata.priceData = priceData;
+						graphdata.volumeData = volumeData;
+
+						// for (var key in reqbody.daily)
+						// {
+						// 	graphdata.daily.push({date: new Date (parseInt(key)), price: reqbody.daily[key]});
+						// }
+						// for (var key in reqbody.average)
+						// {
+						// 	graphdata.average.push({date: new Date (parseInt(key)), price: reqbody.average[key]});
+						// }
+						graphdata.save();
+						console.log("document with id of " + documentarr[start].id + " at index " + start + " updated!");
+						populatedDoc.lastUpdated = (priceData.length === 0) ?  new Date(0) : priceData[priceData.length - 1].date ;
+						populatedDoc.save();
+						documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+						start ++;
+						//console.log(process.memoryUsage());
+						resolve();
+					}
+				});
+			});
+			await new Promise(function (resolve, reject) 
+				{
+					setTimeout(resolve, 500);
+				});
+		}
+	}
+	console.log("finished updating graphdata!");
+	callback();
+	//process.exit();
+}
+
+
+
+module.exports = makeRequests;
+
+if (process.argv.length > 2)
+{
+populate(process.argv[2], function(){});
+}
+
+// request.get("https://oldschool.runescape.wiki/w/Module:Exchange/Blue_wizard_hat_(g)/Data", function (error, response, body)
+// {
+// 	if (error)
+// 	{
+// 		console.log("there was an error!");
+// 		process.exit();
+// 	}
+// 	else
+// 	{
+// 		const dom = new JSDOM(body);
+// 		console.log(dom.window.document.querySelectorAll(".s1")['0'].textContent);
+// 	}
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// var temp = async function (aitem, arr)
+// {
+// 	item.find({id : aitem.id}, function (err, founditem)
+// 	{
+// 		if (err)
+// 		{
+// 			console.log("error, try again");
+// 		}
+// 		else
+// 		{
+// 			if (founditem.length === 0)
+// 			{
+// 				console.log("item with id of " + aitem.id + " not found in the database.");
+// 				arr.push(aitem);
+// 			}
+// 			else
+// 			{
+// 				//
+// 			}
+// 		}
+// 	});
+// }
+
+// var arr = [];
+// for (var i = 0; i < itemids.length; i ++)
+// {
+// 	temp(itemids[i], arr);
+// }
+
+// setTimeout(function () {console.dir(arr); console.log(arr.length)}, 10000);

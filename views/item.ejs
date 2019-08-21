@@ -1,0 +1,183 @@
+<% include ./partials/header.ejs %>
+
+<div class = "container">
+    <div> last updated: <%= item.lastUpdated.toDateString() %>
+            <form class = "d-inline" action = "/item/data/<%=item.name_lower%>" method = "POST">
+                <button type = "submit"> <i class = "fa fa-refresh"> </i> </button>
+            </form>
+        </div>
+    <div class = "row">
+        <div class = "col-sm-6 col-md-3">
+            <div class="card">
+            <img class = "card-img-top" alt= "<%= item.name %>" src= "/images/big/<%=item.id%>.gif">
+                <div class="card-body">
+                    <h5 class="card-title"><%= item.name %></h5>
+                    <p class="card-text"><%= item.description %></p>
+                </div>
+            </div>
+        </div>
+        <div class = "col-sm-6 col-md-9">
+            <canvas id= "myChart" width="225" height="100"></canvas>
+            <div class = "row">
+                <div class = "col-1">
+                    <button id = "decrease"> <i class = "fa fa-minus"> </i> </button>
+                </div>
+                <div class = "col-10">
+                    <input id = "daterange" type="range" min="1" max="1500" value="1">
+                </div>
+                <div class = "col-1">
+                    <button id = "increase"> <i class = "fa fa-plus"> </i> </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<script>
+    var ctx = document.getElementById('myChart');
+    var priceData = [
+                    <% for (var i = 0; i < priceData.length; i ++) { %>
+                            <%= priceData[i].price %>
+                            <% if (i !== priceData.length) { %>
+                                ,
+                            <% } %>
+                    <%  }                                            %>
+                ];
+    var volumeData = [
+                    <% var volumeDataIndex = 0 %>
+                    <% for (var i = 0; i < priceData.length && volumeDataIndex < volumeData.length; i ++) { %>
+                        <% if (volumeData[volumeDataIndex].date.toDateString() === priceData[i].date.toDateString()) { %>
+                            <%= volumeData[volumeDataIndex].volume %>
+                            <% volumeDataIndex ++; %>
+                        <% } else { %>
+                            <% null %>
+                            <% } %>
+                            <% if (i !== priceData.length) { %>
+                                ,
+                            <% } %>
+                    <% } %>                       
+                ];
+    var labels = [
+                <% for (var i = 0; i < priceData.length; i ++) { %>
+                            "<%= priceData[i].date.toDateString().substring(4) %>"
+                            <% if (i !== priceData.length) { %>
+                                ,
+                            <% } %>
+                    <% }                                            %>
+                ];
+
+    let chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                pointBackgroundColor : '#ebe34b',
+                pointRadius : 3,
+                fill : false,
+                label: 'price',
+                yAxisID: 'price-axis',
+                data: priceData
+            },
+            {
+                pointBackgroundColor : '#81adb5',
+                pointRadius : 3,
+                fill : false,
+                showLine : false,
+                label: 'volume',
+                yAxisID: 'volume-axis',
+                data: volumeData
+            }],
+            labels : labels
+        },
+
+        options: {
+            tooltips: {
+              mode: 'x-axis'
+            },
+            scales: {
+                yAxes: [{
+                    id: 'price-axis',
+                    type: 'linear',
+                    position: 'left',
+                    scaleLabel: {
+                        labelString : "price",
+                        display : true
+                    },
+                }, 
+                {
+                    id: 'volume-axis',
+                    type: 'linear',
+                    position: 'right',
+                    scaleLabel: {
+                        labelString : "volume",
+                        display : true
+                    },
+                }],
+                xAxes: [{
+                    ticks: {
+                        maxTicksLimit : 12,
+                        callback: function(value, index, values) {
+                            return value;
+                        }
+                    }
+
+                }]
+            },
+            legend : {
+            	display: false
+            },
+        }
+    });
+    var context = ctx.getContext('2d');
+
+    context.beginPath();
+    context.moveTo(75, 50);
+    context.lineTo(100, 75);
+    context.lineTo(100, 25);
+    context.fill();
+
+    var range = $("#daterange");
+    var leftIndex = (range[0].value / range[0].max) * priceData.length;
+    var rightIndex = priceData.length;
+
+
+    $("#increase").click(function ()
+    {
+        range.val(parseInt(range[0].value) + 4);
+        range.trigger("change");
+    });
+
+    $("#decrease").click(function ()
+    {
+        range.val(parseInt(range[0].value) - 4);
+        range.trigger("change");
+    });
+
+    range.change(function()
+    {
+        leftIndex = Math.floor((range[0].value / range[0].max) * priceData.length);
+
+        chart.data.datasets[0].data = priceData.slice(leftIndex, rightIndex);
+        chart.data.datasets[1].data = volumeData.slice(leftIndex, rightIndex);
+        chart.data.labels = labels.slice(leftIndex, rightIndex);
+
+        chart.update(0);
+
+    });
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<% include ./partials/footer.ejs %>
