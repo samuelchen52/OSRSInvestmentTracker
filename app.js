@@ -55,7 +55,6 @@ app.use(function(req, res, next) {
 mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
 //todo
-//carousel recommendations
 //will need to update allitems periodically, just fetch the documents from database every so often
 //new idea - load array of docs, iterate and update each one 
 //use same array for sorting, simply allocate another array, and copy over all references that make it past the filter

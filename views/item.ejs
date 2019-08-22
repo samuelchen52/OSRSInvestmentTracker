@@ -18,16 +18,13 @@
         </div>
         <div class = "col-sm-6 col-md-9">
             <canvas id= "myChart" width="225" height="100"></canvas>
-            <div class = "row">
-                <div class = "col-1">
-                    <button id = "decrease"> <i class = "fa fa-minus"> </i> </button>
-                </div>
-                <div class = "col-10">
-                    <input id = "daterange" type="range" min="1" max="1500" value="1">
-                </div>
-                <div class = "col-1">
-                    <button id = "increase"> <i class = "fa fa-plus"> </i> </button>
-                </div>
+            <div class = "d-flex justify-content-center">  
+                <input id = "daterangeindicator" class = "text-center" type = "text" disabled> 
+            </div>
+            <div class = "d-flex justify-content-between">
+                <button id = "decrease"> <i class = "fa fa-minus"> </i> </button>
+                <input id = "daterange" type="range" min="1" max="1500" value="1">
+                <button id = "increase"> <i class = "fa fa-plus"> </i> </button>
             </div>
         </div>
     </div>
@@ -128,15 +125,9 @@
             },
         }
     });
-    var context = ctx.getContext('2d');
-
-    context.beginPath();
-    context.moveTo(75, 50);
-    context.lineTo(100, 75);
-    context.lineTo(100, 25);
-    context.fill();
 
     var range = $("#daterange");
+    var rangeindicator = $("#daterangeindicator");
     var leftIndex = (range[0].value / range[0].max) * priceData.length;
     var rightIndex = priceData.length;
 
@@ -160,10 +151,13 @@
         chart.data.datasets[0].data = priceData.slice(leftIndex, rightIndex);
         chart.data.datasets[1].data = volumeData.slice(leftIndex, rightIndex);
         chart.data.labels = labels.slice(leftIndex, rightIndex);
-
         chart.update(0);
 
+        rangeindicator.val(labels[leftIndex] + " - " + labels[labels.length - 1]);
     });
+
+    range.val(1400);
+    range.trigger("change");
 
 
 </script>

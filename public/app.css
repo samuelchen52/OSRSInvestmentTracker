@@ -29,10 +29,8 @@ td
 
 input[type="range"]
 {
-
-	width : 100%;
+	width : 90%;
 }
-
 
 #searchbox
 {
@@ -44,4 +42,9 @@ input[type="range"]
 	width : 77%;
 }
 
+#daterangeindicator
+{
+	width: 25%;
+	border-radius: 5px;
+}
 
