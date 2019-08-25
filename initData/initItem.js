@@ -38,9 +38,9 @@ async function populate()
 						newItem.graphdata = newGraphData;
 						newItem.save();
 					}
+					resolve();
 				});
 			}
-			resolve();
 			});
 		});
 	}
