@@ -5876,16 +5876,6 @@ module.exports =
   "id" : 4207
   },
   {
-  "name" : "New crystal bow",
-  "limit" : 70,
-  "id" : 4212
-  },
-  {
-  "name" : "New crystal shield",
-  "limit" : 70,
-  "id" : 4224
-  },
-  {
   "name" : "Ham shirt",
   "limit" : 15,
   "id" : 4298
