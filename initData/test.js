@@ -313,5 +313,8 @@ async function test(documentarr)
 var url = "http://services.runescape.com/m=itemdb_oldschool/1565260184131_obj_big.gif?id=7394";
 var stream = function(){
         request(url).pipe(fs.createWriteStream('images/big/' + 7394 + '.gif'));
-    }
-stream();
+    };
+
+
+
+

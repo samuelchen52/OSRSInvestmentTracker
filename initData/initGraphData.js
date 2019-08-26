@@ -177,6 +177,7 @@ async function makeRequests(start, documentarr, callback)
 		}
 		else
 		{
+
 			await new Promise (function (resolve, reject)
 			{
 				item.populate(documentarr[start], [{path: "graphdata"}], function (err, populatedDoc)
