@@ -8,9 +8,23 @@ td
 	border : black solid 2px;
 }
 
-.container
+input[type="range"]
 {
-	background-color : white;
+	width : 90%;
+}
+
+.mainfeature
+{
+	border : solid 5px black;
+	z-index : 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.featureimage
+{
+	top: 1px;
+	left: 1px;
 }
 
 .item
@@ -27,11 +41,6 @@ td
 	background-color: gray;
 }
 
-input[type="range"]
-{
-	width : 90%;
-}
-
 #searchbox
 {
 	width : 77%;
@@ -41,10 +50,44 @@ input[type="range"]
 {
 	width : 77%;
 }
+#sortform 
+{
+	height : 100%;
+}
 
 #daterangeindicator
 {
 	width: 25%;
 	border-radius: 5px;
+}
+
+#filterform
+{
+	height : 100%;
+	top : 0px;
+	font-size: 0;
+}
+#filteroptions
+{
+	vertical-align:top;
+	overflow-x : hidden;
+	background-color: white;
+	width : 0px;
+	height : 100%;
+	font-size: 1rem;
+}
+#filterslideout
+{
+	vertical-align : top;
+	height : 100%;
+}
+#slidebutton
+{
+	font-size: 30px;
+	height: 60%;
+	background-color: white;
+	opacity: 1;
+	border-bottom-right-radius: 60px;
+	border-top-right-radius: 60px;
 }
 
