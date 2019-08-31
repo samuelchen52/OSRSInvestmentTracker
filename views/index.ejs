@@ -29,13 +29,13 @@
 						</select>
 					</div>
 					<div class = "d-flex justify-content-center">
-						<button id = "sortsubmit" class = "btn btn-primary">submit</button>
+						<button id = "sortsubmit" class = "btn btn-light">submit</button>
 					</div>
 				</form>
 				<div id = "filterform" class = "position-absolute">
 					<div id = "filteroptions" class = "d-inline-block">
 						<div>
-							<h4> filters </h4>
+							<h4 class = "text-center"> filters </h4>
 							<p> 
 								<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
 							</p>
@@ -178,7 +178,8 @@ $("#addoption").click(function () {
 
 sortsubmit.click(function ()
 {
-
+	sortform.append($(".filterdata").toggleClass("d-none"));
+	sortform.submit();
 });
 
 

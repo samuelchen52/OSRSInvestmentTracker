@@ -70,7 +70,8 @@ input[type="range"]
 #filteroptions
 {
 	vertical-align:top;
-	overflow-x : hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 	background-color: white;
 	width : 0px;
 	height : 100%;
