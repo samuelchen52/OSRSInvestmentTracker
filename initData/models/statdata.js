@@ -13,26 +13,16 @@ averageNeutralTrendDuration: Number,
 averagePositiveTrendDuration: Number,
 averageNegativeTrendDuration: Number,
 
-currentPrice : Number,
+currentPrice : {price : Number, score : Number},
 averagePrice : Number,
 maxPrice : Number,
 minPrice : Number,
-
-averageNegativePriceChange : Number, //day to day
-averagePositivePriceChange : Number, //day to day
-//profitMargin : Number, //can really only determine through going in game and checking manually
-
-currentVolume : Number,
+currentVolume : {volume : Number, score : Number},
 averageVolume : Number,
 
-
-
-
-
-
-
-
-
+averageNegativePriceChange : Number, //day to day
+averagePositivePriceChange : Number //day to day
+//profitMargin : Number, //can really only determine through going in game and checking manually
 
 
 });

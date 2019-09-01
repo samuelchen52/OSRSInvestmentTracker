@@ -62,6 +62,8 @@ mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true})
 //message passed through res.locals?
 //make graph more readable
 //statdata volatility
+//function that calculates stat score
+//make weighted / rounded exclusive :(, too hard to implement
 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
@@ -77,21 +79,16 @@ var sortFunctions = {
 		//sort by current volume
 		sortByVolume : function (item1, item2) 
 		{
-			var item1volume = item1.statdata.currentVolume;
-			var item2volume = item2.statdata.currentVolume;
+			var item1volume = item1.statdata.currentVolume.volume;
+			var item2volume = item2.statdata.currentVolume.volume;
 			return item1volume === item2volume ? 0 : (item1volume > item2volume ? 1 : -1);
 		},
 		//sort by current price
 		sortByPrice : function (item1, item2) 
 		{
-			var item1price = item1.statdata.currentPrice;
-			var item2price = item2.statdata.currentPrice;
+			var item1price = item1.statdata.currentPrice.price;
+			var item2price = item2.statdata.currentPrice.price;
 			return item1price === item2price ? 0 : (item1price > item2price ? 1 : -1);
-		},
-		//sort by item limit
-		sortByLimit : function (item1, item2)
-		{
-			return item1.limit === item2.limit ? 0 : (item1.limit > item2.limit ? 1 : -1);
 		}
 	};
 
@@ -117,32 +114,30 @@ var filterFunctions = {
 	{
 		return function (item) 
 		{
-			return item.statdata.currentPrice >= priceLowerBound;
+			return item.statdata.currentPrice.price >= priceLowerBound;
 		}
 	},
 	filterByPriceUpperBound : function(priceUpperBound)
 	{
 		return function (item) 
 		{
-			return item.statdata.currentPrice <= priceUpperBound;
+			return item.statdata.currentPrice.price <= priceUpperBound;
 		}
 	},
 	filterByVolumeLowerBound : function(volumeLowerBound)
 	{
 		return function (item) 
 		{
-			return item.statdata.currentVolume >= volumeLowerBound;
+			return item.statdata.currentVolume.volume >= volumeLowerBound;
 		}
 	},
 	filterByVolumeUpperBound : function(volumeUpperBound)
 	{
 		return function (item) 
 		{
-			return item.statdata.currentVolume <= volumeUpperBound;
+			return item.statdata.currentVolume.volume <= volumeUpperBound;
 		}
 	}
-
-
 
 
 
@@ -168,7 +163,7 @@ function quicksort (arr, start, end, sortby)
 		var sortFunctionIndex = 0; //keeps track of which function to use when comparing objects
 		var result = 0;
 
-		//put everything lower than partition on the left
+		//put everything higher than partition on the left
 		while (pointer < end)
 		{
 			result = 0;
@@ -413,6 +408,10 @@ app.get("/item/sort", async function(req, res)
 	if (sortby[sortby.length - 1] !== 'sortByNone')
 	{
 		sortby.push('sortByNone');
+	}
+	if (req.query.roundedsort)
+	{
+
 	}
 
 	var filterby = [];

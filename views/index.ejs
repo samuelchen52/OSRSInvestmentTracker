@@ -19,13 +19,18 @@
 			<div class = "mainfeature">
 				<form class = "pl-5" id = "sortform" action = "./item/sort" method = "GET">
 					<h3 class = "text-center"> sort by </h3>
+					<p> 
+						<input type="checkbox" name="roundedSort" class = "filterdata"> rounded sort
+					</p>
+					<p> 
+						<input type="checkbox" name="weightedSort" class = "filterdata"> weighted sort
+					</p>
 					<div id = "sortoptions">
 						<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
 						<select class = "sortby" id = "firstselect" name = "sortby[0]">
 							<option value="sortByNone">none</option>
 							<option value="sortByPrice">by current price</option>
 							<option value="sortByVolume">by current volume</option>
-							<option value="sortByLimit">by item limit</option>
 						</select>
 					</div>
 					<div class = "d-flex justify-content-center">
@@ -36,6 +41,7 @@
 					<div id = "filteroptions" class = "d-inline-block">
 						<div>
 							<h4 class = "text-center"> filters </h4>
+							<br>
 							<p> 
 								<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
 							</p>
@@ -138,8 +144,7 @@ var options =
 {
 	//bn : {selected : false, string : "<option value=\"bn\">none</option>"},
 	sortByPrice : {selected : false, string : "<option value=\"sortByPrice\">by current price</option>"},
-	sortByVolume : {selected : false, string : "<option value=\"sortByVolume\">by current volume</option>"},
-	sortByLimit : {selected : false, string : "<option value=\"sortByLimit\">by item limit</option>"},
+	sortByVolume : {selected : false, string : "<option value=\"sortByVolume\">by current volume</option>"}
 }
 var optionIndex = 1; //number of options that have been selected, also serves as unique index for naming the new option for select element
 var optionString = "";
@@ -209,6 +214,7 @@ sortsubmit.click(function ()
 
 	var filteroptions = $("#filteroptions");
 	var buttonstate = false;
+	var buttonactive = false;
 	//make a new array just to make use of the foreach function lol
 	var arr = new Array();
 	for (var i = 0; i < 100; i ++)
@@ -219,6 +225,7 @@ sortsubmit.click(function ()
 	$("#slidebutton").click(function()
 	{
 		buttonstate = !buttonstate;
+		buttonactive = true;
 		arr.forEach(function(value, index)
 		{
 			setTimeout(function()
