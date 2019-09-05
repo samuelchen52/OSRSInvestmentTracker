@@ -20,21 +20,25 @@
 				<form class = "pl-5" id = "sortform" action = "./item/sort" method = "GET">
 					<h3 class = "text-center"> sort by </h3>
 					<p> 
-						<input type="checkbox" name="roundedSort" class = "filterdata"> rounded sort
+						<input type="radio" name = "typeSort" value="roundedSort"> rounded sort
 					</p>
 					<p> 
-						<input type="checkbox" name="weightedSort" class = "filterdata"> weighted sort
+						<input type="radio" name = "typeSort" value="weightedSort"> weighted sort
 					</p>
-					<div id = "sortoptions">
-						<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
+					<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
+					<div class = "sortoptions">
 						<select class = "sortby" id = "firstselect" name = "sortby[0]">
 							<option value="sortByNone">none</option>
 							<option value="sortByPrice">by current price</option>
 							<option value="sortByVolume">by current volume</option>
 						</select>
+						<div class="progress position-relative">
+							<div class="progress-bar" role="progressbar"></div>
+							<input name = "weight[0]" class = "position-absolute weightrange" type = "range">
+						</div>
 					</div>
 					<div class = "d-flex justify-content-center">
-						<button id = "sortsubmit" class = "btn btn-light">submit</button>
+						<button id = "sortsubmit" class = "btn btn-light">sort</button>
 					</div>
 				</form>
 				<div id = "filterform" class = "position-absolute">
@@ -68,6 +72,14 @@
 							<p> 
 								<input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
 								<input type="number" name="volumeUpperBound" class = "filterdata">
+							</p>
+							<p> 
+								<input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
+								<input type="number" name="itemLimitUpperBound" class = "filterdata">
+							</p>
+							<p> 
+								<input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
+								<input type="number" name="itemLimitLowerBound" class = "filterdata">
 							</p>
 						</div>
 					</div>
@@ -131,8 +143,12 @@
 	<% }%>
 </div>
 
-
-
+<script>
+	$("#sortform").on("input", ".sortoptions input[type='range']", function(event)
+	{
+		$(this).siblings(".progress-bar").css("width", event.target.value + "%");
+	});
+</script>
 
 
 <script>
@@ -157,10 +173,10 @@ sortform.on("submit", function ()
 
 $("#addoption").click(function () {
 	//only add options if first select isnt selected as none and last select doesnt only have one option
-	if ( ($("#firstselect").prop("value") !== 'sortByNone') && ($("#sortform .sortby:last-of-type option").length !== 1) )
+	if ( ($(".sortby").first().prop("value") !== 'sortByNone') && ($(".sortby").last().children("option").length !== 1) )
 	{
-		$("#sortform .sortby").last().prop("disabled", true);
-		options[$("#sortform .sortby").last().prop("value")].selected = true;
+		$(".sortby").last().prop("disabled", true);
+		options[$(".sortby").last().prop("value")].selected = true;
 		optionString = "";
 
 		for (var option in options)
@@ -171,13 +187,38 @@ $("#addoption").click(function () {
 			}
 		}
 
-		$("#sortform .sortby").last().after(
-			"<h6> then by </h6>" +
-			"<select class = \"sortby\"name = \"sortby[" + optionIndex + "]\">" +
-				optionString +
-			"</select>" 
+		$(".sortoptions").last().after(
+			"<div class = \"sortoptions\">" +
+				"<h6> then by </h6>" +
+				"<select class = \"sortby\"name = \"sortby[" + optionIndex + "]\">" +
+					optionString +
+				"</select>" +
+				"<div class=\"progress position-relative\">" +
+					"<div id = \"test\" class=\"progress-bar\" role=\"progressbar\"></div>" +
+					"<input name = \"weight[" + optionIndex + "]\" class = \"position-absolute weightrange\" type = \"range\"> "+
+				"</div>" +	
+			"</div"
 			);
 		optionIndex ++;
+	}
+});
+
+var checked = {roundedSort : false, weightedSort : false};
+
+$("input[type='radio']").click(function()
+{
+	if (checked[$(this).prop("value")])
+	{
+		$(this).prop("checked", false);
+		checked[$(this).prop("value")] = false;
+	}
+	else
+	{
+		for (sorttype in checked)
+		{
+			checked[sorttype] = false;
+		}
+		checked[$(this).prop("value")] = true;
 	}
 });
 
@@ -197,7 +238,7 @@ sortsubmit.click(function ()
 	});
 	$(".mainfeature").mouseleave(function()
 	{
-		$(this).siblings(".featureimage").finish().fadeTo(250, .75);
+		$(this).siblings(".featureimage").finish().fadeTo(250, .1);
 	});
 	//center the featureimage
 	$(".featureimage").css("z-index", 1).css({

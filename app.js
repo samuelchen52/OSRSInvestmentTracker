@@ -137,9 +137,21 @@ var filterFunctions = {
 		{
 			return item.statdata.currentVolume.volume <= volumeUpperBound;
 		}
+	},
+	filterByItemLimitUpperBound : function(itemLimitUpperBound)
+	{
+		return function (item) 
+		{
+			return item.limit <= itemLimitUpperBound;
+		}
+	},
+	filterByItemLimitLowerBound : function(itemLimitLowerBound)
+	{
+		return function (item) 
+		{
+			return item.limit >= itemLimitLowerBound;
+		}
 	}
-
-
 
 
 }
@@ -221,6 +233,63 @@ function filter(docArr, filterArr)
 	}
 
 	return ret.slice(0, retIndex);
+}
+
+function populateFilterArr(req, filterby)
+{
+	if (req.query.filterByNonMember)
+	{
+		filterby.push(filterFunctions.filterByNonMember);
+	}
+	if (req.query.filterByTrend)
+	{
+		if (filterFunctions[req.query.trendType] !== undefined)
+		{
+			filterby.push(filterFunctions[req.query.trendType]);
+		}
+	}
+	if (req.query.filterByPriceLowerBound)
+	{
+		if (parseInt(req.query.priceLowerBound))
+		{
+			filterby.push(filterFunctions["filterByPriceLowerBound"](parseInt(req.query.priceLowerBound)));
+		}
+	}
+	if (req.query.filterByPriceUpperBound)
+	{
+		if (parseInt(req.query.priceUpperBound))
+		{
+			filterby.push(filterFunctions["filterByPriceUpperBound"](parseInt(req.query.priceUpperBound)));
+		}
+	}
+	if (req.query.filterByVolumeLowerBound)
+	{
+		if (parseInt(req.query.volumeLowerBound))
+		{
+			filterby.push(filterFunctions["filterByVolumeLowerBound"](parseInt(req.query.volumeLowerBound)));
+		}
+	}
+	if (req.query.filterByVolumeUpperBound)
+	{
+		if (parseInt(req.query.volumeUpperBound))
+		{
+			filterby.push(filterFunctions["filterByVolumeUpperBound"](parseInt(req.query.volumeUpperBound)));
+		}
+	}
+	if (req.query.filterByItemLimitUpperBound)
+	{
+		if (parseInt(req.query.itemLimitUpperBound))
+		{
+			filterby.push(filterFunctions["filterByItemLimitUpperBound"](parseInt(req.query.itemLimitUpperBound)));
+		}
+	}
+	if (req.query.filterByItemLimitLowerBound)
+	{
+		if (parseInt(req.query.itemLimitLowerBound))
+		{
+			filterby.push(filterFunctions["filterByItemLimitLowerBound"](parseInt(req.query.itemLimitLowerBound)));
+		}
+	}
 }
 //fetches all docs and assigns it to allitems
 async function fetchAllDocuments(callback)
@@ -404,59 +473,15 @@ app.get("/register", function(req, res)
 
 app.get("/item/sort", async function(req, res)
 {
+	var typeSort = req.query.typeSort;
+	var weights = req.query.weight;
 	var sortby = (req.query.sortby === undefined || req.query.sortby.length === 0) ? ['sortByNone'] : req.query.sortby;	
-	if (sortby[sortby.length - 1] !== 'sortByNone')
-	{
-		sortby.push('sortByNone');
-	}
-	if (req.query.roundedsort)
-	{
+	sortby.push('sortByNone'); //fine if we push an extra sortByNone, effectively does nothing
 
-	}
 
 	var filterby = [];
-	if (req.query.filterByNonMember)
-	{
-		filterby.push(filterFunctions.filterByNonMember);
-	}
-	if (req.query.filterByTrend)
-	{
-		if (filterFunctions[req.query.trendType] !== undefined)
-		{
-			filterby.push(filterFunctions[req.query.trendType]);
-		}
-	}
-	if (req.query.filterByPriceLowerBound)
-	{
-		if (parseInt(req.query.priceLowerBound))
-		{
-			filterby.push(filterFunctions["filterByPriceLowerBound"](parseInt(req.query.priceLowerBound)));
-		}
-	}
-	if (req.query.filterByPriceUpperBound)
-	{
-		if (parseInt(req.query.priceUpperBound))
-		{
-			filterby.push(filterFunctions["filterByPriceUpperBound"](parseInt(req.query.priceUpperBound)));
-		}
-	}
-	if (req.query.filterByVolumeLowerBound)
-	{
-		if (parseInt(req.query.volumeLowerBound))
-		{
-			filterby.push(filterFunctions["filterByVolumeLowerBound"](parseInt(req.query.volumeLowerBound)));
-		}
-	}
-	if (req.query.filterByVolumeUpperBound)
-	{
-		if (parseInt(req.query.volumeUpperBound))
-		{
-			filterby.push(filterFunctions["filterByVolumeUpperBound"](parseInt(req.query.volumeUpperBound)));
-		}
-	}
-
+	populateFilterArr(req, filterby);
 	var filteredArr  = filter(allitems, filterby);
-
 
 	quicksort(filteredArr, 0, filteredArr.length - 1, sortby);
 	res.render("sorted.ejs", {items: filteredArr});
