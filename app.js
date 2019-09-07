@@ -72,23 +72,98 @@ mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true})
 //these functions dont sort, they are used IN the sorting
 var sortFunctions = {
 		//sort by id, in ascending order (will be the tiebreaker, since ids are unique)
-		sortByNone : function (item1, item2) 
+		sortByNone : function(typeSort)
 		{
-			return item1.id > item2.id ? -1 : 1;
+			if (typeSort === "weightedSort")
+			{
+				return function (item1, item2)
+				{
+					return {score1 : 0, score2 : 0};
+				}
+			}
+			else
+			{
+				return function (item1, item2) 
+				{
+					return item1.id > item2.id ? -1 : 1;
+				}
+			}
 		},
 		//sort by current volume
-		sortByVolume : function (item1, item2) 
+		sortByVolume : function(typeSort, weight)
 		{
-			var item1volume = item1.statdata.currentVolume.volume;
-			var item2volume = item2.statdata.currentVolume.volume;
-			return item1volume === item2volume ? 0 : (item1volume > item2volume ? 1 : -1);
+			if (typeSort)
+			{
+				if (typeSort === "weightedSort")
+				{
+					return function (item1, item2) 
+					{
+						var item1volumeScore = item1.statdata.currentVolume.score * weight;
+						var item2volumeScore = item2.statdata.currentVolume.score * weight;
+						return {
+							score1 : item1volumeScore,
+							score2 : item2volumeScore
+						}
+					}
+				}
+				else if (typeSort === "roundedSort")
+				{
+					return function (item1, item2)
+					{
+						var item1volume = item1.statdata.currentVolume.volume;
+						var item2volume = item2.statdata.currentVolume.volume;
+						return item1volume.toString().length === item2volume.toString().length  
+						? 0 : (item1volume.toString().length  > item2volume.toString().length  ? 1 : -1);
+					}
+				}
+			}
+			else
+			{
+				return function (item1, item2) 
+				{
+					var item1volume = item1.statdata.currentVolume.volume;
+					var item2volume = item2.statdata.currentVolume.volume;
+					return item1volume === item2volume ? 0 : (item1volume > item2volume ? 1 : -1);
+				}
+			}
 		},
 		//sort by current price
-		sortByPrice : function (item1, item2) 
+		sortByPrice : function(typeSort, weight)
 		{
-			var item1price = item1.statdata.currentPrice.price;
-			var item2price = item2.statdata.currentPrice.price;
-			return item1price === item2price ? 0 : (item1price > item2price ? 1 : -1);
+			if (typeSort)
+			{
+				if (typeSort === "weightedSort")
+				{
+					return function (item1, item2)
+					{
+						var item1priceScore = item1.statdata.currentPrice.score * weight;
+						var item2priceScore = item2.statdata.currentPrice.score * weight;
+						return {
+							score1 : item1priceScore,
+							score2 : item2priceScore
+						};
+					}
+				}
+				else if (typeSort === "roundedSort")
+				{
+					return function (item1, item2)
+					{
+						var item1price = item1.statdata.currentPrice.price;
+						var item2price = item2.statdata.currentPrice.price;
+						return item1price.toString().length === item2price.toString().length 
+						? 0 : (item1price.toString().length > item2price.toString().length ? 1 : -1);
+					}
+				}
+			}
+			else
+			{
+				return function (item1, item2) 
+				{
+					var item1price = item1.statdata.currentPrice.price;
+					var item2price = item2.statdata.currentPrice.price;
+					return item1price === item2price ? 0 : (item1price > item2price ? 1 : -1);
+				}
+			}
 		}
 	};
 
@@ -151,6 +226,13 @@ var filterFunctions = {
 		{
 			return item.limit >= itemLimitLowerBound;
 		}
+	},
+	filterByPosition : function(position)
+	{
+		return function(item, index)
+		{
+			return index <= position;
+		}
 	}
 
 
@@ -182,7 +264,7 @@ function quicksort (arr, start, end, sortby)
 			sortFunctionIndex = 0;
 			while (result === 0)
 			{
-				result = sortFunctions[sortby[sortFunctionIndex]](arr[pointer], partition);
+				result = sortby[sortFunctionIndex](arr[pointer], partition);
 				sortFunctionIndex ++;
 			}
 			if (result === 1)
@@ -217,7 +299,7 @@ function filter(docArr, filterArr)
 	{
 		for (var p = 0; p < filterArr.length; p++)
 		{
-			if (!filterArr[p](docArr[i]))
+			if (!filterArr[p](docArr[i], i))
 			{
 				passedFilter = false;
 				break;
@@ -288,6 +370,13 @@ function populateFilterArr(req, filterby)
 		if (parseInt(req.query.itemLimitLowerBound))
 		{
 			filterby.push(filterFunctions["filterByItemLimitLowerBound"](parseInt(req.query.itemLimitLowerBound)));
+		}
+	}
+	if (req.query.filterByPosition)
+	{
+		if (parseInt(req.query.position))
+		{
+			filterby.push(filterFunctions["filterByPosition"](parseInt(req.query.position)));
 		}
 	}
 }
@@ -471,12 +560,38 @@ app.get("/register", function(req, res)
 	res.render("register.ejs", {message : null});
 });
 
-app.get("/item/sort", async function(req, res)
+app.get("/item/sort", function(req, res)
 {
-	var typeSort = req.query.typeSort;
-	var weights = req.query.weight;
+	var typeSort = req.query.typeSort ? req.query.typeSort : null;
+	var weight = req.query.weight;
 	var sortby = (req.query.sortby === undefined || req.query.sortby.length === 0) ? ['sortByNone'] : req.query.sortby;	
 	sortby.push('sortByNone'); //fine if we push an extra sortByNone, effectively does nothing
+	//replace string criteria in sortby array with the actual functions
+	sortby.forEach(function(val, index){
+		sortby[index] = sortFunctions[val](typeSort, weight[index]);
+	});
+	//if weighted combine all the functions together
+	if (typeSort === "weightedSort")
+	{
+		var functions = sortby;
+		functions.pop();
+		sortby = new Array();
+		sortby.push(function (item1, item2) 
+		{
+			var score1 = 0;
+			var score2 = 0;
+			functions.forEach(function(func)
+			{
+				var scores = func(item1, item2);
+				score1 += scores.score1;
+				score2 += scores.score2;
+			});
+
+			return score1 === score2 ? 0 : (score1 > score2 ? 1 : -1);
+		});
+		sortby.push(sortFunctions['sortByNone'](null));
+	}
+
 
 
 	var filterby = [];

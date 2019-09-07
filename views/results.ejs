@@ -12,6 +12,7 @@
             <th>CURRENT TREND</th>
             <th>CURRENT TREND DURATION</th>
             <th>MEMBERS ONLY</th>
+            <th>TEST BAR </th>
         </tr>
         <% for(var i=0; i<items.length; i++) { %>
             <tr class = "item d-none">
@@ -31,6 +32,11 @@
                 <td> <%= items[i].statdata.currentTrend%> </td>
                 <td> <%= items[i].statdata.currentTrendDuration%> </td>
                 <td> <%= items[i].members %> </td>
+                <td> 
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </td>
             </tr>
         <% } %>
     </table>
