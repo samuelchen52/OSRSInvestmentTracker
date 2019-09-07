@@ -69,6 +69,12 @@ mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true})
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 
+//colors for the progress bars
+var colors = 
+{
+	price : "#ebe34b",
+	volume : "#81adb5"
+}
 //these functions dont sort, they are used IN the sorting
 var sortFunctions = {
 		//sort by id, in ascending order (will be the tiebreaker, since ids are unique)
@@ -96,13 +102,15 @@ var sortFunctions = {
 			{
 				if (typeSort === "weightedSort")
 				{
-					return function (item1, item2) 
+					return function (item) 
 					{
-						var item1volumeScore = item1.statdata.currentVolume.score * weight;
-						var item2volumeScore = item2.statdata.currentVolume.score * weight;
-						return {
-							score1 : item1volumeScore,
-							score2 : item2volumeScore
+						if (item)
+						{
+							return item.statdata.currentVolume.score * weight;
+						}
+						else
+						{
+							return colors["volume"];
 						}
 					}
 				}
@@ -134,14 +142,16 @@ var sortFunctions = {
 			{
 				if (typeSort === "weightedSort")
 				{
-					return function (item1, item2)
+					return function (item)
 					{
-						var item1priceScore = item1.statdata.currentPrice.score * weight;
-						var item2priceScore = item2.statdata.currentPrice.score * weight;
-						return {
-							score1 : item1priceScore,
-							score2 : item2priceScore
-						};
+						if (item)
+						{
+							return item.statdata.currentPrice.score * weight;
+						}
+						else
+						{
+							return colors["price"];
+						}
 					}
 				}
 				else if (typeSort === "roundedSort")
@@ -562,6 +572,10 @@ app.get("/register", function(req, res)
 
 app.get("/item/sort", function(req, res)
 {
+	//for weighted sort
+	var progressbars = null;
+	var functions = null;
+
 	var typeSort = req.query.typeSort ? req.query.typeSort : null;
 	var weight = req.query.weight;
 	var sortby = (req.query.sortby === undefined || req.query.sortby.length === 0) ? ['sortByNone'] : req.query.sortby;	
@@ -573,23 +587,24 @@ app.get("/item/sort", function(req, res)
 	//if weighted combine all the functions together
 	if (typeSort === "weightedSort")
 	{
-		var functions = sortby;
+		functions = sortby;
 		functions.pop();
 		sortby = new Array();
 		sortby.push(function (item1, item2) 
 		{
 			var score1 = 0;
 			var score2 = 0;
-			functions.forEach(function(func)
+			functions.forEach(function(getScore)
 			{
-				var scores = func(item1, item2);
-				score1 += scores.score1;
-				score2 += scores.score2;
+				score1 += getScore(item1);
+				score2 += getScore(item2);
 			});
 
 			return score1 === score2 ? 0 : (score1 > score2 ? 1 : -1);
 		});
 		sortby.push(sortFunctions['sortByNone'](null));
+
+		progressbars = new Array();
 	}
 
 
@@ -599,7 +614,36 @@ app.get("/item/sort", function(req, res)
 	var filteredArr  = filter(allitems, filterby);
 
 	quicksort(filteredArr, 0, filteredArr.length - 1, sortby);
-	res.render("sorted.ejs", {items: filteredArr});
+	if (typeSort === "weightedSort")
+	{
+		//populate the progressbars array with objects that will have the color for the progress bar
+		//and an array holding numbers representing the percentages of an attribute relative to the total score
+		functions.forEach(function(getColor)
+		{
+			progressbars.push({color: getColor(), percentages: new Array()});
+		});
+
+		var temparr = new Array(functions.length);
+		var sum = 0;
+		for (var i = 0; i < filteredArr.length; i ++)
+		{
+			//find the total score for the item in the filtered arr
+			//save it in the array so that we dont have to get it again
+			functions.forEach(function(getScore, index)
+			{
+				temparr[index] = getScore(filteredArr[i]);
+				sum += temparr[index]
+			});
+			//push the percentage of each attribute of an item into the progressbars array
+			temparr.forEach(function(score, index)
+			{
+				progressbars[index].percentages.push(Math.round( (score / sum) * 100 ));
+			});
+			sum = 0;
+		}
+
+	}
+	res.render("sorted.ejs", {items: filteredArr, progressbars : progressbars});
 });
 
 app.get("/item/search/:query", function (req, res) 

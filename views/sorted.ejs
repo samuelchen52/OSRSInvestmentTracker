@@ -15,6 +15,9 @@
             <th>CURRENT TREND</th>
             <th>CURRENT TREND DURATION</th>
             <th>MEMBERS ONLY</th>
+            <% if (progressbars) { %>
+                <th> PROGRESS BARS</th>
+            <% } %>
 		</tr>
         <% for(var i=0; i < items.length; i++) { %>
             <tr class = "item d-none">
@@ -34,6 +37,17 @@
                 <td> <%= items[i].statdata.currentTrend%> </td>
                 <td> <%= items[i].statdata.currentTrendDuration%> </td>
                 <td> <%= items[i].members %> </td>
+                <% if (progressbars) { %>
+                    <td>
+                         <div class="progress">
+                        <%  for (var q = 0; q < progressbars.length; q ++) { %>
+                          <div class="progress-bar" role="progressbar" 
+                          style="width:<%=progressbars[q].percentages[i]%>%; background-color:<%=progressbars[q].color%>">
+                          </div>
+                        <% } %>
+                        </div>
+                    </td>
+                <% } %>
             </tr>
         <% } %>
     </table>
