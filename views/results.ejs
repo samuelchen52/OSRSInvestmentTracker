@@ -12,34 +12,26 @@
             <th>CURRENT TREND</th>
             <th>CURRENT TREND DURATION</th>
             <th>MEMBERS ONLY</th>
-            <th>TEST BAR </th>
         </tr>
         <% for(var i=0; i<items.length; i++) { %>
-            <tr class = "item d-none">
-                <td> 
-                    <% if (user) { %>
-                        <button class = "additem" data-item-name = "<%= items[i].name %>" data-item-name-lower = "<%= items[i].name_lower %>" data-item-price = <%= items[i].statdata.currentPrice %>> 
-                            <i class = "fa fa-plus"> </i> 
-                        </button>
-                    <% } %>
-                    <a href = "/item/data/<%= items[i].name_lower %>"><%= items[i].name %> </a> 
-                    <img src = "/images/small/<%=items[i].id%>.gif">
-                 </td>
-                <td> <%= items[i].id %> </td>
-                <td> <%= items[i].limit %> </td>
-                <td> <%= items[i].statdata.currentPrice.toLocaleString() %> </td>
-                <td> <%= items[i].statdata.currentVolume.toLocaleString() %> </td>
-                <td> <%= items[i].statdata.currentTrend%> </td>
-                <td> <%= items[i].statdata.currentTrendDuration%> </td>
-                <td> <%= items[i].members %> </td>
-                <td> 
-                    <div class="progress">
-                      <div class="progress-bar" role="progressbar" style="width: 40%"></div>
-                      <div class="progress-bar bg-success" role="progressbar" style="width: 30%"></div>
-                      <div class="progress-bar bg-info" role="progressbar" style="width: 20%"></div>
-                    </div>
-                </td>
-            </tr>
+               <tr class = "item d-none">
+                   <td> 
+                       <% if (user) { %>
+                            <button class = "additem" data-item-name = "<%= items[i].name %>" data-item-name-lower = "<%= items[i].name_lower %>"data-item-price = <%= items[i].statdata.currentPrice %>> 
+                               <i class = "fa fa-plus"> </i> 
+                           </button>
+                       <% } %>
+                       <a href = "/item/data/<%= items[i].name_lower %>"><%= items[i].name %> </a> 
+                       <img src = "/images/small/<%=items[i].id%>.gif">
+                    </td>
+                   <td> <%= items[i].id %> </td>
+                   <td> <%= items[i].limit %> </td>
+                   <td> <%= items[i].statdata.currentPrice.toLocaleString() %> </td>
+                   <td> <%= items[i].statdata.currentVolume.toLocaleString() %> </td>
+                   <td> <%= items[i].statdata.currentTrend%> </td>
+                   <td> <%= items[i].statdata.currentTrendDuration%> </td>
+                   <td> <%= items[i].members %> </td>
+               </tr>
         <% } %>
     </table>
 
