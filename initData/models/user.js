@@ -7,12 +7,17 @@ password : String,
 
 investments : [
 {
-	itemname : String, 
-	itemid : Number, 
+	name : String, 
+	id : Number, 
 
 	dateInvested : Date,
+	pricePerItemInvested : Number,
+
 	numInvested : Number,
-	priceInvested : Number
+
+	lastUpdated : Date,
+	currentPricePerItem: Number,
+
 }
 ]
 });

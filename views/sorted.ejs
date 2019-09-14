@@ -23,7 +23,11 @@
             <tr class = "item d-none">
                 <td> 
                     <% if (user) { %>
-                        <button class = "additem" data-item-name = "<%= items[i].name %>" data-item-name-lower = "<%= items[i].name_lower %>" data-item-price = <%= items[i].statdata.currentPrice %>> 
+                        <button class = "additem" 
+                        data-item-name = "<%= items[i].name %>" 
+                        data-item-name-lower = "<%= items[i].name_lower %>" 
+                        data-item-price = "<%= items[i].statdata.currentPrice.price %>"
+                        data-item-updated = "<%= items[i].lastUpdated %>">
                             <i class = "fa fa-plus"> </i> 
                         </button>
                     <% } %>
@@ -74,26 +78,37 @@
         var itemName = $(this).data().itemName;
         var itemNameLower = $(this).data().itemNameLower;
         var itemPrice = $(this).data().itemPrice;
+        var lastUpdated = $(this).data().itemUpdated;
 
+        
         var form = $(
                     "<div class = 'container itemtab'>" +
                         "<form method = 'POST' action = '/item/add/" + itemNameLower + "/" + window.location.href.split("/").join("_").split("?").join("-") + "'>" +
                             "<h1>" + itemName + " (" + itemPrice + "gp each)</h1>" +
                             "<h3> quantity </h3>" +
                             "<input name = 'quantity' type = 'number' min = 1 required>" +
-                            "<h3> price </h3>" +
-                            "<input name = 'price' type = 'number' min = 1 required>" +
-                            "<input type = 'submit'>" +
+                            "<h3> price per item</h3>" +
+                            "<input name = 'pricePerItem' type = 'number' min = 1 required>" +
+                            "<h3> Total Price </h3>" +
+                            "<span id = 'totalPrice'> 0 gp </span>" +
+                            "<input class = 'd-block' type = 'submit'>" +
+                            "<input class = 'd-none' name = 'lastUpdated' value = '" + lastUpdated + "''>" +
+                            "<input class = 'd-none' name = 'itemPrice' value = '" + itemPrice + "''>" +
                         "</form>" +
                     "</div>"
                     ).appendTo($("body"));
-         $("input[name='quantity']").focusout(function()
+
+        $(".itemtab input").on("input", function()
         {
-            if ($(this)[0].value !== "" && $("input[name='price']")[0].value === "")
+            let ppi = parseInt($("input[name='pricePerItem']")[0].value);
+            let qty = parseInt($("input[name='quantity']")[0].value);
+            console.log("hello");
+            if (ppi > 0 && qty > 0)
             {
-                $("input[name='price']").val($(this)[0].value * itemPrice);
+                $("#totalPrice").text($(this)[0].value * $("input[name='quantity']")[0].value + " gp");
             }
         });
+
         form.focusout(function (event)
         {
             var form = $(this);
@@ -104,6 +119,7 @@
                 }
             }); 
         });
+
         $("input[name='quantity']").focus();
     });
 

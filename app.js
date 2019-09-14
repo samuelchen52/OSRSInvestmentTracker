@@ -4,8 +4,6 @@ var mongoose   = require("mongoose");
 var session = require('client-sessions');
 
 var item = require("./initData/models/item.js");
-var itemList = require("./initData/itemList.js");
-console.log(itemList.length);
 var graphdata = require("./initData/models/graphdata.js");
 var statdata = require("./initData/models/statdata.js");
 var user = require("./initData/models/user.js");
@@ -44,6 +42,21 @@ app.use(function(req, res, next) {
 			else
 			{
 				res.locals.user = foundUser;
+				var investments = foundUser.investments;
+				for (var i = 0; i < investments.length; i ++)
+				{
+					let investment = investments[i];
+					//this should ALWAYS be true, generally server will validate data before storing it
+					if (allitemsOrdered[investment.id])
+					{
+						if (investment.lastUpdated.toDateString() !== allitemsOrdered[investment.id].lastUpdated.toDateString())
+						{
+							investment.lastUpdated = allitemsOrdered[investment.id].lastUpdated;
+							investment.currentPricePerItem = allitemsOrdered[investment.id].statdata.currentPrice.price;
+							foundUser.save();
+						}
+					}
+				}
 			}
 			next();
 		});
@@ -411,14 +424,9 @@ async function fetchAllDocuments(callback)
 		{
 			for (var i = 0; i < alldocs.length; i ++)
 			{
-				if (allitemsOrdered[alldocs[i].id])
-				{
-					console.log(alldocs[i].name_lower);
-				}
-				else
-				{
-					allitemsOrdered[alldocs[i].id] = alldocs[i];
-				}
+
+				allitemsOrdered[alldocs[i].id] = alldocs[i];
+	
 				await new Promise( function(resolve, reject)
 				{
 					item.populate(alldocs[i], [{path: "statdata"}], function (err, populatedDoc)
@@ -437,9 +445,6 @@ async function fetchAllDocuments(callback)
 		}
 		});
 	});
-
-	console.log(Object.keys(allitemsOrdered).length);
-	console.log(allitems.length);
 	callback(allitems);
 }
 
@@ -462,77 +467,7 @@ async function startapp ()
 
 app.get("/", async function(req, res)
 {
-	if (res.locals.user)
-	{
-		var investments = res.locals.user.investments;
-		var investmentResults = [];
-		var error = false;
-		for (var i = 0; i < investments.length && !error; i ++)
-		{
-			await new Promise (function (resolve, reject)
-			{
-				item.findOne({id : investments[i].itemid}, async function(err, foundItem)
-				{
-					if (err || !foundItem)
-					{
-						error = true;
-						resolve();
-					}
-					else
-					{
-						item.populate(foundItem, [{path: "statdata"}], function (err, populatedDoc)
-						{
-							if (err)
-							{
-								error = true;
-								console.log(err);
-								resolve();
-							}
-							else
-							{
-								var pastPricePerItem = Math.round(investments[i].priceInvested / investments[i].numInvested * 10) / 10;
-								var currentPricePerItem = populatedDoc.statdata.currentPrice.price;
-
-								var dateInvested = investments[i].dateInvested;
-								var lastUpdated = populatedDoc.lastUpdated;
-
-								investmentResults.push({
-									itemName : populatedDoc.name,
-									itemNameLower : populatedDoc.name_lower,
-									itemId : populatedDoc.id,
-									arrayId : investments[i]._id,
-
-									dateInvested : dateInvested,
-									numInvested : investments[i].numInvested,
-									priceInvested : investments[i].priceInvested,
-									pastPricePerItem : pastPricePerItem,
-
-									currentDate : lastUpdated,
-									currentPrice : investments[i].numInvested * currentPricePerItem,
-									currentPricePerItem : currentPricePerItem,
-									approxTotalChange : (investments[i].numInvested * populatedDoc.statdata.currentPrice.price) - investments[i].priceInvested,
-									approxTotalChangePerItem : currentPricePerItem - pastPricePerItem
-								});
-								resolve();
-							}
-						});
-					}
-				});
-			});
-		}
-		if (error)
-		{
-			res.render("error.ejs");
-		}
-		else
-		{
-			res.render("index.ejs", {investmentResults : investmentResults});
-		}
-	}
-	else
-	{
-		res.render("index.ejs");
-	}
+	res.render("index.ejs");
 });
 
 app.get("/login", function(req, res)
@@ -624,19 +559,19 @@ app.get("/item/sort", function(req, res)
 			sum = 0;
 		}
 
-		for (var i = 0; i < allitems.length; i ++)
-		{
-			console.log(allitems[i].name_lower);
-		}
-		console.log("length is " + allitems.length);
-		console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		for (id in allitemsOrdered)
-		{
-			console.log(id + " " + allitemsOrdered[id].name_lower);
-		}
-		console.log("length is " + Object.keys(allitemsOrdered).length);
+		// for (var i = 0; i < filteredArr.length; i ++)
+		// {
+		// 	console.log(filteredArr[i].name_lower);
+		// }
+		// console.log("length is " + filteredArr.length);
+		// console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		// console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		// console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		// for (id in allitemsOrdered)
+		// {
+		// 	console.log(id + " " + allitemsOrdered[id].name_lower);
+		// }
+		// console.log("length is " + Object.keys(allitemsOrdered).length);
 
 	}
 	res.render("sorted.ejs", {items: filteredArr, progressbars : progressbars});
@@ -785,7 +720,7 @@ app.post("/item/data/:itemname", function(req, res)
 	{
 		if (err)
 		{
-			res.send("problem with mongo search, try again later");
+			res.render("error.ejs");
 		}
 		else
 		{
@@ -795,18 +730,22 @@ app.post("/item/data/:itemname", function(req, res)
 			}
 			else
 			{
-				var temp = itemarr[0];
+				var itemToUpdate = itemarr[0];
 				await new Promise (function (resolve ,reject)
 				{
 					updateGraph(0, itemarr, resolve);
 				});
-				itemarr[0] = temp;
-				await new Promise (function (resolve ,reject)
+				itemarr[0] = itemToUpdate;
+				if (itemToUpdate.lastUpdated.toDateString() !== allitemsOrdered[itemToUpdate.id].lastUpdated.toDateString())
 				{
-					calculateStat(itemarr, resolve);
-				});
+					await new Promise (function (resolve ,reject)
+					{
+						calculateStat(itemarr, resolve);
+					});
+					allitemsOrdered[itemToUpdate.id].lastUpdated = itemToUpdate.lastUpdated;
+					allitemsOrdered[itemToUpdate.id].statdata = itemToUpdate.statdata;
+				}
 				res.redirect('back');
-
 			}
 		}
 	});
@@ -826,12 +765,21 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 	{
 		res.redirect("/login");
 	}
-	else if (!req.params.itemname || !req.params.prevurl || !parseInt(req.body.quantity) || !parseInt(req.body.price))
+	else if (!req.params.itemname || !req.params.prevurl || !parseInt(req.body.quantity) || !parseInt(req.body.pricePerItem))
 	{
 		res.render("error.ejs");
 	}
 	else
 	{
+		var lastUpdated = new Date(req.body.lastUpdated);
+		var currentPricePerItem = req.body.itemPrice;
+
+		var pricePerItem = req.body.pricePerItem;
+		var quantity = req.body.quantity;
+
+		var itemName = req.params.itemname;
+		var investments = res.locals.user.investments;
+
 		item.findOne({name_lower : req.params.itemname}, function (err, foundItem)
 		{
 			if (err || !foundItem)
@@ -841,14 +789,17 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 			else 
 			{
 				var investments = res.locals.user.investments;
-				investments.push(
-				{
-					itemname : foundItem.name_lower,
-					itemid : foundItem.id,
+				investments.push({
+					name : foundItem.name, 
+					id : foundItem.id, 
 
 					dateInvested : new Date(),
-					numInvested : req.body.quantity,
-					priceInvested : req.body.price
+					pricePerItemInvested : pricePerItem,
+
+					numInvested : quantity,
+
+					lastUpdated : lastUpdated,
+					currentPricePerItem: currentPricePerItem,
 				});
 				res.locals.user.save();
 
@@ -872,7 +823,7 @@ app.post("/item/delete/:arrayid", function(req, res)
 	{
 		res.locals.user.investments.pull({_id : req.params.arrayid});
 		res.locals.user.save();
-		res.redirect("/login");
+		res.redirect("/");
 	}
 });
 
