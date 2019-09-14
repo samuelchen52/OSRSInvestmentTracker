@@ -141,16 +141,12 @@
 						</ul>
 					</div>
 					<div class = "col-4">
-						<% if (investmentResults[i].datesValid) { %>
-							<h5> latest date : <%= investmentResults[i].currentDate.toDateString() %> </h5>
-							<ul>
-								<li> price : <%=investmentResults[i].currentPrice%> </li>
-								<li> gp/item : <%=investmentResults[i].currentPricePerItem%></li>
-								<li> change : <%=investmentResults[i].approxTotalChange%> </li>
-							</ul>
-						<% } else { %>
-							<h1> N/A </h1>
-						<% } %>
+						<h5> latest date : <%= investmentResults[i].currentDate.toDateString() %> </h5>
+						<ul>
+							<li> price : <%=investmentResults[i].currentPrice%> </li>
+							<li> gp/item : <%=investmentResults[i].currentPricePerItem%></li>
+							<li> change : <%=investmentResults[i].approxTotalChange%> </li>
+						</ul>
 					</div>
 					<div class = "col-2">
 						<form class = "d-inline" action = "/item/delete/<%=investmentResults[i].arrayId%>" method = "POST">
@@ -165,6 +161,7 @@
 		</div>
 			
 	<% }%>
+
 
 <a class = "pl-5" href = "https://icons8.com">icons from icons8</a>
 

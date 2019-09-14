@@ -4,6 +4,8 @@ var mongoose   = require("mongoose");
 var session = require('client-sessions');
 
 var item = require("./initData/models/item.js");
+var itemList = require("./initData/itemList.js");
+console.log(itemList.length);
 var graphdata = require("./initData/models/graphdata.js");
 var statdata = require("./initData/models/statdata.js");
 var user = require("./initData/models/user.js");
@@ -13,6 +15,7 @@ var updateGraph = require("./initData/initGraphData.js");
 
 var app = express(); 
 var allitems = null;
+var allitemsOrdered = null;
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
@@ -59,11 +62,10 @@ mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true})
 //new idea - load array of docs, iterate and update each one 
 //use same array for sorting, simply allocate another array, and copy over all references that make it past the filter
 //faster than fetching every time
-//message passed through res.locals?
 //make graph more readable
 //statdata volatility
-//function that calculates stat score
-//make weighted / rounded exclusive :(, too hard to implement
+//make sure res.render is synchronous, i.e. the array being passed wont be altered if another user wants to sort the array
+//if it isnt, make a new array each time that has references to each object in sorted array
 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
@@ -391,9 +393,12 @@ function populateFilterArr(req, filterby)
 	}
 }
 //fetches all docs and assigns it to allitems
+//callback in this case is resolve function from promise, cause app has to wait until all items are fetched before starting
 async function fetchAllDocuments(callback)
 {
-	var allitems = [];
+	//allitems will be the array being sorted that is 
+	allitems = [];
+	allitemsOrdered = {};
 	await new Promise (function (resolve, reject)
 	{
 		item.find({}, async function(err, alldocs) {
@@ -406,6 +411,14 @@ async function fetchAllDocuments(callback)
 		{
 			for (var i = 0; i < alldocs.length; i ++)
 			{
+				if (allitemsOrdered[alldocs[i].id])
+				{
+					console.log(alldocs[i].name_lower);
+				}
+				else
+				{
+					allitemsOrdered[alldocs[i].id] = alldocs[i];
+				}
 				await new Promise( function(resolve, reject)
 				{
 					item.populate(alldocs[i], [{path: "statdata"}], function (err, populatedDoc)
@@ -424,6 +437,9 @@ async function fetchAllDocuments(callback)
 		}
 		});
 	});
+
+	console.log(Object.keys(allitemsOrdered).length);
+	console.log(allitems.length);
 	callback(allitems);
 }
 
@@ -475,43 +491,10 @@ app.get("/", async function(req, res)
 							else
 							{
 								var pastPricePerItem = Math.round(investments[i].priceInvested / investments[i].numInvested * 10) / 10;
-								var currentPricePerItem = populatedDoc.statdata.currentPrice;
+								var currentPricePerItem = populatedDoc.statdata.currentPrice.price;
 
 								var dateInvested = investments[i].dateInvested;
 								var lastUpdated = populatedDoc.lastUpdated;
-								var datesValid = true;
-
-								if (lastUpdated.getFullYear() > dateInvested.getFullYear())
-								{
-									datesValid = true;
-								}
-								else if (lastUpdated.getFullYear() < dateInvested.getFullYear())
-								{
-									datesValid = false;
-								}
-								else
-								{
-									if (lastUpdated.getMonth() > dateInvested.getMonth())
-									{
-										datesValid = true;
-									}
-									else if (lastUpdated.getMonth() < dateInvested.getMonth())
-									{
-										datesValid = false;
-									}
-									else
-									{
-										if (lastUpdated.getDate() >= dateInvested.getDate())
-										{
-											datesValid = true;
-										}
-										else
-										{
-											datesValid = false;
-										}
-									}
-								}
-
 
 								investmentResults.push({
 									itemName : populatedDoc.name,
@@ -524,11 +507,10 @@ app.get("/", async function(req, res)
 									priceInvested : investments[i].priceInvested,
 									pastPricePerItem : pastPricePerItem,
 
-									datesValid : datesValid,
 									currentDate : lastUpdated,
-									currentPrice : investments[i].numInvested * populatedDoc.statdata.currentPrice,
+									currentPrice : investments[i].numInvested * currentPricePerItem,
 									currentPricePerItem : currentPricePerItem,
-									approxTotalChange : (investments[i].numInvested * populatedDoc.statdata.currentPrice) - investments[i].priceInvested,
+									approxTotalChange : (investments[i].numInvested * populatedDoc.statdata.currentPrice.price) - investments[i].priceInvested,
 									approxTotalChangePerItem : currentPricePerItem - pastPricePerItem
 								});
 								resolve();
@@ -641,6 +623,20 @@ app.get("/item/sort", function(req, res)
 			});
 			sum = 0;
 		}
+
+		for (var i = 0; i < allitems.length; i ++)
+		{
+			console.log(allitems[i].name_lower);
+		}
+		console.log("length is " + allitems.length);
+		console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		for (id in allitemsOrdered)
+		{
+			console.log(id + " " + allitemsOrdered[id].name_lower);
+		}
+		console.log("length is " + Object.keys(allitemsOrdered).length);
 
 	}
 	res.render("sorted.ejs", {items: filteredArr, progressbars : progressbars});

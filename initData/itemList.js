@@ -3422,11 +3422,6 @@ module.exports =
   },
   {
   "name" : "Asgarnian ale",
-  "limit" : 500,
-  "id" : 1905
-  },
-  {
-  "name" : "Asgarnian ale",
   "limit" : 2000,
   "id" : 1905
   },
@@ -3437,22 +3432,12 @@ module.exports =
   },
   {
   "name" : "Greenman's ale",
-  "limit" : 500,
-  "id" : 1909
-  },
-  {
-  "name" : "Greenman's ale",
   "limit" : 2000,
   "id" : 1909
   },
   {
   "name" : "Dragon bitter",
   "limit" : 2000,
-  "id" : 1911
-  },
-  {
-  "name" : "Dragon bitter",
-  "limit" : 500,
   "id" : 1911
   },
   {
@@ -7759,11 +7744,6 @@ module.exports =
   "name" : "Axeman's folly(m)",
   "limit" : 2000,
   "id" : 5753
-  },
-  {
-  "name" : "Chef's delight",
-  "limit" : 500,
-  "id" : 5755
   },
   {
   "name" : "Chef's delight",
