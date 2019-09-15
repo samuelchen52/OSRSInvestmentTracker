@@ -5,8 +5,7 @@ var userSchema = new mongoose.Schema({
 username : String,
 password : String,
 
-investments : [
-{
+investments : [{
 	name : String, 
 	id : Number, 
 
@@ -16,10 +15,9 @@ investments : [
 	numInvested : Number,
 
 	lastUpdated : Date,
-	currentPricePerItem: Number,
+	currentPricePerItem: Number
 
-}
-]
+}]
 });
 
 var user = mongoose.model("user", userSchema);

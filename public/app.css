@@ -175,15 +175,21 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 
 #inthegreen
 {
-	width: 300px;
-	background-color: green;
-	top: 65px;
+	position : absolute;
+	width: 250px;
+	top: 70px;
+}
+
+.greeninvestment
+{
+	font-size: 15px;
 }
 
 #inthered
 {
-	width: 300px;
-	top: 65px;
+	position : absolute;
+	width: 250px;
+	top: 70px;
 	right: 0px;
 	background-color: red;
 }
