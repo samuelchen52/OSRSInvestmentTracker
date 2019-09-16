@@ -3,7 +3,7 @@
 <div class = "container">
     <div class = "pl-2 pr-2">
         <div> last updated: <%= item.lastUpdated.toDateString() %>
-                <form class = "d-inline" action = "/item/data/<%=item.name_lower%>" method = "POST">
+                <form class = "d-inline" action = "/item/data/<%=item.id%>" method = "POST">
                     <button type = "submit"> <i class = "fa fa-refresh"> </i> </button>
                 </form>
             </div>

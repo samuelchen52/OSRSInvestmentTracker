@@ -46,7 +46,7 @@
 	<% if (user !== null){ %>
 		<% var profits= []; var losses = []; %>
 		<% for (var i = 0; i < user.investments.length; i ++) { %>
-			<% if (user.investments[i].pricePerItemInvested < user.investments[i].currentPricePerItem) { %>
+			<% if (user.investments[i].pricePerItemInvested <= user.investments[i].currentPricePerItem) { %>
 			<% profits.push(user.investments[i]); %>
 			<% } else { %>
 			<% losses.push(user.investments[i]); %>
@@ -65,6 +65,7 @@
 							<div>
 								gp ea. <%=profits[i].pricePerItemInvested%> -> <%=profits[i].currentPricePerItem%>
 								total <%=profits[i].pricePerItemInvested * profits[i].numInvested%> -> <%=profits[i].currentPricePerItem * profits[i].numInvested%>
+								gains: <%=profits[i].currentPricePerItem * profits[i].numInvested - profits[i].pricePerItemInvested * profits[i].numInvested%>
 							</div>
 						</div>
 					</div>
@@ -83,7 +84,8 @@
 						<div class = "col-8">
 							<div>
 								gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
-									total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInveste%>
+								total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
+								losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
 							</div>
 						</div>
 					</div>

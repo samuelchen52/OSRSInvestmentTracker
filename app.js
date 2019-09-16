@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 var express    = require("express");
 var bodyparser = require("body-parser");
 var mongoose   = require("mongoose");
@@ -77,8 +79,7 @@ mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true})
 //faster than fetching every time
 //make graph more readable
 //statdata volatility
-//make sure res.render is synchronous, i.e. the array being passed wont be altered if another user wants to sort the array
-//if it isnt, make a new array each time that has references to each object in sorted array
+//make sure to handle spam requests for updates
 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
@@ -426,7 +427,8 @@ async function fetchAllDocuments(callback)
 			{
 
 				allitemsOrdered[alldocs[i].id] = alldocs[i];
-	
+				//userLastUpdated is last day that user reqeuested an update, if the day is the same, its not going to bother requesting
+				allitemsOrdered[alldocs[i].id].userLastUpdated = alldocs[i].lastUpdated;
 				await new Promise( function(resolve, reject)
 				{
 					item.populate(alldocs[i], [{path: "statdata"}], function (err, populatedDoc)
@@ -712,11 +714,11 @@ app.post("/logout", function(req, res)
   	 res.redirect("/");
 });
 
-//updates itemname then redirects back to previous
-app.post("/item/data/:itemname", function(req, res)
+//updates item with id then redirects back to previous
+app.post("/item/data/:id", function(req, res)
 {
-	var itemname = req.params.itemname;
-	item.find({name_lower : itemname}, async function (err, itemarr)
+	var id = req.params.id;
+	item.find({id : id}, async function (err, itemarr)
 	{
 		if (err)
 		{
@@ -801,11 +803,11 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 					lastUpdated : lastUpdated,
 					currentPricePerItem: currentPricePerItem,
 				});
-				res.locals.user.save();
+				res.locals.user.save(() => res.redirect(req.params.prevurl.split("_").join("/").split("-").join("?")));
 
 				//rebuild the url from the post request
 				//have to replace / and ? because those are special and change how url is interpreted
-				res.redirect(req.params.prevurl.split("_").join("/").split("-").join("?"));
+				//res.redirect(req.params.prevurl.split("_").join("/").split("-").join("?"));
 			}
 		});
 	}
