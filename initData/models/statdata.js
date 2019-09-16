@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var mongoose = require ("mongoose");
 
 //sort by price, something with trend, amount traded, profit margin if available

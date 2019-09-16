@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 //populates the mongodb database
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
@@ -6,7 +8,7 @@ var mongoose = require("mongoose");
 var request = require("request");
 var fs = require("fs");
 
-mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 //http://services.runescape.com/m=itemdb_oldschool/api/graph/7394.json
 //http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=7394
 

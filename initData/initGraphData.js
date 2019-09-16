@@ -1,3 +1,4 @@
+require('dotenv').config();
 //populates the mongodb database
 
 var item = require("./models/item.js");
@@ -12,7 +13,7 @@ var jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
 
-mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
 //note, for the graph json, the epoch time is in MILLISECONDS, and javascripts date object uses milliseconds as the unit for epoch date
 

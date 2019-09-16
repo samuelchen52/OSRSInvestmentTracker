@@ -1,10 +1,11 @@
+require('dotenv').config();
+
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
 var statdata = require("./models/statdata.js");
 
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
-
+mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
 
 

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 //populates the mongodb database
 
 var itemList = require ("./itemList.js");
@@ -5,7 +7,7 @@ var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
 
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
 //populate database with item ids and then do a find(), which will return an array of all the items, which we then iterate over (get the item ids)
 //and then do two requests for each item to populate them with data, more modular and less error prone

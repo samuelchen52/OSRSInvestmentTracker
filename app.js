@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 
 var express    = require("express");
 var bodyparser = require("body-parser");
@@ -70,7 +70,7 @@ app.use(function(req, res, next) {
 	}
 });
 
-mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
 //todo
 //will need to update allitems periodically, just fetch the documents from database every so often
