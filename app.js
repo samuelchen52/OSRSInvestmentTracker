@@ -13,6 +13,7 @@ var user = require("./initData/models/user.js");
 var calculateStat = require("./initData/initStatData.js");
 var updateGraph = require("./initData/initGraphData.js");
 
+const port = process.env.PORT || 80;
 var app = express(); 
 var allitems = null;
 var allitemsOrdered = null;
@@ -450,14 +451,14 @@ async function fetchAllDocuments(callback)
 	callback(allitems);
 }
 
-async function startapp ()
+async function startapp (port)
 {
 	await new Promise(function (resolve, reject)
 	{
 		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
-	app.listen(80, async function ()
+	app.listen(port, async function ()
 	{	
 		console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 	});
