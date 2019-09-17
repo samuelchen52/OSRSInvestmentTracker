@@ -163,16 +163,7 @@ async function makeRequests(start, documentarr)
 	process.exit();
 }
 
-
-
-if (process.argv.length !== 3)
-{
-	console.log("enter an index!");
-}
-else
-{
-	populate(process.argv[2]);
-}
+module.exports = populate;
 
 
 

@@ -258,8 +258,3 @@ async function calculate(allitems, callback)
 }
 
 module.exports = calculate;
-
-if (process.argv.length > 2)
-{
-	populate();
-}

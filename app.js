@@ -1,19 +1,27 @@
 require('dotenv').config();
 
-var express    = require("express");
-var bodyparser = require("body-parser");
-var mongoose   = require("mongoose");
-var session = require('client-sessions');
+const express    = require("express");
+const bodyparser = require("body-parser");
+const mongoose   = require("mongoose");
+const session = require('client-sessions');
 
-var item = require("./initData/models/item.js");
-var graphdata = require("./initData/models/graphdata.js");
-var statdata = require("./initData/models/statdata.js");
-var user = require("./initData/models/user.js");
+const item = require("./initData/models/item.js");
+const graphdata = require("./initData/models/graphdata.js");
+const statdata = require("./initData/models/statdata.js");
+const user = require("./initData/models/user.js");
 
-var calculateStat = require("./initData/initStatData.js");
-var updateGraph = require("./initData/initGraphData.js");
+//make items
+const makeItems = require("./initData/initItem.js"); //makes graphdata as well
+const makeStat = require("./initData/initStat.js") //separate because stat model can change often
+
+//update item data
+const initItemData = require("./initData/initItemData.js");
+const initStatData = require("./initData/initStatData.js");
+const initGraphData = require("./initData/initGraphData.js");
 
 const port = process.env.PORT || 80;
+const numItems = 3506; 
+
 var app = express(); 
 var allitems = null;
 var allitemsOrdered = null;
@@ -428,8 +436,9 @@ async function fetchAllDocuments(callback)
 			{
 
 				allitemsOrdered[alldocs[i].id] = alldocs[i];
+				allitemsOrdered[alldocs[i].id].index = i; 
 				//userLastUpdated is last day that user reqeuested an update, if the day is the same, its not going to bother requesting
-				allitemsOrdered[alldocs[i].id].userLastUpdated = alldocs[i].lastUpdated;
+				//allitemsOrdered[alldocs[i].id].userLastUpdated = alldocs[i].lastUpdated;
 				await new Promise( function(resolve, reject)
 				{
 					item.populate(alldocs[i], [{path: "statdata"}], function (err, populatedDoc)
@@ -458,14 +467,36 @@ async function startapp (port)
 		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
-	app.listen(port, async function ()
+	
+	//initialize all items in the database
+	if (allitems.length === 0)
+	{
+		await new Promise (function(resolve, reject)
+		{
+			initItem(resolve);
+		});
+		await new Promise (function(resolve, reject)
+		{
+			initStat(resolve);
+		});
+
+		await new Promise (function(resolve, reject)
+		{
+			initItemData();
+			initGraphData(resolve);
+		});
+		initStatData();
+	}
+
+
+	app.listen(port, function ()
 	{	
 		console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 	});
 }
 
 //_________________________________________________________________________________________________________________________________________________________________
-//_________________________________________________________________________________________________________________________________________________________________
+//__________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 
 app.get("/", async function(req, res)
@@ -561,20 +592,6 @@ app.get("/item/sort", function(req, res)
 			});
 			sum = 0;
 		}
-
-		// for (var i = 0; i < filteredArr.length; i ++)
-		// {
-		// 	console.log(filteredArr[i].name_lower);
-		// }
-		// console.log("length is " + filteredArr.length);
-		// console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		// console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		// console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		// for (id in allitemsOrdered)
-		// {
-		// 	console.log(id + " " + allitemsOrdered[id].name_lower);
-		// }
-		// console.log("length is " + Object.keys(allitemsOrdered).length);
 
 	}
 	res.render("sorted.ejs", {items: filteredArr, progressbars : progressbars});
@@ -736,14 +753,14 @@ app.post("/item/data/:id", function(req, res)
 				var itemToUpdate = itemarr[0];
 				await new Promise (function (resolve ,reject)
 				{
-					updateGraph(0, itemarr, resolve);
+					initGraphData(0, itemarr, resolve);
 				});
 				itemarr[0] = itemToUpdate;
 				if (itemToUpdate.lastUpdated.toDateString() !== allitemsOrdered[itemToUpdate.id].lastUpdated.toDateString())
 				{
 					await new Promise (function (resolve ,reject)
 					{
-						calculateStat(itemarr, resolve);
+						initStatData(itemarr, resolve);
 					});
 					allitemsOrdered[itemToUpdate.id].lastUpdated = itemToUpdate.lastUpdated;
 					allitemsOrdered[itemToUpdate.id].statdata = itemToUpdate.statdata;

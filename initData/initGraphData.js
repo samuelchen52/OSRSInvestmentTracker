@@ -53,20 +53,27 @@ var detailurl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/
 
 // }
 
-function populate(start) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
 {
-	item.find({}, function (err, allItems)
+	if (documentarr)
 	{
-		if (err)
+		makeRequests(start, documentarr, callback);
+	}
+	else
+	{
+		item.find({}, function (err, allItems)
 		{
-			console.log("error fetching all the document objects!");
-			process.exit();
-		}
-		else
-		{
-			makeRequests(start, allItems);
-		}
-	});
+			if (err)
+			{
+				console.log("error fetching all the document objects!");
+				process.exit();
+			}
+			else
+			{
+				makeRequests(start, allItems, callback);
+			}
+		});
+	}
 }
 
 async function makeRequests(start, documentarr, callback)
@@ -244,18 +251,17 @@ async function makeRequests(start, documentarr, callback)
 		}
 	}
 	console.log("finished updating graphdata!");
-	callback();
+	if (typeof callback === "function")
+	{
+		callback();
+	}
 	//process.exit();
 }
 
 
 
-module.exports = makeRequests;
+module.exports = populate;
 
-if (process.argv.length > 2)
-{
-populate(process.argv[2], function(){});
-}
 
 // request.get("https://oldschool.runescape.wiki/w/Module:Exchange/Blue_wizard_hat_(g)/Data", function (error, response, body)
 // {

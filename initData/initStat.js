@@ -12,7 +12,7 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 
 //populate database with item ids and then do a find(), which will return an array of all the items, which we then iterate over (get the item ids)
 //and then do two requests for each item to populate them with data, more modular and less error prone
-async function populate()
+async function populate(callback)
 {
 
 	item.find({}, async function (err, allitems)
@@ -48,7 +48,11 @@ async function populate()
 		}
 	});
 	
+	if (typeof callback === "function")
+	{
+		callback();
+	}
 };
 
-populate();
+module.exports = populate;
 //console.log(itemids.length); //3011 documents
