@@ -4,7 +4,6 @@
   "description": "osrs ge tracker",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node initializeDataBase.js",
     "start": "node app.js"
   },
   "author": "samuel chen",
