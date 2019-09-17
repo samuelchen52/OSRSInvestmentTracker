@@ -10,6 +10,8 @@ const graphdata = require("./initData/models/graphdata.js");
 const statdata = require("./initData/models/statdata.js");
 const user = require("./initData/models/user.js");
 
+const tracker = require("./initData/models/tracker.js");
+
 //make items
 const initItem = require("./initData/initItem.js"); //makes graphdata as well
 const initStat = require("./initData/initStat.js") //separate because stat model can change often
@@ -18,6 +20,8 @@ const initStat = require("./initData/initStat.js") //separate because stat model
 const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
+
+const initDataBase = require("./initializeDatabase.js");
 
 const port = process.env.PORT || 80;
 const numItems = 3506; 

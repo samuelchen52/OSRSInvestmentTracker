@@ -10,6 +10,8 @@ const graphdata = require("./initData/models/graphdata.js");
 const statdata = require("./initData/models/statdata.js");
 const user = require("./initData/models/user.js");
 
+const tracker = require("./initData/models/tracker.js");
+
 //make items
 const initItem = require("./initData/initItem.js"); //makes graphdata as well
 const initStat = require("./initData/initStat.js") //separate because stat model can change often
@@ -99,12 +101,6 @@ async function initDatabase ()
 			console.log("making stats....");
 			initStat(resolve);
 		});
-		await new Promise (function(resolve, reject)
-		{
-			console.log("fetching item and graph data....");
-			initGraphData(0);
-			initItemData(0, resolve);
-		});
 
 		//wait for graph and item data to be populated, itemdata should take longer than graphdata
 		//so shouldnt need to wait for graph data to catch up
@@ -139,7 +135,7 @@ async function initDatabase ()
 
 }
 
-initDatabase();
+module.exports = initDatabase;
 
 
 
