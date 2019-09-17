@@ -16,32 +16,6 @@ var graphurl = "http://services.runescape.com/m=itemdb_oldschool/api/graph/";
 var detailurl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=";
 
 
-// async function requestGraphData(id) //return promise object with value of parsed request body in the mongodb database, if error, returns with null value
-// {
-// 	var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + id + ".json";
-// 	var ret = null;
-
-// 	return request(url, function(error, response, body)
-// 	{
-// 		if (response.statusCode !== 200)
-// 		{
-// 			ret =  new Promise (function (resolve, reject)
-// 			{
-// 				resolve(null);
-// 			});
-// 		}
-// 		else
-// 		{
-// 			ret = new Promise (function (resolve, reject)
-// 			{
-// 				resolve(JSON.parse(body));
-// 			});
-// 		}
-// 	});
-
-// 	return await ret;
-
-// }
 
 function stream (url, id, folder)
 {
@@ -148,7 +122,7 @@ async function makeRequests(start, documentarr, callback)
 			temp.members = reqbody.members;
 			temp.save();
 
-			console.log("document with id of " + documentarr[start].id + " at index " + start + " updated!");
+			console.log("item data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 			documentarr[start] = null; // allow garbage collector to clean up
 			start ++;
 
@@ -166,16 +140,4 @@ async function makeRequests(start, documentarr, callback)
 }
 
 module.exports = populate;
-
-
-
-// item.find({}, function (err, allitems)
-// {
-// 	var s1 = "<img src = \"";
-// 	var s2 = "\">";
-// 	for (var i = 0; i < 300; i ++)
-// 	{
-// 		console.log(s1 + allitems[i].icon_large + s2);
-// 	}
-// });
 

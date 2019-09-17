@@ -216,7 +216,7 @@ async function calculate(allitems, callback)
 
 						stat.save();
 						//allitems[i] = null; //doesnt work for some reason, have to do this outside of the promise
-						console.log("stats calculated for " + doc.name + " with id of " + doc.id);
+						console.log("stat data calculated for " + doc.name + " with id of " + doc.id);
 						//console.log(process.memoryUsage());
 						resolve();
 					}

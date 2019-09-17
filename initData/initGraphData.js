@@ -234,7 +234,7 @@ async function makeRequests(start, documentarr, callback)
 						// 	graphdata.average.push({date: new Date (parseInt(key)), price: reqbody.average[key]});
 						// }
 						graphdata.save();
-						console.log("document with id of " + documentarr[start].id + " at index " + start + " updated!");
+						console.log("graph data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 						populatedDoc.lastUpdated = (priceData.length === 0) ?  new Date(0) : priceData[priceData.length - 1].date ;
 						populatedDoc.save();
 						documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
@@ -250,7 +250,7 @@ async function makeRequests(start, documentarr, callback)
 				});
 		}
 	}
-	console.log("finished updating graphdata!");
+
 	if (typeof callback === "function")
 	{
 		callback();

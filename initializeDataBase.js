@@ -10,7 +10,6 @@ const graphdata = require("./initData/models/graphdata.js");
 const statdata = require("./initData/models/statdata.js");
 const user = require("./initData/models/user.js");
 
-const tracker = require("./initData/models/tracker.js");
 
 //make items
 const initItem = require("./initData/initItem.js"); //makes graphdata as well
@@ -88,7 +87,7 @@ async function initDatabase ()
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
 	
-	//initialize all items in the database
+	//initialize all items in the database, if they havent been initialized
 	if (allitems.length === 0)
 	{
 		await new Promise (function(resolve, reject)
@@ -101,37 +100,61 @@ async function initDatabase ()
 			console.log("making stats....");
 			initStat(resolve);
 		});
+	}
 
-		//wait for graph and item data to be populated, itemdata should take longer than graphdata
-		//so shouldnt need to wait for graph data to catch up
-		var numgraphdata = 0;
-		while(numgraphdata !== numItems)
+	// check if all items have had their graph / item data fetched, if not, then fetch it
+	let graphdataPopulated = -1;
+	let itemdataPopulated = -1;
+	for (var i = 0; i < allitems.length && (graphdataPopulated === -1 || itemdataPopulated === -1); i ++)
+	{
+		if (!allitems[i].lastUpdated)
 		{
-			graphdata.find({}, function(err, allgraphdata)
-			{
-				if (err)
-				{
-					console.log(err);
-					process.exit();
-				}
-				else
-				{
-					numgraphdata = allgraphdata.length;
-				}
-			});
-			console.log("still fetching graph data");
-			await new Promise (function (resolve, reject)
-			{
-				setTimeout(function(){resolve();}, 60000 * 5);
-			});
+			graphdataPopulated = i;
 		}
-		console.log("calculating stat data");
+		if (!allitems[i].description)
+		{
+			itemdataPopulated = i;
+		}
+	}
+	// populate the rest of the data
+	if (itemdataPopulated >= 0 )
+	{
+		initItemData(0);
+		//get all items again, since initdata functions will wipe the array for the garbage collector
+		await new Promise(function (resolve, reject)
+		{
+			fetchAllDocuments(resolve);
+		}).then(function(alldocs){allitems = alldocs;});
+	}
+	if (graphdataPopulated >= 0)
+	{
 		await new Promise (function(resolve, reject)
 		{
-			initStatData(resolve);
+			initGraphData(0, allitems, resolve);
+		});
+		initStatData();
+		await new Promise(function (resolve, reject)
+		{
+			fetchAllDocuments(resolve);
+		}).then(function(alldocs){allitems = alldocs;});
+	}
+
+
+
+	//continually update graphdata throughout the life time of the applictaion
+
+	while(true)
+	{
+		for (let i = 0; i < numItems; i ++)
+		{
+			setTimeout(() => initGraphData(0, [allitems[i]]), i * 25000);
+		}
+		await new Promise(function (resolve, reject)
+		{
+			setTimeout(() => resolve(), 24 * 60 * 60 * 1000);
 		});
 	}
-	process.exit();
+		
 
 }
 

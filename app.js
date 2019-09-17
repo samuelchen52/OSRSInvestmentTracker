@@ -10,7 +10,6 @@ const graphdata = require("./initData/models/graphdata.js");
 const statdata = require("./initData/models/statdata.js");
 const user = require("./initData/models/user.js");
 
-const tracker = require("./initData/models/tracker.js");
 
 //make items
 const initItem = require("./initData/initItem.js"); //makes graphdata as well
@@ -847,7 +846,7 @@ app.post("/*", function(req, res)
 //_________________________________________________________________________________________________________________________________________________________________
 
 startapp(port);
-
+initDataBase();
 
 
 
