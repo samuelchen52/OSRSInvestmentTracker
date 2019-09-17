@@ -4,6 +4,7 @@
   "description": "osrs ge tracker",
   "main": "index.js",
   "scripts": {
+    "heroku-postbuild": "node initializeDataBase.js",
     "start": "node app.js"
   },
   "author": "samuel chen",

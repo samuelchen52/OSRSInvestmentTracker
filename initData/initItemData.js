@@ -48,7 +48,7 @@ function stream (url, id, folder)
     request(url).pipe(fs.createWriteStream('images/' + folder +'/' + id + '.gif'));
 }
 
-function populate(start) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+function populate(start, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
 {
 	item.find({}, function (err, allItems)
 	{
@@ -59,12 +59,12 @@ function populate(start) //fetches all document objects in mongodb and then pass
 		}
 		else
 		{
-			makeRequests(start, allItems);
+			makeRequests(start, allItems, callback);
 		}
 	});
 }
 
-async function makeRequests(start, documentarr)
+async function makeRequests(start, documentarr, callback)
 {
 	var reqbody = null;
 	var arr = [];
@@ -159,8 +159,10 @@ async function makeRequests(start, documentarr)
 		}
 	}
 	console.log("finished updating the database!");
-	console.log(arr);
-	process.exit();
+	if (typeof callback === "function")
+	{
+		callback();
+	}
 }
 
 module.exports = populate;

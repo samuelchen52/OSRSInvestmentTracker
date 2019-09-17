@@ -468,57 +468,6 @@ async function startapp (port)
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
 	
-	//initialize all items in the database
-	if (allitems.length === 0)
-	{
-		await new Promise (function(resolve, reject)
-		{
-			console.log("making items....");
-			initItem(resolve);
-		});
-		await new Promise (function(resolve, reject)
-		{
-			console.log("making stats....");
-			initStat(resolve);
-		});
-		await new Promise (function(resolve, reject)
-		{
-			console.log("fetching item and graph data....");
-			initGraphData(0);
-			initItemData(resolve);
-		});
-
-		//wait for graph and item data to be populated, itemdata should take longer than graphdata
-		//so shouldnt need to wait for graph data to catch up
-		var numgraphdata = 0;
-		while(numgraphdata !== numItems)
-		{
-			graphdata.find({}, function(err, allgraphdata)
-			{
-				if (err)
-				{
-					console.log(err);
-					process.exit();
-				}
-				else
-				{
-					numgraphdata = allgraphdata.length;
-				}
-			});
-			console.log("still fetching graph data");
-			await new Promise (function (resolve, reject)
-			{
-				setTimeout(function(){resolve();}, 60000 * 5);
-			});
-		}
-		console.log("calculating stat data");
-		await new Promise (function(resolve, reject)
-		{
-			initStatData(resolve);
-		});
-	}
-
-
 	app.listen(port, function ()
 	{	
 		console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
