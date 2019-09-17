@@ -11,8 +11,8 @@ const statdata = require("./initData/models/statdata.js");
 const user = require("./initData/models/user.js");
 
 //make items
-const makeItems = require("./initData/initItem.js"); //makes graphdata as well
-const makeStat = require("./initData/initStat.js") //separate because stat model can change often
+const initItem = require("./initData/initItem.js"); //makes graphdata as well
+const initStat = require("./initData/initStat.js") //separate because stat model can change often
 
 //update item data
 const initItemData = require("./initData/initItemData.js");
