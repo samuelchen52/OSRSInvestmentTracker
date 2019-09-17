@@ -473,19 +473,49 @@ async function startapp (port)
 	{
 		await new Promise (function(resolve, reject)
 		{
+			console.log("making items....");
 			initItem(resolve);
 		});
 		await new Promise (function(resolve, reject)
 		{
+			console.log("making stats....");
 			initStat(resolve);
 		});
-
 		await new Promise (function(resolve, reject)
 		{
-			initItemData();
-			initGraphData(resolve);
+			console.log("fetching item and graph data....");
+			initGraphData(0);
+			initItemData(resolve);
 		});
-		initStatData();
+
+		//wait for graph and item data to be populated, itemdata should take longer than graphdata
+		//so shouldnt need to wait for graph data to catch up
+		var numgraphdata = 0;
+		while(numgraphdata !== numItems)
+		{
+			graphdata.find({}, function(err, allgraphdata)
+			{
+				if (err)
+				{
+					console.log(err);
+					process.exit();
+				}
+				else
+				{
+					numgraphdata = allgraphdata.length;
+				}
+			});
+			console.log("still fetching graph data");
+			await new Promise (function (resolve, reject)
+			{
+				setTimeout(function(){resolve();}, 60000 * 5);
+			});
+		}
+		console.log("calculating stat data");
+		await new Promise (function(resolve, reject)
+		{
+			initStatData(resolve);
+		});
 	}
 
 
