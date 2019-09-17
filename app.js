@@ -21,7 +21,7 @@ const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
-const initDataBase = require("./initializeDatabase.js");
+const initDataBase = require("./initializeDataBase.js");
 
 const port = process.env.PORT || 80;
 const numItems = 3506; 
