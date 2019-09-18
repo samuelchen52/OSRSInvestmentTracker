@@ -57,7 +57,7 @@ async function fetchAllDocuments(callback)
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 
-async function initDatabase ()
+async function initDatabase (callback)
 {
 	var allitems = null;
 	await new Promise(function (resolve, reject)
@@ -93,44 +93,43 @@ async function initDatabase ()
 	}
 
 	// check if all items have had their graph / item data fetched, if not, then fetch it
-	var graphdataPopulated = -1;
-	var itemdataPopulated = -1;
-	for (var i = 0; i < allitems.length && (graphdataPopulated === -1 || itemdataPopulated === -1); i ++)
+	var arrItemsGraphDataNeeded = [];
+	var arrItemsItemDataNeeded = [];
+	for (var i = 0; i < allitems.length; i ++)
 	{
-		if (!allitems[i].lastUpdated && graphdataPopulated === -1)
+		if (!allitems[i].lastUpdated)
 		{
-			graphdataPopulated = i;
+			arrItemsGraphDataNeeded.push(allitems[i]);
 		}
-		if (!allitems[i].description && itemdataPopulated === -1)
+		if (!allitems[i].description)
 		{
-			itemdataPopulated = i;
+			arrItemsItemDataNeeded.push(allitems[i]);
 		}
 	}
 	// populate the rest of the data
-	if (itemdataPopulated >= 0 )
+
+	initItemData(0, arrItemsItemDataNeeded);
+	await new Promise (function(resolve, reject)
 	{
-		initItemData(itemdataPopulated);
-	}
-	if (graphdataPopulated >= 0)
+		initGraphData(0, arrItemsGraphDataNeeded, resolve);
+	}).catch(function (error) 
 	{
-		await new Promise (function(resolve, reject)
-		{
-			initGraphData(graphdataPopulated, allitems, resolve);
-		}).catch(function (error) 
-		{
-			console.log("THIS SHOULDNT HAPPEN");
-		});;
-		initStatData();
+		console.log("THIS SHOULDNT HAPPEN");
+	});;
 
-		//get all items again, since initdata functions will wipe the array for the garbage collector
-		await new Promise(function (resolve, reject)
-		{
-			fetchAllDocuments(resolve);
-		}).then(function(alldocs){allitems = alldocs;});
+	initStatData();
+	//get all items again, since initdata functions will wipe the array for the garbage collector
+	await new Promise(function (resolve, reject)
+	{
+		fetchAllDocuments(resolve);
+	}).then(function(alldocs){allitems = alldocs;});
+	
+
+
+	if (typeof callback === "function")
+	{
+		callback();
 	}
-
-
-
 	//continually update graphdata throughout the life time of the applictaion
 
 	while(true)

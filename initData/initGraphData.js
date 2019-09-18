@@ -88,7 +88,12 @@ async function makeRequests(start, documentarr, callback)
 		{
 			request.get({url : url},  function (error, response, body)
 			{
-				if (response.statusCode !== 200)
+				if (error)
+				{
+					console.log("error:" +  error);
+					process.exit();
+				}
+				else if (response.statusCode !== 200)
 				{
 					if (response.statusCode === 404)
 					{
@@ -98,11 +103,6 @@ async function makeRequests(start, documentarr, callback)
 					}
 					reqbody = null;
 					resolve();
-				}
-				else if (error)
-				{
-					console.log("error:" +  error);
-					process.exit();
 				}
 				else
 				{

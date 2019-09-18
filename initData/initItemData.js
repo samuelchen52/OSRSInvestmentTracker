@@ -22,20 +22,27 @@ function stream (url, id, folder)
     request(url).pipe(fs.createWriteStream('images/' + folder +'/' + id + '.gif'));
 }
 
-function populate(start, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
 {
-	item.find({}, function (err, allItems)
+	if (documentarr)
 	{
-		if (err)
+		makeRequests(start, documentarr, callback);
+	}
+	else
+	{
+		item.find({}, function (err, allItems)
 		{
-			console.log("error fetching all the document objects!");
-			process.exit();
-		}
-		else
-		{
-			makeRequests(start, allItems, callback);
-		}
-	});
+			if (err)
+			{
+				console.log("error fetching all the document objects!");
+				process.exit();
+			}
+			else
+			{
+				makeRequests(start, allItems, callback);
+			}
+		});
+	}
 }
 
 async function makeRequests(start, documentarr, callback)

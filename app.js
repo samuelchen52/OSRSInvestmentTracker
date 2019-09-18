@@ -467,10 +467,15 @@ async function startapp (port)
 {
 	await new Promise(function (resolve, reject)
 	{
+		initDataBase(resolve);
+	});
+	
+	await new Promise(function (resolve, reject)
+	{
 		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
-	
+
 	app.listen(port, function ()
 	{	
 		console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
@@ -846,7 +851,6 @@ app.post("/*", function(req, res)
 //_________________________________________________________________________________________________________________________________________________________________
 
 startapp(port);
-initDataBase();
 
 
 
