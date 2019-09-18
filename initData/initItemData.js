@@ -22,7 +22,7 @@ function stream (url, id, folder)
     request(url).pipe(fs.createWriteStream('images/' + folder +'/' + id + '.gif'));
 }
 
-function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+async function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
 {
 	if (documentarr)
 	{

@@ -33,7 +33,7 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 async function fetchAllDocuments(callback)
 {
 	//allitems will be the array being sorted that is 
-	allitems = [];
+	var allitems = [];
 	await new Promise (function (resolve, reject)
 	{
 		item.find({}, async function(err, alldocs) {
@@ -113,13 +113,17 @@ async function initDatabase (callback)
 
 	// populate the rest of the data
 	initItemData(0, arrItemsItemDataNeeded);
+	// throw away all references, so garbage collector can clean up
+	console.log("cleaning up memory for itemdata...");
+	arrItemsItemDataNeeded = null;
+	allitems = null;
+
 	await new Promise (function(resolve, reject)
 	{
 		initGraphData(0, arrItemsGraphDataNeeded, resolve);
 		//throw away all references, so garbage collector can clean up
+		console.log("cleaning up memory for graphdata...");
 		arrItemsGraphDataNeeded = null;
-		arrItemsItemDataNeeded = null;
-		allitems = null;
 	}).catch(function (error) 
 	{
 		console.log("THIS SHOULDNT HAPPEN");
@@ -143,8 +147,8 @@ async function initDatabase (callback)
 	{
 		callback();
 	}
-	//continually update graphdata throughout the life time of the applictaion
 
+	//continually update graphdata throughout the life time of the applictaion
 	while(true)
 	{
 		//grab allitems AGAIN, to get rid of statdata references, just to save some space

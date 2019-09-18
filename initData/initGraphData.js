@@ -53,7 +53,7 @@ var detailurl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/
 
 // }
 
-function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+async function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
 {
 	if (documentarr)
 	{
@@ -135,45 +135,45 @@ async function makeRequests(start, documentarr, callback)
 
 		if (reqbody === null) 
 		{
-			if (deletedoc)
-			{
-				deletedoc = false;
-				await new Promise (function (resolve, reject)
-				{
-					item.deleteOne({id : documentarr[start].id}, function(err)
-					{
-						if (err)
-						{
-							console.log("failed to delete item document with id " + documentarr[start].id + "!");
-							process.exit();
-						}
-						else
-						{
-							console.log("succesfully deleted item document with id " + documentarr[start].id + "!");
-						}
-						resolve();
-					});
-				});
-				await new Promise (function (resolve, reject)
-				{
-					graphdata.deleteOne({id : documentarr[start].id}, function(err)
-					{
-						if (err)
-						{
-							console.log("failed to delete graphdata document with id " + documentarr[start].id + "!");
-							process.exit();
-						}
-						else
-						{
-							console.log("succesfully deleted graphdata document with id " + documentarr[start].id + "!");
-						}
-						resolve();
-					});
-				});
-				start ++;
-			}
-			else
-			{
+			// if (deletedoc)
+			// {
+			// 	deletedoc = false;
+			// 	await new Promise (function (resolve, reject)
+			// 	{
+			// 		item.deleteOne({id : documentarr[start].id}, function(err)
+			// 		{
+			// 			if (err)
+			// 			{
+			// 				console.log("failed to delete item document with id " + documentarr[start].id + "!");
+			// 				process.exit();
+			// 			}
+			// 			else
+			// 			{
+			// 				console.log("succesfully deleted item document with id " + documentarr[start].id + "!");
+			// 			}
+			// 			resolve();
+			// 		});
+			// 	});
+			// 	await new Promise (function (resolve, reject)
+			// 	{
+			// 		graphdata.deleteOne({id : documentarr[start].id}, function(err)
+			// 		{
+			// 			if (err)
+			// 			{
+			// 				console.log("failed to delete graphdata document with id " + documentarr[start].id + "!");
+			// 				process.exit();
+			// 			}
+			// 			else
+			// 			{
+			// 				console.log("succesfully deleted graphdata document with id " + documentarr[start].id + "!");
+			// 			}
+			// 			resolve();
+			// 		});
+			// 	});
+			// 	start ++;
+			// }
+			// else
+			// {
 				console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "! waiting 60 seconds...");
 				console.log(url);
 				await new Promise(function (resolve, reject) 
@@ -181,11 +181,10 @@ async function makeRequests(start, documentarr, callback)
 						setTimeout(resolve, 60000);
 					});
 				console.log("60 seconds up, trying again...");
-			}
+			//}
 		}
 		else
 		{
-
 			await new Promise (function (resolve, reject)
 			{
 				item.populate(documentarr[start], [{path: "graphdata"}], function (err, populatedDoc)
@@ -237,17 +236,18 @@ async function makeRequests(start, documentarr, callback)
 						console.log("graph data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 						populatedDoc.lastUpdated = (priceData.length === 0) ?  new Date(0) : priceData[priceData.length - 1].date ;
 						populatedDoc.save();
-						//console.log(process.memoryUsage());
+						console.log(process.memoryUsage());
 						resolve();
 					}
 				});
 			});
 			documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
 			start ++;
+
 			await new Promise(function (resolve, reject) 
-				{
-					setTimeout(resolve, 500);
-				});
+			{
+				setTimeout(resolve, 500);
+			});
 		}
 	}
 
