@@ -106,11 +106,14 @@ async function initDatabase (callback)
 			arrItemsItemDataNeeded.push(allitems[i]);
 		}
 	}
+	console.log("there are " + arrItemsItemDataNeeded.length + " documents that need to have item data fetched");
+	console.log("there are " + arrItemsGraphDataNeeded.length + " documents that need to have graph data updated");
 	//throw away all references, so garbage collector can clean up
 	allitems = null;
 	arrItemsGraphDataNeeded = null;
 	arrItemsItemDataNeeded = null;
 	// populate the rest of the data
+
 
 	initItemData(0, arrItemsItemDataNeeded);
 	await new Promise (function(resolve, reject)
