@@ -150,7 +150,7 @@ async function initDatabase (callback)
 	{
 		for (let i = 0; i < numItems; i ++)
 		{
-			setTiemout(function()
+			setTimeout(function()
 			{
 				initGraphData(0, [allitems[i]]);
 				initStatData([allitems[i]]);
