@@ -127,15 +127,16 @@ async function initDatabase (callback)
 	//then calculate stats
 	await new Promise(function (resolve, reject)
 	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
-	initStatData(allitems);
+	await new Promise(function (resolve, reject)
+	{
+		initStatData(allitems, resolve);
+	});
 
 	//grab allitems AGAIN, to get rid of statdata references, just to save some space
 	await new Promise(function (resolve, reject)
 	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
 	
@@ -149,7 +150,11 @@ async function initDatabase (callback)
 	{
 		for (let i = 0; i < numItems; i ++)
 		{
-			setTimeout(() => initGraphData(0, [allitems[i]]), i * 25000);
+			setTiemout(function()
+			{
+				initGraphData(0, [allitems[i]]);
+				initStatData([allitems[i]]);
+			}, i * 25000);
 		}
 		await new Promise(function (resolve, reject)
 		{
