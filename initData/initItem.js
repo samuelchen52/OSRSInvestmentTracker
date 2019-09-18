@@ -46,6 +46,7 @@ async function populate(callback)
 			});
 		});
 	}
+	itemList = null;
 	if (typeof callback === "function")
 	{
 		callback();

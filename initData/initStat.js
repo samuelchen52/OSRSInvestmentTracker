@@ -2,7 +2,6 @@ require('dotenv').config();
 
 //populates the mongodb database
 
-var itemList = require ("./itemList.js");
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
 var statdata = require("./models/statdata.js");

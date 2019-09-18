@@ -23,8 +23,7 @@ const initGraphData = require("./initData/initGraphData.js");
 const port = process.env.PORT || 80;
 const numItems = 3506; 
 
-var allitems = null;
-var allitemsOrdered = null;
+
 
 
 mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
@@ -35,7 +34,6 @@ async function fetchAllDocuments(callback)
 {
 	//allitems will be the array being sorted that is 
 	allitems = [];
-	allitemsOrdered = {};
 	await new Promise (function (resolve, reject)
 	{
 		item.find({}, async function(err, alldocs) {
@@ -46,26 +44,6 @@ async function fetchAllDocuments(callback)
 		}
 		else
 		{
-			for (var i = 0; i < alldocs.length; i ++)
-			{
-
-				allitemsOrdered[alldocs[i].id] = alldocs[i];
-				allitemsOrdered[alldocs[i].id].index = i; 
-				//userLastUpdated is last day that user reqeuested an update, if the day is the same, its not going to bother requesting
-				//allitemsOrdered[alldocs[i].id].userLastUpdated = alldocs[i].lastUpdated;
-				await new Promise( function(resolve, reject)
-				{
-					item.populate(alldocs[i], [{path: "statdata"}], function (err, populatedDoc)
-					{
-						if (err)
-						{
-							console.log(err);
-							process.exit();
-						}
-						resolve();
-					});
-				});
-			}
 			allitems = alldocs;
 			resolve();
 		}
@@ -81,6 +59,7 @@ async function fetchAllDocuments(callback)
 
 async function initDatabase ()
 {
+	var allitems = null;
 	await new Promise(function (resolve, reject)
 	{
 		//passes the promise object all the documents i.e. passes alldocs to the resolve function
@@ -114,15 +93,15 @@ async function initDatabase ()
 	}
 
 	// check if all items have had their graph / item data fetched, if not, then fetch it
-	let graphdataPopulated = -1;
-	let itemdataPopulated = -1;
+	var graphdataPopulated = -1;
+	var itemdataPopulated = -1;
 	for (var i = 0; i < allitems.length && (graphdataPopulated === -1 || itemdataPopulated === -1); i ++)
 	{
-		if (!allitems[i].lastUpdated)
+		if (!allitems[i].lastUpdated && graphdataPopulated === -1)
 		{
 			graphdataPopulated = i;
 		}
-		if (!allitems[i].description)
+		if (!allitems[i].description && itemdataPopulated === -1)
 		{
 			itemdataPopulated = i;
 		}
@@ -130,13 +109,13 @@ async function initDatabase ()
 	// populate the rest of the data
 	if (itemdataPopulated >= 0 )
 	{
-		initItemData(0);
+		initItemData(itemdataPopulated);
 	}
 	if (graphdataPopulated >= 0)
 	{
 		await new Promise (function(resolve, reject)
 		{
-			initGraphData(0, allitems, resolve);
+			initGraphData(graphdataPopulated, allitems, resolve);
 		}).catch(function (error) 
 		{
 			console.log("THIS SHOULDNT HAPPEN");
