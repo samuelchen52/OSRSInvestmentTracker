@@ -121,17 +121,24 @@ async function initDatabase (callback)
 	}).catch(function (error) 
 	{
 		console.log("THIS SHOULDNT HAPPEN");
-	});;
+	});
 
-	initStatData();
 	//get all items again, since initdata functions will wipe the array for the garbage collector
+	//then calculate stats
 	await new Promise(function (resolve, reject)
 	{
+		//passes the promise object all the documents i.e. passes alldocs to the resolve function
+		fetchAllDocuments(resolve);
+	}).then(function(alldocs){allitems = alldocs;});
+	initStatData(allitems);
+
+	//grab allitems AGAIN, to get rid of statdata references, just to save some space
+	await new Promise(function (resolve, reject)
+	{
+		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
 	
-
-
 	if (typeof callback === "function")
 	{
 		callback();
