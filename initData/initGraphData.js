@@ -237,13 +237,13 @@ async function makeRequests(start, documentarr, callback)
 						console.log("graph data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 						populatedDoc.lastUpdated = (priceData.length === 0) ?  new Date(0) : priceData[priceData.length - 1].date ;
 						populatedDoc.save();
-						documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
-						start ++;
-						//console.log(process.memoryUsage());
+						console.log(process.memoryUsage());
 						resolve();
 					}
 				});
 			});
+			documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+			start ++;
 			await new Promise(function (resolve, reject) 
 				{
 					setTimeout(resolve, 500);

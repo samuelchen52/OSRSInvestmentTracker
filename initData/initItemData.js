@@ -132,7 +132,7 @@ async function makeRequests(start, documentarr, callback)
 			console.log("item data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 			documentarr[start] = null; // allow garbage collector to clean up
 			start ++;
-
+			console.log(process.memoryUsage());
 			await new Promise(function (resolve, reject) 
 				{
 					setTimeout(resolve, 3500);
