@@ -95,10 +95,12 @@ async function initDatabase (callback)
 	// check if all items have had their graph / item data fetched, if not, then fetch it
 	var arrItemsGraphDataNeeded = [];
 	var arrItemsItemDataNeeded = [];
+	var graphDataUpdated = false;
 	for (var i = 0; i < allitems.length; i ++)
 	{
 		if (allitems[i].lastUpdated === undefined)
 		{
+			graphDataUpdated = true;
 			arrItemsGraphDataNeeded.push(allitems[i]);
 		}
 		if (allitems[i].description === undefined)
@@ -125,20 +127,17 @@ async function initDatabase (callback)
 
 	//get all items again, since initdata functions will wipe the array for the garbage collector
 	//then calculate stats
-	await new Promise(function (resolve, reject)
+	if (graphDataUpdated)
 	{
-		fetchAllDocuments(resolve);
-	}).then(function(alldocs){allitems = alldocs;});
-	await new Promise(function (resolve, reject)
-	{
-		initStatData(allitems, resolve);
-	});
-
-	//grab allitems AGAIN, to get rid of statdata references, just to save some space
-	await new Promise(function (resolve, reject)
-	{
-		fetchAllDocuments(resolve);
-	}).then(function(alldocs){allitems = alldocs;});
+		await new Promise(function (resolve, reject)
+		{
+			fetchAllDocuments(resolve);
+		}).then(function(alldocs){allitems = alldocs;});
+		await new Promise(function (resolve, reject)
+		{
+			initStatData(allitems, resolve);
+		});
+	}
 	
 	if (typeof callback === "function")
 	{
@@ -148,12 +147,18 @@ async function initDatabase (callback)
 
 	while(true)
 	{
+		//grab allitems AGAIN, to get rid of statdata references, just to save some space
+		await new Promise(function (resolve, reject)
+		{
+			fetchAllDocuments(resolve);
+		}).then(function(alldocs){allitems = alldocs;});
 		for (let i = 0; i < numItems; i ++)
 		{
 			setTimeout(function()
 			{
 				initGraphData(0, [allitems[i]]);
 				initStatData([allitems[i]]);
+				allitems[i] = null;
 			}, i * 25000);
 		}
 		await new Promise(function (resolve, reject)
