@@ -97,28 +97,27 @@ async function initDatabase (callback)
 	var arrItemsItemDataNeeded = [];
 	for (var i = 0; i < allitems.length; i ++)
 	{
-		if (!allitems[i].lastUpdated)
+		if (allitems[i].lastUpdated === undefined)
 		{
 			arrItemsGraphDataNeeded.push(allitems[i]);
 		}
-		if (!allitems[i].description)
+		if (allitems[i].description === undefined)
 		{
 			arrItemsItemDataNeeded.push(allitems[i]);
 		}
 	}
 	console.log("there are " + arrItemsItemDataNeeded.length + " documents that need to have item data fetched");
 	console.log("there are " + arrItemsGraphDataNeeded.length + " documents that need to have graph data updated");
-	//throw away all references, so garbage collector can clean up
-	allitems = null;
-	arrItemsGraphDataNeeded = null;
-	arrItemsItemDataNeeded = null;
+
 	// populate the rest of the data
-
-
 	initItemData(0, arrItemsItemDataNeeded);
 	await new Promise (function(resolve, reject)
 	{
 		initGraphData(0, arrItemsGraphDataNeeded, resolve);
+		//throw away all references, so garbage collector can clean up
+		arrItemsGraphDataNeeded = null;
+		arrItemsItemDataNeeded = null;
+		allitems = null;
 	}).catch(function (error) 
 	{
 		console.log("THIS SHOULDNT HAPPEN");
