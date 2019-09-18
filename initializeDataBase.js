@@ -94,12 +94,23 @@ async function initDatabase ()
 		{
 			console.log("making items....");
 			initItem(resolve);
+		}).catch(function (error) 
+		{
+			console.log("THIS SHOULDNT HAPPEN");
 		});
 		await new Promise (function(resolve, reject)
 		{
 			console.log("making stats....");
 			initStat(resolve);
-		});
+		}).catch(function (error) 
+		{
+			console.log("THIS SHOULDNT HAPPEN");
+		});;
+		await new Promise(function (resolve, reject)
+		{
+			//passes the promise object all the documents i.e. passes alldocs to the resolve function
+			fetchAllDocuments(resolve);
+		}).then(function(alldocs){allitems = alldocs;});
 	}
 
 	// check if all items have had their graph / item data fetched, if not, then fetch it
@@ -120,19 +131,19 @@ async function initDatabase ()
 	if (itemdataPopulated >= 0 )
 	{
 		initItemData(0);
-		//get all items again, since initdata functions will wipe the array for the garbage collector
-		await new Promise(function (resolve, reject)
-		{
-			fetchAllDocuments(resolve);
-		}).then(function(alldocs){allitems = alldocs;});
 	}
 	if (graphdataPopulated >= 0)
 	{
 		await new Promise (function(resolve, reject)
 		{
 			initGraphData(0, allitems, resolve);
-		});
+		}).catch(function (error) 
+		{
+			console.log("THIS SHOULDNT HAPPEN");
+		});;
 		initStatData();
+
+		//get all items again, since initdata functions will wipe the array for the garbage collector
 		await new Promise(function (resolve, reject)
 		{
 			fetchAllDocuments(resolve);
