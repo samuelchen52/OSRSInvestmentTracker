@@ -236,7 +236,6 @@ async function makeRequests(start, documentarr, callback)
 						console.log("graph data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 						populatedDoc.lastUpdated = (priceData.length === 0) ?  new Date(0) : priceData[priceData.length - 1].date ;
 						populatedDoc.save();
-						console.log(process.memoryUsage());
 						resolve();
 					}
 				});

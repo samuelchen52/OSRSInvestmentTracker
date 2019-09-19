@@ -683,7 +683,7 @@ app.post("/login", function(req, res)
 			}
 			else if (!foundUser)
 			{
-				res.render("login.ejs", {message : "invalid username or password"});
+				res.render("login.ejs", {message : "invalid username or password", border: "border border-danger"});
 			}
 			else
 			{
@@ -705,15 +705,29 @@ app.post("/register", function(req, res)
 	}
 	else
 	{
-		user.create({username : username, password : password}, function(err, newuser)
+		user.findOne({username : username}, function (err, newuser)
 		{
 			if (err)
 			{
 				res.render("error.ejs");
 			}
+			else if (newuser)
+			{
+				res.render("register.ejs", {message : "that username is already taken!", border : "border border-danger"})
+			}
 			else
 			{
-				res.render("register.ejs", {message: "succesfully registered!"});
+				user.create({username : username, password : password}, function(err, newuser)
+				{
+					if (err)
+					{
+						res.render("error.ejs");
+					}
+					else
+					{
+						res.render("register.ejs", {message: "succesfully registered!", border: "border border-success"});
+					}
+				});
 			}
 		});
 	}

@@ -14,7 +14,7 @@
 								<h3 class = "text-center"> search </h3>
 								<form action = "./item/search" method = "POST">
 									<div class = "d-flex justify-content-center">
-										<input id = "searchbox" type = "text" name = "searchQuery" placeholder= "enter item name" minlength= "3" required><button  type="submit">
+										<input class = "text-center" id = "searchbox" type = "text" name = "searchQuery" placeholder= "enter item name" minlength= "3" required><button  type="submit">
 											<i class="fa fa-search"></i>
 										</button>
 									</div>
@@ -132,6 +132,12 @@
 var sortform = $("#sortform");
 var sortsubmit = $("#sortsubmit");
 
+//for progressbar colors
+var colors = 
+{
+	sortByPrice : "#ebe34b",
+	sortByVolume : "#81adb5"
+}
 var options = 
 {
 	//bn : {selected : false, string : "<option value=\"bn\">none</option>"},
@@ -175,33 +181,73 @@ $("#addoption").click(function () {
 				"</div>" +	
 			"</div"
 			);
+		$(".progress").last().children(".progress-bar").css("background-color", colors[$(".progress").last().siblings().children("option:selected").val()]);
 		optionIndex ++;
+
+
 	}
 });
 
 
 $("input[type='radio']").click(function()
 {
-	if (checked[$(this).prop("value")])
+	//if user tries toggling weighted when sorting by none, dont let em
+	if ($(this).prop("value") === "weightedSort" && $("#firstselect option:selected").val() === "sortByNone")
 	{
 		$(this).prop("checked", false);
 		checked[$(this).prop("value")] = false;
-		if ($(this).prop("value") === "weightedSort")
-		{
-			$(".progress").toggleClass("d-none");
-		}
 	}
 	else
 	{
-		for (sorttype in checked)
+		//if already checked, uncheck it
+		if (checked[$(this).prop("value")])
 		{
-			checked[sorttype] = false;
+			$(this).prop("checked", false);
+			checked[$(this).prop("value")] = false;
+			//if weightedsort, toggle progressbars
+			if ($(this).prop("value") === "weightedSort")
+			{
+				$(".progress").toggleClass("d-none");
+			}
+			else // hide bars
+			{
+				$(".progress").addClass("d-none");
+			}
 		}
-		checked[$(this).prop("value")] = true;
-		if ($(this).prop("value") === "weightedSort")
+		//otherwise, check it and uncheck everything else
+		else
 		{
-			$(".progress").toggleClass("d-none");
+			for (sorttype in checked)
+			{
+				checked[sorttype] = false;
+			}
+			checked[$(this).prop("value")] = true;
+			//if weightedsort, toggle progressbars
+			if ($(this).prop("value") === "weightedSort")
+			{
+				$(".progress").toggleClass("d-none");
+			}
+			else // hide bars
+			{
+				$(".progress").addClass("d-none");
+			}
 		}
+	}
+});
+
+//uncheck weightedsort and hide bar if user goes back to sortbynone
+$("select").on("input", function()
+{
+	if ($("#firstselect option:selected").val() === "sortByNone")
+	{
+		$("input[value='weightedSort']").prop("checked", false);
+		checked["weightedSort"] = false;
+		$(".progress").addClass("d-none");
+	}
+	//set the correct color for the progress bar
+	else
+	{
+		$(".progress").last().children(".progress-bar").css("background-color", colors[$(this).children("option:selected").val()]);
 	}
 });
 

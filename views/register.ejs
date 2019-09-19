@@ -1,17 +1,27 @@
 <% include ./partials/header.ejs %>
 
-<div class = "container">
-	<% if (message !== null) {%>
-	<p class = "text-danger"><%=message%></p>
-	<% }%>
-	<form action = "/register" method = "POST">
-		<h4>username</h4>
-		<input name = "username" type = "text" required>
-		<h4>password</h4>
-		<input name = "password" type = "password" required>
-		<button class = "my-3 d-block" type = "submit"> register </button>
-	</form>
-	<h4> already a user? <a href = "/login">login!</a></h4>
+<div class = "container mt-5">
+	<div class = "row justify-content-center">
+		<div class = "col-5">
+			<% if (message !== null) {%>
+			<div id = "message" class = "m-5 text-danger <%= border ? border : "border border-primary"%>">
+				<h3 class = "text-center"> <%=message%> </h3>
+			</div>
+			<% } %>
+		</div>
+	</div>
+	<div class = "row justify-content-center">
+		<div class = "col-4">
+			<form action = "/register" method = "POST">
+				<h4>username</h4>
+				<input name = "username" type = "text" required>
+				<h4>password</h4>
+				<input name = "password" type = "password" required>
+				<button class = "my-3 d-block btn btn-primary" type = "submit"> register </button>
+			</form>
+			<h4> already a user? <a href = "/login">login!</a></h4>
+		</div>
+	</div>
 </div>
 
 

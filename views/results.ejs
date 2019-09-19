@@ -2,23 +2,25 @@
 
 <div class = "container">
     <div class = "pl-3 pr-3">
-        <h1> <%=items.length%> results for "<%= query %>"</h1>
+        <h1 class = "text-center"> <%=items.length%> results for "<%= query %>"</h1>
     	<table id = "results">
-            <tr>
-                <th></th>
-                <th>ID</th> 
-                <th>ITEM LIMIT</th> 
-                <th>CURRENT PRICE</th>
-                <th>CURRENT VOLUME</th>
-                <th>CURRENT TREND</th>
-                <th>CURRENT TREND DURATION</th>
-                <th>MEMBERS ONLY</th>
-            </tr>
+            <% if (items.length > 0) { %>
+                <tr>
+                    <th></th>
+                    <th>ID</th> 
+                    <th>ITEM LIMIT</th> 
+                    <th>CURRENT PRICE</th>
+                    <th>CURRENT VOLUME</th>
+                    <th>CURRENT TREND</th>
+                    <th>CURRENT TREND DURATION</th>
+                    <th>MEMBERS ONLY</th>
+                </tr>
+            <% } %>
             <% for(var i=0; i<items.length; i++) { %>
                    <tr class = "item d-none">
                        <td> 
                            <% if (user) { %>
-                            <button class = "additem" 
+                            <button class = "additem btn btn-outline-primary" 
                             data-item-name = "<%= items[i].name %>" 
                             data-item-name-lower = "<%= items[i].name_lower %>" 
                             data-item-price = "<%= items[i].statdata.currentPrice.price %>"
@@ -31,8 +33,8 @@
                         </td>
                        <td> <%= items[i].id %> </td>
                        <td> <%= items[i].limit %> </td>
-                       <td> <%= items[i].statdata.currentPrice.toLocaleString() %> </td>
-                       <td> <%= items[i].statdata.currentVolume.toLocaleString() %> </td>
+                       <td> <%= items[i].statdata.currentPrice.price.toLocaleString() %> </td>
+                       <td> <%= items[i].statdata.currentVolume.volume.toLocaleString() %> </td>
                        <td> <%= items[i].statdata.currentTrend%> </td>
                        <td> <%= items[i].statdata.currentTrendDuration%> </td>
                        <td> <%= items[i].members %> </td>
@@ -41,17 +43,19 @@
         </table>
     </div>
 
-    <div class = "d-flex justify-content-center">
-        <div>
-            <button class = "btn btn-outline-primary" id = "prevRow"> << </button>
-            <button class = "btn btn-outline-primary" id = "prev"> < </button>
-            <% for(var i = 1; i <= Math.ceil((items.length) / 20); i++) { %>
-            <a class = "btn btn-outline-primary d-none" href = "#<%=i%>"><%=i%> </a>
-            <% } %>
-            <button class = "btn btn-outline-primary" id = "next"> > </button>
-            <button class = "btn btn-outline-primary" id = "nextRow"> >> </button>
+    <% if (items.length > 0) { %>
+        <div class = "d-flex justify-content-center">
+            <div>
+                <button class = "btn btn-outline-primary" id = "prevRow"> << </button>
+                <button class = "btn btn-outline-primary" id = "prev"> < </button>
+                <% for(var i = 1; i <= Math.ceil((items.length) / 10); i++) { %>
+                <a class = "btn btn-outline-primary d-none" href = "#<%=i%>"><%=i%> </a>
+                <% } %>
+                <button class = "btn btn-outline-primary" id = "next"> > </button>
+                <button class = "btn btn-outline-primary" id = "nextRow"> >> </button>
+            </div>
         </div>
-    </div>
+    <% } %>
 </div>
 
 
@@ -144,7 +148,7 @@
         }
     }
 
-    var numItemsShowed = 20;
+    var numItemsShowed = 10;
     var numPages = Math.ceil($(".item").length / numItemsShowed);
 
     //sanitize hash
@@ -185,7 +189,7 @@
     $("#nextRow").click(function ()
     {
         var currentRow = Math.floor(hash / 5) + ((hash % 5) > 0 ? 1 : 0);
-        if (currentRow  < Math.floor(numPages / 5))
+        if (currentRow  < Math.ceil(numPages / 5))
         {
             window.location.hash = (currentRow * 5) + 1;
         }
