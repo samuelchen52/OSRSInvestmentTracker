@@ -863,6 +863,11 @@ app.post("/item/delete/:arrayid", function(req, res)
 	}
 });
 
+app.get("/picture/:id", function (req, res)
+{
+	initItemData(allitemsOrdered[req.param.id]);
+	
+});
 
 app.get("/*", function(req, res)
 {
