@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 function checkFields(item)
 {
 	//returns if all fields are there
-	return (!item.id || !item.limit || !item.description || !item.members) ? false : true;
+	return ((!item.id) || (!item.limit) || (!item.description) || (!item.members)) ? false : true;
 }
 
 async function fetchAllDocuments(callback, criteria)
