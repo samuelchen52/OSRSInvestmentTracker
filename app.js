@@ -29,6 +29,8 @@ var app = express();
 var allitems = null;
 var allitemsOrdered = null;
 
+var appUpdating = true;
+
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 app.use(session({
@@ -43,43 +45,51 @@ app.use(session({
 
 //checks if user is logged in, if not, res.locals.user will be null
 app.use(function(req, res, next) {
-	if (req.session && req.session.user)
+	if (appUpdating)
 	{
-		user.findOne({username : req.session.user.username}, function (err, foundUser)
-		{
-			//should always be able to find user, because they are validated before cookie is sent
-			if (err || !foundUser)
-			{
-				res.locals.user = null;
-				req.session.reset();
-			}
-			else
-			{
-				res.locals.user = foundUser;
-				var investments = foundUser.investments;
-				for (var i = 0; i < investments.length; i ++)
-				{
-					let investment = investments[i];
-					//this should ALWAYS be true, generally server will validate data before storing it
-					if (allitemsOrdered[investment.id])
-					{
-						if (investment.lastUpdated.toDateString() !== allitemsOrdered[investment.id].lastUpdated.toDateString())
-						{
-							investment.lastUpdated = allitemsOrdered[investment.id].lastUpdated;
-							investment.currentPricePerItem = allitemsOrdered[investment.id].statdata.currentPrice.price;
-							foundUser.save();
-						}
-					}
-				}
-			}
-			next();
-		});
+		res.locals.user = null;
+		res.render("update.ejs");
 	}
 	else
 	{
-		res.locals.user = null;
-		next();
-	}
+		if (req.session && req.session.user)
+		{
+			user.findOne({username : req.session.user.username}, function (err, foundUser)
+			{
+				//should always be able to find user, because they are validated before cookie is sent
+				if (err || !foundUser)
+				{
+					res.locals.user = null;
+					req.session.reset();
+				}
+				else
+				{
+					res.locals.user = foundUser;
+					var investments = foundUser.investments;
+					for (var i = 0; i < investments.length; i ++)
+					{
+						let investment = investments[i];
+						//this should ALWAYS be true, generally server will validate data before storing it
+						if (allitemsOrdered[investment.id])
+						{
+							if (investment.lastUpdated.toDateString() !== allitemsOrdered[investment.id].lastUpdated.toDateString())
+							{
+								investment.lastUpdated = allitemsOrdered[investment.id].lastUpdated;
+								investment.currentPricePerItem = allitemsOrdered[investment.id].statdata.currentPrice.price;
+								foundUser.save();
+							}
+						}
+					}
+				}
+				next();
+			});
+		}
+		else
+		{
+			res.locals.user = null;
+			next();
+		}
+	}	
 });
 
 mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
@@ -480,6 +490,9 @@ async function startapp (port)
 			console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 		});
 	});
+	//once initDatabase is done, allow users on the site again
+	//appUpdating will also be used as a flag for when the site is doing a weekly update
+	appUpdating = false;
 
 	await new Promise(function (resolve, reject)
 	{
