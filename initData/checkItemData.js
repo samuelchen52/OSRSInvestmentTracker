@@ -101,7 +101,7 @@ async function checkItemData(callback)
 						item.description = description;
 
 						item.save();
-						console.log("itemdata with id of " + item.id " has been fetched from wiki")
+						console.log("itemdata with id of " + item.id + " has been fetched from wiki");
 						resolve(); 
 					}
 				});
