@@ -107,9 +107,9 @@ async function initDatabase (callback)
 		}
 	}
 
+	//fetch all documents AGAIN, just so we can pass different references to the two arrays with items to update
 	await new Promise(function (resolve, reject)
 	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve);
 	}).then(function(alldocs){allitems = alldocs;});
 
@@ -120,7 +120,7 @@ async function initDatabase (callback)
 			arrItemsItemDataNeeded.push(allitems[i]);
 		}
 	}
-	
+
 	console.log("there are " + arrItemsItemDataNeeded.length + " documents that need to have item icons fetched");
 	console.log("there are " + arrItemsGraphDataNeeded.length + " documents that need to have graph data updated");
 

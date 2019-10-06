@@ -228,15 +228,36 @@ async function calculate(allitems, callback)
 
 		await new Promise (function (resolve, reject)
 		{
-			statdata.find({}, function (err, allstats)
+			item.find({invalid : false}, function (err, allitems)
 			{
 				if (err)
 				{
-					console.log("couldnt fetch all stat documents!");
+					console.log("couldnt fetch all item documents!");
 					resolve();
+					process.exit();
 				}
 				else
 				{
+					var allstats = [];
+					for (var i = 0; i < allitems.length; i ++)
+					{
+						await new Promise (function(resolve, reject)
+						{
+							item.populate(allitems[i], [{path: "statdata"}], function (err, doc)
+							{
+								if (err)
+								{
+									console.log("couldn't populate!");
+									process.exit();
+								}
+								else
+								{
+									allstats.push(doc.statdata);
+									resolve();
+								}
+							});
+						});
+					}
 					console.log("populating standardscore...");
 					populateStandardScore(allstats, "currentPrice", "price");
 					populateStandardScore(allstats, "currentVolume", "volume");
