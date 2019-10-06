@@ -58,8 +58,8 @@ async function checkItemData(callback)
 	
 	//used to find data on the wiki page we pull
 	var memberClass = "gemw-members";
-	var limitClass = "gemw-limit";
-	var idClass = "gemw-id";
+	var limitClass = "gemw-limit"; //Buy limit<limit> .substring(9).split(",").join("")
+	var idClass = "gemw-id"; //Item ID<id> .substring(7).item.name.split(",").join("")
 	var descriptionClass = "gemw-examine";
 	//there is also high alch and low alch, if ever needed
 
@@ -91,8 +91,8 @@ async function checkItemData(callback)
 						const dom = new JSDOM(body);
 
 						let members = dom.window.document.querySelector("." + memberClass).textContent;
-						let limit = dom.window.document.querySelector("." + limitClass).textContent;
-						let id = dom.window.document.querySelector("." + idClass).textContent;
+						let limit = dom.window.document.querySelector("." + limitClass).textContent.substring(9).split(",").join("");
+						let id = dom.window.document.querySelector("." + idClass).textContent.substring(7).item.name.split(",").join("");
 						let description = dom.window.document.querySelector("." + descriptionClass).textContent;
 
 						item.members = (members === 'Members' ? true : false);
