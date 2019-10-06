@@ -29,7 +29,7 @@ var app = express();
 var allitems = null;
 var allitemsOrdered = null;
 
-var appUpdating = true;
+var appUpdating = false;
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
@@ -865,9 +865,11 @@ app.post("/item/delete/:arrayid", function(req, res)
 
 app.get("/picture/:id", function (req, res)
 {
-	if (allitemsOrdered[req.param.id])
+	console.log("picture...");
+	if (allitemsOrdered[req.params.id])
 	{
-		initItemData(0, [allitemsOrdered[req.param.id]]);
+		console.log("updating picture");
+		initItemData(0, [allitemsOrdered[req.params.id]]);
 	}
 	res.redirect("/");
 });
