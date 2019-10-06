@@ -104,12 +104,23 @@ async function makeRequests(start, documentarr, callback)
 					if (response.statusCode === 404)
 					{
 						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
-						invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+						invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
 						{
 							if (error)
 							{
-								console.log("failed to create invalid document with id of " + documentarr[start].id);
+								console.log("failed to find invalid document with id of " + documentarr[start].id);
 								process.exit();
+							}
+							else if (!invalidItem)
+							{
+								invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+								{
+									if (error)
+									{
+										console.log("failed to create invalid document with id of " + documentarr[start].id);
+										process.exit();
+									}
+								});
 							}
 						});
 						//set invalid to true
