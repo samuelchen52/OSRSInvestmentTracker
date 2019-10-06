@@ -29,7 +29,7 @@ var app = express();
 var allitems = null;
 var allitemsOrdered = null;
 
-var appUpdating = false;
+var appUpdating = true;
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));

@@ -20,6 +20,8 @@ const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
+const checkItemData = require("./initData/checkItemData");
+
 const port = process.env.PORT || 80;
 const numItems = 3506; 
 
@@ -155,6 +157,12 @@ async function initDatabase (callback)
 			initStatData(allitems, resolve);
 		});
 	}
+
+	//fill in all the items that osrsbox failed to fill
+	await new Promise(function (resolve, reject)
+	{
+		checkItemData(resolve);
+	});
 	
 	if (typeof callback === "function")
 	{
