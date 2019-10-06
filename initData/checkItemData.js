@@ -86,7 +86,7 @@ async function checkItemData(callback)
 					}
 					else if (response.statusCode !== 200)
 					{
-						console.log("failed to retrieve item data from wiki (incorrect link)");
+						console.log("failed to retrieve item data from wiki for item with id " + item.id + " (incorrect link)");
 						process.exit();
 					}
 					else
@@ -94,8 +94,8 @@ async function checkItemData(callback)
 						const dom = new JSDOM(body);
 
 						let members = dom.window.document.querySelector("." + memberClass).textContent;
-						let limit = dom.window.document.querySelector("." + limitClass);
-						limit = ( limit === "Unknown" ? -1 : limit.textContent.substring(9).split(",").join("") );
+						let limit = dom.window.document.querySelector("." + limitClass).textContent.substring(9).split(",").join("")
+						limit = limit === "Unknown" ? -1 : limit;
 						let id = dom.window.document.querySelector("." + idClass).textContent.substring(7).split(",").join("");
 						let description = dom.window.document.querySelector("." + descriptionClass).textContent;
 
