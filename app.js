@@ -866,6 +866,7 @@ app.post("/item/delete/:arrayid", function(req, res)
 app.get("/picture/:id", function (req, res)
 {
 	console.log("picture...");
+	console.log(allitemsOrdered[req.params.id]);
 	if (allitemsOrdered[req.params.id])
 	{
 		console.log("updating picture");
