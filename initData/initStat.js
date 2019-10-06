@@ -44,13 +44,13 @@ async function populate(callback)
 					});
 				});
 			}
+			if (typeof callback === "function")
+			{
+				callback();
+			}
 		}
 	});
-	
-	if (typeof callback === "function")
-	{
-		callback();
-	}
+
 };
 
 module.exports = populate;

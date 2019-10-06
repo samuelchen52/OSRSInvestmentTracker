@@ -79,7 +79,8 @@ async function populate(start, documentarr, callback) //fetches all document obj
 async function makeRequests(start, documentarr, callback)
 {
 	var reqbody = null;
-	var deletedoc = false;
+	var statusCode = 200;
+	//var deletedoc = false;
 	while (start < documentarr.length)
 	{
 		//var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + documentarr[start].id + ".json";
@@ -95,11 +96,10 @@ async function makeRequests(start, documentarr, callback)
 				}
 				else if (response.statusCode !== 200)
 				{
+					statusCode = response.statusCode;
 					if (response.statusCode === 404)
 					{
 						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
-						process.exit();
-						deletedoc = true;
 					}
 					reqbody = null;
 					resolve();
@@ -135,53 +135,20 @@ async function makeRequests(start, documentarr, callback)
 
 		if (reqbody === null) 
 		{
-			// if (deletedoc)
-			// {
-			// 	deletedoc = false;
-			// 	await new Promise (function (resolve, reject)
-			// 	{
-			// 		item.deleteOne({id : documentarr[start].id}, function(err)
-			// 		{
-			// 			if (err)
-			// 			{
-			// 				console.log("failed to delete item document with id " + documentarr[start].id + "!");
-			// 				process.exit();
-			// 			}
-			// 			else
-			// 			{
-			// 				console.log("succesfully deleted item document with id " + documentarr[start].id + "!");
-			// 			}
-			// 			resolve();
-			// 		});
-			// 	});
-			// 	await new Promise (function (resolve, reject)
-			// 	{
-			// 		graphdata.deleteOne({id : documentarr[start].id}, function(err)
-			// 		{
-			// 			if (err)
-			// 			{
-			// 				console.log("failed to delete graphdata document with id " + documentarr[start].id + "!");
-			// 				process.exit();
-			// 			}
-			// 			else
-			// 			{
-			// 				console.log("succesfully deleted graphdata document with id " + documentarr[start].id + "!");
-			// 			}
-			// 			resolve();
-			// 		});
-			// 	});
-			// 	start ++;
-			// }
-			// else
-			// {
+			if (statusCode !== 404)
+			{
 				console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "! waiting 60 seconds...");
-				console.log(url);
 				await new Promise(function (resolve, reject) 
 					{
 						setTimeout(resolve, 60000);
 					});
 				console.log("60 seconds up, trying again...");
-			//}
+			}
+			else
+			{
+				documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+				start ++;
+			}
 		}
 		else
 		{

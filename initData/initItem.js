@@ -2,7 +2,7 @@ require('dotenv').config();
 
 //populates the mongodb database
 
-var itemList = require ("./itemList.js");
+var getItemList = require ("./itemList.js");
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
 
@@ -13,13 +13,32 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 //and then do two requests for each item to populate them with data, more modular and less error prone
 async function populate(callback)
 {
-
-	for (var i = 0; i < itemList.length; i ++)
+	var itemList;
+	await new Promise (function (resolve,reject)
 	{
-		var curItem = itemList[i];
+		getItemList(resolve);
+	}).then(function (GEItems)
+	{
+		itemList = GEItems;
+	});
+
+	for (let itemid in itemList)
+	{
+		var curItem = itemList[itemid];
 		await new Promise (function (resolve, reject)
 		{
-			item.create({ id : curItem.id, name : curItem.name, limit : curItem.limit}, function(err, newItem){
+			let tempObj = 
+			{
+				id : curItem.id,
+				name : curItem.name,
+				name_lower : curItem.name.split(" ").join("_").toLowerCase(),
+				limit : curItem.buy_limit,
+				wikiName : curItem.wiki_name,
+				description : curItem.examine,
+				members : curItem.members,
+				iconFetched : false
+			}
+			item.create(tempObj, function(err, newItem){
 			if (err)
 			{
 				console.log("failed to create document with id of " + curItem.id);
@@ -46,12 +65,12 @@ async function populate(callback)
 			});
 		});
 	}
-	itemList = null;
 	if (typeof callback === "function")
 	{
 		callback();
 	}
-	console.log("finished adding " + itemList.length + " items!!");
+	console.log("finished adding " + Object.keys(itemList).length + " items!!");
+	itemList = null;
 	
 	
 };

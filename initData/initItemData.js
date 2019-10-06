@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 //populates the mongodb database
+//initItemData only downloads all the icons from all the images
+//itemData now comes from massive file from osrsbox
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
 
@@ -17,9 +19,9 @@ var detailurl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/
 
 
 
-function stream (url, id, folder)
+function stream (url, id, folder, directory)
 {
-    request(url).pipe(fs.createWriteStream('images/' + folder +'/' + id + '.gif'));
+    request(url).pipe(fs.createWriteStream('public/images/' + folder + '/' + id + '.gif'));
 }
 
 async function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
@@ -68,6 +70,8 @@ async function makeRequests(start, documentarr, callback)
 						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange! ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
 						arr.push("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
 						start ++;
+						//this shouldnt happen, as this is done with an up to date item list
+						process.exit();
 					}
 					reqbody = null;
 					resolve();
@@ -111,23 +115,26 @@ async function makeRequests(start, documentarr, callback)
 		}
 		else
 		{
-			var temp = documentarr[start];
-			reqbody = reqbody.item;
+			// var temp = documentarr[start];
+			let item = reqbody.item;
 
-			temp.icon = reqbody.icon;
-			temp.icon_large = reqbody.icon_large;
+			// temp.icon = reqbody.icon;
+			// temp.icon_large = reqbody.icon_large;
 
-			//stream(temp.icon, documentarr[start].id, "small");
-			//stream(temp.icon_large, documentarr[start].id, "big");
+			stream(item.icon, documentarr[start].id, "small");
+			stream(item.icon_large, documentarr[start].id, "big");
+			
+			documentarr[start].iconFetched = true;
+			documentarr[start].save();
 
-			temp.type = reqbody.type;
-			temp.typeIcon = reqbody.typeIcon;
+			// temp.type = reqbody.type;
+			// temp.typeIcon = reqbody.typeIcon;
 
-			temp.name_lower = reqbody.name.split(" ").join("_").toLowerCase();
+			// temp.name_lower = reqbody.name.split(" ").join("_").toLowerCase();
 
-			temp.description = reqbody.description;
-			temp.members = reqbody.members;
-			temp.save();
+			// temp.description = reqbody.description;
+			// temp.members = reqbody.members;
+			// temp.save();
 
 			console.log("item data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
 			documentarr[start] = null; // allow garbage collector to clean up

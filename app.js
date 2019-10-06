@@ -92,6 +92,7 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 //make graph more readable
 //statdata volatility
 //make sure to handle spam requests for updates
+//looks like app update is a day behind
 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________

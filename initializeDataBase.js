@@ -103,12 +103,12 @@ async function initDatabase (callback)
 			graphDataUpdated = true;
 			arrItemsGraphDataNeeded.push(allitems[i]);
 		}
-		if (allitems[i].description === undefined)
+		if (!allitems[i].iconFetched)
 		{
 			arrItemsItemDataNeeded.push(allitems[i]);
 		}
 	}
-	console.log("there are " + arrItemsItemDataNeeded.length + " documents that need to have item data fetched");
+	console.log("there are " + arrItemsItemDataNeeded.length + " documents that need to have item icons fetched");
 	console.log("there are " + arrItemsGraphDataNeeded.length + " documents that need to have graph data updated");
 
 	// populate the rest of the data
@@ -160,6 +160,7 @@ async function initDatabase (callback)
 		{
 			setTimeout(function()
 			{
+				console.log("updating item at index " +  i + "...")
 				initGraphData(0, [allitems[i]]);
 				initStatData([allitems[i]]);
 				allitems[i] = null;
