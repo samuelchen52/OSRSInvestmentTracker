@@ -492,7 +492,7 @@ async function startapp (port)
 	await new Promise(function (resolve, reject)
 	{
 		//passes the promise object all the documents i.e. passes alldocs to the resolve function
-		fetchAllDocuments(resolve);
+		fetchAllDocuments(resolve, {invalid : false});
 	}).then(function(alldocs){allitems = alldocs;});
 
 }
@@ -606,7 +606,7 @@ app.get("/item/search/:query", function (req, res)
 
 	var pattern = / +/;
 
-	item.find({name_lower : new RegExp( query.split(pattern).join("_").toLowerCase() )}, async function (err, items)
+	item.find({name_lower : new RegExp( query.split(pattern).join("_").toLowerCase() ), invalid : false}, async function (err, items)
 	{
 		if (err)
 		{
