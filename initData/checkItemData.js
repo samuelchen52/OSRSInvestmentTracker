@@ -68,7 +68,7 @@ async function checkItemData(callback)
 
 	for (var i = 0; i < allitems.length; i ++)
 	{
-		if (checkFields(allitems[i]))
+		if (!checkFields(allitems[i]))
 		{
 			var item = allitems[i];
 			numMissing ++;
