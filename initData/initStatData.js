@@ -228,7 +228,7 @@ async function calculate(allitems, callback)
 
 		await new Promise (function (resolve, reject)
 		{
-			item.find({invalid : false}, function (err, allitems)
+			item.find({invalid : false}, async function (err, allitems)
 			{
 				if (err)
 				{
