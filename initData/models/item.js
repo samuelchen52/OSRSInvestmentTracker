@@ -19,6 +19,7 @@ members: Boolean,
 limit: Number,
 
 iconFetched : Boolean,
+invalid : Boolean,
 
 graphdata: {
 		type: mongoose.Schema.Types.ObjectId,

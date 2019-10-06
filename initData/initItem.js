@@ -36,7 +36,8 @@ async function populate(callback)
 				wikiName : curItem.wiki_name,
 				description : curItem.examine,
 				members : curItem.members,
-				iconFetched : false
+				iconFetched : false,
+				invalid : false
 			}
 			item.create(tempObj, function(err, newItem){
 			if (err)

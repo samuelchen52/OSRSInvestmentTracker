@@ -3,6 +3,7 @@ require('dotenv').config();
 
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
+var invalid = require("./models/invalid.js");
 
 var mongoose = require("mongoose");
 var request = require("request");
@@ -84,7 +85,11 @@ async function makeRequests(start, documentarr, callback)
 	while (start < documentarr.length)
 	{
 		//var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + documentarr[start].id + ".json";
-		var url = "https://oldschool.runescape.wiki/w/Module:Exchange/"+ documentarr[start].name.split(" ").join("_") +"/Data";
+		//if wikiName is just a longer version of actual name, then thats probably for duplicates, in which case it will be correct
+		//var wikiName = documentarr[start].wikiName.split(" ").join("_");
+		var actualName = documentarr[start].name.split(" ").join("_");
+
+		var url = "https://oldschool.runescape.wiki/w/Module:Exchange/"+ actualName +"/Data";
 		await new Promise (function (resolve, reject)
 		{
 			request.get({url : url},  function (error, response, body)
@@ -96,11 +101,24 @@ async function makeRequests(start, documentarr, callback)
 				}
 				else if (response.statusCode !== 200)
 				{
-					statusCode = response.statusCode;
 					if (response.statusCode === 404)
 					{
 						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
-					}
+						invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+						{
+							if (error)
+							{
+								console.log("failed to create invalid document with id of " + documentarr[start].id);
+								process.exit();
+							}
+						});
+						//set invalid to true
+						documentarr[start].invalid = true;
+						documentarr[start].save();
+
+				    }
+
+				    statusCode = response.statusCode;
 					reqbody = null;
 					resolve();
 				}
@@ -214,6 +232,7 @@ async function makeRequests(start, documentarr, callback)
 			{
 				setTimeout(resolve, 500);
 			});
+			console.log(process.memoryUsage());
 		}
 	}
 

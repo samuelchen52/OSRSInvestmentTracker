@@ -431,14 +431,15 @@ function populateFilterArr(req, filterby)
 }
 //fetches all docs and assigns it to allitems
 //callback in this case is resolve function from promise, cause app has to wait until all items are fetched before starting
-async function fetchAllDocuments(callback)
+async function fetchAllDocuments(callback, criteria)
 {
 	//allitems will be the array being sorted that is 
 	allitems = [];
 	allitemsOrdered = {};
+	criteria = criteria ? criteria : {};
 	await new Promise (function (resolve, reject)
 	{
-		item.find({}, async function(err, alldocs) {
+		item.find(criteria, async function(err, alldocs) {
 		if (err)
 		{
 			res.send("there was an error fetching all the documents!");
@@ -475,13 +476,7 @@ async function fetchAllDocuments(callback)
 }
 
 async function startapp (port)
-{
-	await new Promise(function (resolve, reject)
-	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
-		fetchAllDocuments(resolve);
-	}).then(function(alldocs){allitems = alldocs;}); 
-	
+{	
 	await new Promise(function (resolve, reject)
 	{
 		initDataBase(resolve);

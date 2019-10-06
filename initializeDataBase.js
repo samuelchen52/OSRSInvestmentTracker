@@ -30,13 +30,14 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 
 //fetches all docs and assigns it to allitems
 //callback in this case is resolve function from promise, cause app has to wait until all items are fetched before starting
-async function fetchAllDocuments(callback)
+async function fetchAllDocuments(callback, criteria)
 {
 	//allitems will be the array being sorted that is 
 	var allitems = [];
+	criteria = criteria ? criteria : {};
 	await new Promise (function (resolve, reject)
 	{
-		item.find({}, async function(err, alldocs) {
+		item.find(criteria, async function(err, alldocs) {
 		if (err)
 		{
 			res.send("there was an error fetching all the documents!");
@@ -96,6 +97,7 @@ async function initDatabase (callback)
 	var arrItemsGraphDataNeeded = [];
 	var arrItemsItemDataNeeded = [];
 	var graphDataUpdated = false;
+
 	for (var i = 0; i < allitems.length; i ++)
 	{
 		if (allitems[i].lastUpdated === undefined)
@@ -103,23 +105,34 @@ async function initDatabase (callback)
 			graphDataUpdated = true;
 			arrItemsGraphDataNeeded.push(allitems[i]);
 		}
+	}
+
+	await new Promise(function (resolve, reject)
+	{
+		//passes the promise object all the documents i.e. passes alldocs to the resolve function
+		fetchAllDocuments(resolve);
+	}).then(function(alldocs){allitems = alldocs;});
+
+	for (var i = 0; i < allitems.length; i ++)
+	{
 		if (!allitems[i].iconFetched)
 		{
 			arrItemsItemDataNeeded.push(allitems[i]);
 		}
 	}
+	
 	console.log("there are " + arrItemsItemDataNeeded.length + " documents that need to have item icons fetched");
 	console.log("there are " + arrItemsGraphDataNeeded.length + " documents that need to have graph data updated");
 
-	// populate the rest of the data
-	initItemData(0, arrItemsItemDataNeeded);
-	// throw away all references, so garbage collector can clean up
-	console.log("cleaning up memory for itemdata...");
-	arrItemsItemDataNeeded = null;
-	allitems = null;
-
-	await new Promise (function(resolve, reject)
+	await new Promise (async function(resolve, reject)
 	{
+		// populate the rest of the data
+		initItemData(0, arrItemsItemDataNeeded);
+		// throw away all references, so garbage collector can clean up
+		console.log("cleaning up memory for itemdata...");
+		arrItemsItemDataNeeded = null;
+		allitems = null;
+
 		initGraphData(0, arrItemsGraphDataNeeded, resolve);
 		//throw away all references, so garbage collector can clean up
 		console.log("cleaning up memory for graphdata...");
@@ -135,7 +148,7 @@ async function initDatabase (callback)
 	{
 		await new Promise(function (resolve, reject)
 		{
-			fetchAllDocuments(resolve);
+			fetchAllDocuments(resolve, {invalid : false});
 		}).then(function(alldocs){allitems = alldocs;});
 		await new Promise(function (resolve, reject)
 		{
@@ -154,7 +167,7 @@ async function initDatabase (callback)
 		//grab allitems AGAIN, to get rid of statdata references, just to save some space
 		await new Promise(function (resolve, reject)
 		{
-			fetchAllDocuments(resolve);
+			fetchAllDocuments(resolve, {invalid : false});
 		}).then(function(alldocs){allitems = alldocs;});
 		for (let i = 0; i < numItems; i ++)
 		{
