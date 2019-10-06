@@ -867,7 +867,7 @@ app.get("/picture/:id", function (req, res)
 {
 	if (allitemsOrdered[req.param.id])
 	{
-		initItemData(allitemsOrdered[req.param.id]);
+		initItemData(0, [allitemsOrdered[req.param.id]]);
 	}
 	res.redirect("/");
 });
