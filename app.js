@@ -867,6 +867,7 @@ app.get("/picture/:id", function (req, res)
 {
 	console.log("picture...");
 	console.log(allitemsOrdered[req.params.id]);
+	console.log(allitemsOrdered);
 	if (allitemsOrdered[req.params.id])
 	{
 		console.log("updating picture");
