@@ -66,11 +66,11 @@ async function checkItemData(callback)
 	var numMissing = 0;
 
 
-	for (var i = 0; i < arr.length; i ++)
+	for (var i = 0; i < allitems.length; i ++)
 	{
-		if (checkFields(arr[i]))
+		if (checkFields(allitems[i]))
 		{
-			var item = arr[i];
+			var item = allitems[i];
 			numMissing ++;
 			await new Promise (function (resolve, reject)
 			{
