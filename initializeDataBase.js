@@ -1,9 +1,7 @@
 require('dotenv').config();
 
-const express    = require("express");
-const bodyparser = require("body-parser");
 const mongoose   = require("mongoose");
-const session = require('client-sessions');
+
 
 const item = require("./initData/models/item.js");
 const graphdata = require("./initData/models/graphdata.js");
@@ -23,7 +21,6 @@ const initGraphData = require("./initData/initGraphData.js");
 const checkItemData = require("./initData/checkItemData");
 
 const port = process.env.PORT || 80;
-const numItems = 3506; 
 
 
 
@@ -177,7 +174,7 @@ async function initDatabase (callback)
 		{
 			fetchAllDocuments(resolve, {invalid : false});
 		}).then(function(alldocs){allitems = alldocs;});
-		for (let i = 0; i < numItems; i ++)
+		for (let i = 0; i < allitems.length; i ++)
 		{
 			setTimeout(function()
 			{
