@@ -135,6 +135,7 @@ async function checkItemData(callback)
 		}
 	}
 
+	allitems = null;
 	console.log("itemdata for " + numMissing + " items have been fetched from the wiki!");
 	if (typeof callback === "function")
 	{

@@ -97,7 +97,14 @@ async function updateDataBase (oldArr, orderedArr, callback)
 		}
 	}
 
-	
+	//set invalid flags for all obsolete items, and push them into invalid collection
+
+	for (var i = 0; i < )
+	//create newitems, inititemdata, initgraphdata, initstatdata
+
+
+
+
 
 
 

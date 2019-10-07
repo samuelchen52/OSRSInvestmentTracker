@@ -174,9 +174,17 @@ async function initDatabase (callback)
 		{
 			fetchAllDocuments(resolve, {invalid : false});
 		}).then(function(alldocs){allitems = alldocs;});
-		for (let i = 0; i < allitems.length; i ++)
+		await new Promise(function (resolve, reject)
 		{
 			setTimeout(function()
+			{
+				resolve();
+			}, 1000 * 10);
+		});
+
+		for (let i = 0; i < allitems.length; i ++)
+		{
+			setTimeout(async function()
 			{
 				console.log("updating item at index " +  i + "...")
 				initGraphData(0, [allitems[i]]);

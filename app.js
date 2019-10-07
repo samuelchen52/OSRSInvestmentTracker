@@ -434,7 +434,8 @@ function populateFilterArr(req, filterby)
 //callback in this case is resolve function from promise, cause app has to wait until all items are fetched before starting
 async function fetchAllDocuments(callback, criteria)
 {
-	//allitems will be the array being sorted that is 
+	//allitems will be the array being sorted
+	//allitemsordered will be the array of items indexed by id
 	allitems = [];
 	allitemsOrdered = {};
 	criteria = criteria ? criteria : {};
@@ -450,7 +451,6 @@ async function fetchAllDocuments(callback, criteria)
 		{
 			for (var i = 0; i < alldocs.length; i ++)
 			{
-
 				allitemsOrdered[alldocs[i].id] = alldocs[i];
 				allitemsOrdered[alldocs[i].id].index = i; 
 				//userLastUpdated is last day that user reqeuested an update, if the day is the same, its not going to bother requesting
@@ -468,6 +468,7 @@ async function fetchAllDocuments(callback, criteria)
 					});
 				});
 			}
+
 			allitems = alldocs;
 			resolve();
 		}
@@ -486,15 +487,17 @@ async function startapp (port)
 			console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 		});
 	});
-	//once initDatabase is done, allow users on the site again
-	//appUpdating will also be used as a flag for when the site is doing a weekly update
-	appUpdating = false;
 
 	await new Promise(function (resolve, reject)
 	{
 		//passes the promise object all the documents i.e. passes alldocs to the resolve function
 		fetchAllDocuments(resolve, {invalid : false});
 	}).then(function(alldocs){allitems = alldocs;});
+
+	console.log("getracker turned on!");
+	//once initDatabase is done, allow users on the site again
+	//appUpdating will also be used as a flag for when the site is doing a weekly update
+	appUpdating = false;
 
 }
 
