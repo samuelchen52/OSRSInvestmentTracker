@@ -128,7 +128,7 @@ async function initDatabase (callback)
 
 	await new Promise (async function(resolve, reject)
 	{
-		// populate the rest of the data
+		// pull all the images
 		initItemData(0, arrItemsItemDataNeeded);
 		// throw away all references, so garbage collector can clean up
 		console.log("cleaning up memory for itemdata...");
@@ -144,6 +144,12 @@ async function initDatabase (callback)
 		console.log("THIS SHOULDNT HAPPEN");
 	});
 
+	//fill in all the items that osrsbox failed to fill
+	await new Promise(function (resolve, reject)
+	{
+		checkItemData(resolve);
+	});
+
 	//get all items again, since initdata functions will wipe the array for the garbage collector
 	//then calculate stats
 	if (graphDataUpdated)
@@ -157,12 +163,6 @@ async function initDatabase (callback)
 			initStatData(allitems, resolve);
 		});
 	}
-
-	//fill in all the items that osrsbox failed to fill
-	await new Promise(function (resolve, reject)
-	{
-		checkItemData(resolve);
-	});
 	
 	if (typeof callback === "function")
 	{

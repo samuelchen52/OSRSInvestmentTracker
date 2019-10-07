@@ -103,7 +103,7 @@ async function makeRequests(start, documentarr, callback)
 				{
 					if (response.statusCode === 404)
 					{
-						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
+						console.log("can't pull wiki graph data for item with id of "  + documentarr[start].id + "!");
 						invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
 						{
 							if (error)

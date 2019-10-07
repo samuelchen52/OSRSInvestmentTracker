@@ -4,6 +4,7 @@ require('dotenv').config();
 //checks all items for any missing fields (that osrxbox failed to provide) and fills them by pulling them from the wiki
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
+var invalid = require("./models/invalid.js");
 
 var mongoose = require("mongoose");
 var request = require("request");
@@ -86,8 +87,29 @@ async function checkItemData(callback)
 					}
 					else if (response.statusCode !== 200)
 					{
-						console.log("failed to retrieve item data from wiki for item with id " + item.id + " (incorrect link)");
-						process.exit();
+						console.log("can't pull wiki item data for item with id of "  + documentarr[start].id + "!");
+						invalid.findOne({name : item.name, id : item.id}, function (error, invalidItem)
+						{
+							if (error)
+							{
+								console.log("failed to find invalid document with id of " + item.id);
+								process.exit();
+							}
+							else if (!invalidItem)
+							{
+								invalid.create({name : item.name, id : item.id}, function (error, invalidItem)
+								{
+									if (error)
+									{
+										console.log("failed to create invalid document with id of " + item.id);
+										process.exit();
+									}
+								});
+							}
+						});
+						item.invalid = true;
+						item.save();
+						resolve();
 					}
 					else
 					{
