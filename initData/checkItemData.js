@@ -87,7 +87,7 @@ async function checkItemData(callback)
 					}
 					else if (response.statusCode !== 200)
 					{
-						console.log("can't pull wiki item data for item with id of "  + documentarr[start].id + "!");
+						console.log("can't pull wiki item data for item with id of "  + item.id + "!");
 						invalid.findOne({name : item.name, id : item.id}, function (error, invalidItem)
 						{
 							if (error)
