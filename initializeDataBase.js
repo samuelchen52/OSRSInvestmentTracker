@@ -18,7 +18,7 @@ const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
-const checkItemData = require("./initData/checkItemData");
+const checkItemData = require("./initData/checkItemData.js");
 
 const port = process.env.PORT || 80;
 
@@ -179,7 +179,7 @@ async function initDatabase (callback)
 			setTimeout(function()
 			{
 				resolve();
-			}, 1000 * 10);
+			}, 1000 * 60 * 3);
 		});
 
 		for (let i = 0; i < allitems.length; i ++)
@@ -190,11 +190,11 @@ async function initDatabase (callback)
 				initGraphData(0, [allitems[i]]);
 				initStatData([allitems[i]]);
 				allitems[i] = null;
-			}, i * 25000);
+			}, i * 60000);
 		}
 		await new Promise(function (resolve, reject)
 		{
-			setTimeout(() => resolve(), 24 * 60 * 60 * 1000);
+			setTimeout(() => resolve(), 60000 * allitems.length);
 		});
 	}
 		

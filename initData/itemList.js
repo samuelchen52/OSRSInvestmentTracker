@@ -17,7 +17,7 @@ async function stream (url, id, folder, callback)
 //stream("http://services.runescape.com/m=itemdb_oldschool/.gif?id=2", 2, "test");
 
 //callback will be resolve function from caller
-async function getItemList (callback)
+async function getItemList (callback, options)
 { 
   let allItemsURL = "https://www.osrsbox.com/osrsbox-db/items-complete.json";
   let GEItems = null;
@@ -33,16 +33,25 @@ async function getItemList (callback)
           console.log("getting all GE items...")
           let allItems = JSON.parse(body);
           GEItems = [];
+          GEItemsByID = {};
           for (let itemid in allItems)
           {
             if (allItems[itemid].tradeable_on_ge)
             {
               GEItems.push(allItems[itemid]);
+              GEItemsByID[allItems[itemid].id] = allItems[itemid];
             }
           }
           if (typeof callback === "function")
           {
-            callback(GEItems);
+            if (options.id)
+            {
+              callback(GEItemsByID);
+            }
+            else
+            {
+              callback(GEItems);
+            }
           }
         }
         resolve();

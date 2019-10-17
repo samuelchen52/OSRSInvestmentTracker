@@ -123,7 +123,7 @@ async function checkItemData(callback)
 
 						item.members = (members === 'Members' ? true : false);
 						item.limit = limit;
-						item.id = id;
+						item.id = item.id === undefined ? id : item.id;
 						item.description = description;
 
 						item.save();

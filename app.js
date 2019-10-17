@@ -21,6 +21,8 @@ const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
 const initDataBase = require("./initializeDataBase.js");
+const updateDataBase = require("./updateDataBase.js");
+
 
 const port = process.env.PORT || 80;
 const numItems = 3506; 
@@ -431,6 +433,8 @@ function populateFilterArr(req, filterby)
 	}
 }
 //fetches all docs and assigns it to allitems
+//also creates an array indexed by itemids, called allitems ordered
+//the fetchAllDocuments in app.js is different in this regard
 //callback in this case is resolve function from promise, cause app has to wait until all items are fetched before starting
 async function fetchAllDocuments(callback, criteria)
 {
@@ -486,6 +490,20 @@ async function startapp (port)
 		{	
 			console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 		});
+	});
+
+	await new Promise(function (resolve, reject)
+	{
+		//passes the promise object all the documents i.e. passes alldocs to the resolve function
+		//we're getting ALL the objects, so that update database doesnt unnecessarily create new items that were 
+		//excluded due to invalid flag
+		fetchAllDocuments(resolve);
+	}).then(function(alldocs){allitems = alldocs;});
+
+	await new Promise(function (resolve, reject)
+	{
+		//passes the promise object all the documents i.e. passes alldocs to the resolve function
+		updateDataBase(allitems, allitemsOrdered, resolve);
 	});
 
 	await new Promise(function (resolve, reject)
@@ -867,18 +885,18 @@ app.post("/item/delete/:arrayid", function(req, res)
 	}
 });
 
-app.get("/picture/:id", function (req, res)
-{
-	console.log("picture...");
-	console.log(allitemsOrdered[req.params.id]);
-	console.log(allitemsOrdered);
-	if (allitemsOrdered[req.params.id])
-	{
-		console.log("updating picture");
-		initItemData(0, [allitemsOrdered[req.params.id]]);
-	}
-	res.redirect("/");
-});
+// app.get("/picture/:id", function (req, res)
+// {
+// 	console.log("picture...");
+// 	console.log(allitemsOrdered[req.params.id]);
+// 	console.log(allitemsOrdered);
+// 	if (allitemsOrdered[req.params.id])
+// 	{
+// 		console.log("updating picture");
+// 		initItemData(0, [allitemsOrdered[req.params.id]]);
+// 	}
+// 	res.redirect("/");
+// });
 
 app.get("/*", function(req, res)
 {

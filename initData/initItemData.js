@@ -146,7 +146,6 @@ async function makeRequests(start, documentarr, callback)
 				});
 		}
 	}
-	console.log("finished updating the database!");
 	if (typeof callback === "function")
 	{
 		callback();

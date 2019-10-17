@@ -7,7 +7,8 @@ var statdata = require("./models/statdata.js");
 var mongoose = require("mongoose");
 mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
-
+//initStatData reponsible for updating all statistics e.g. average price / volume / trendduration for all items 
+//in the array given to it, and, for now, updating the stat score for each item after these values have been updated
 
 
 
@@ -86,6 +87,8 @@ function calculateStandardDeviation(dataArr, field, subfield)
 
 async function calculate(allitems, callback)
 {
+	console.log("_______________________________________________________________");
+	console.log(allitems);
 	for (var i = 0; i < allitems.length; i ++)
 		{
 			await new Promise (function (resolve, reject)
@@ -104,6 +107,7 @@ async function calculate(allitems, callback)
 						var stat = doc.statdata; 
 						var graph = doc.graphdata; 
 
+						//default dummy data if for some bizarre reason priceData nad volumeData have no data in them
 						var priceData = graph.priceData.length === 0 ? [{price : 0, date : new Date()},{price : 0, date : new Date()}] : graph.priceData;
 						var volumeData = graph.volumeData.length === 0 ? [{volume : 0, date : new Date()},{volume : 0, date : new Date()}] : graph.volumeData;
 

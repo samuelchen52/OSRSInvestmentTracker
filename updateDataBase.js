@@ -6,6 +6,7 @@ const item = require("./initData/models/item.js");
 const graphdata = require("./initData/models/graphdata.js");
 const statdata = require("./initData/models/statdata.js");
 const user = require("./initData/models/user.js");
+const invalid = require("./initData/models/invalid.js");
 
 
 //make items
@@ -17,15 +18,16 @@ const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
+const checkItemData = require("./initData/checkItemData.js");
 
-var getItemList = require ("./itemList.js");
+var getItemList = require ("./initData/itemList.js");
 
-const checkItemData = require("./initData/checkItemData");
 
 const port = process.env.PORT || 80;
 
 
-
+//updateDatabase sets invalid flags for items no longer in the GE, and adds new ones
+//however, it does NOT check if already invalid items have been reintroduced to the GE
 
 
 mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
@@ -55,6 +57,16 @@ async function fetchAllDocuments(callback, criteria)
 	callback(allitems);
 }
 
+//returns shallow copy array, to get around initGraphData and initItemData throwing away references to save memory
+function cloneArray(arr)
+{
+	let cloneArr = [];
+	for (let i = 0; i < arr.length; i ++)
+	{
+		cloneArr.push(arr[i]);
+	}
+	return cloneArr;
+}
 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
@@ -67,45 +79,182 @@ async function updateDataBase (oldArr, orderedArr, callback)
 {
 	console.log("updating database...");
 
+	let allitems = null;
 	let newArr = null;
+
 	let obsoleteItems = [];
 	let newItems = [];
 
 	await new Promise (function (resolve,reject)
 	{
-		getItemList(resolve);
+		getItemList(resolve, {id : true});
 	}).then(function (GEItems)
 	{
 		newArr = GEItems;
 	});
 
-	for (var i = 0; i < oldArr.length; i ++)
+	//check for items that have been removed
+	for (let i = 0; i < oldArr.length; i ++)
 	{
 		let oldItem = oldArr[i];
-		if (!newArr[oldItem.id]) //obsolete
+		if (newArr[oldItem.id] === undefined) //obsolete
 		{
 			obsoleteItems.push(oldItem);
 		}
 	}
 
-	for (var i = 0; i < newArr.length; i ++)
+	//check for items that have been added
+	for (let itemid in newArr)
 	{
-		let newItem = newArr[i];
-		if (!orderedArr[newItem.id]) //new
+		if (orderedArr[itemid] === undefined) //new
 		{
-			newItems.push(newItem);
+			newItems.push(newArr[itemid]);
 		}
 	}
 
 	//set invalid flags for all obsolete items, and push them into invalid collection
+	//if graphdata was requested for these obsolete items, then this is probably redundant, but whatever 
+	for (let i = 0; i < obsoleteItems.length; i++)
+	{
+		invalid.findOne({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+		{
+			if (error)
+			{
+				console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
+				process.exit();
+			}
+			else if (!invalidItem)
+			{
+				invalid.create({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+				{
+					if (error)
+					{
+						console.log("failed to create invalid document with id of " + obsoleteItems[i].id);
+						process.exit();
+					}
+				});
+			}
+		});
+	}
 
-	for (var i = 0; i < )
-	//create newitems, inititemdata, initgraphdata, initstatdata
+	//console.log(orderedArr);
+	//console.log(newArr);
+	//create new items
+	console.log("found that " + newItems.length + " items have been added");
+	console.log("found that " + obsoleteItems.length + " items have been removed");
+	//console.log(obsoleteItems);
+
+	//clean up memory, only need newItems arr now
+	obsoleteItems = null
+	newArr = null;
+	oldArr = null;
+	orderedArr = null;
+
+	for (let i = 0; i < newItems.length; i ++)
+	{
+		var curItem = newItems[i];
+		await new Promise (function (resolve, reject)
+		{
+			let tempObj = 
+			{
+				id : curItem.id,
+				name : curItem.name,
+				name_lower : curItem.name.split(" ").join("_").toLowerCase(),
+				limit : curItem.buy_limit,
+				wikiName : curItem.wiki_name,
+				description : curItem.examine,
+				members : curItem.members,
+				iconFetched : false,
+				invalid : false
+			}
+			item.create(tempObj, function(err, newItem){
+			if (err)
+			{
+				console.log("failed to create document with id of " + curItem.id);
+				process.exit();
+			}
+			else
+			{
+				console.log("succesfully created document with id of " + curItem.id);
+				graphdata.create({id : curItem.id, name : curItem.name}, function (err, newGraphData)
+				{
+					if (err)
+					{
+						console.log("failed to create graphdata for id of " + curItem.id);
+						process.exit();
+					}
+					else
+					{
+						newItem.graphdata = newGraphData;
+						newItem.save();
+						newItems[i] = newItem;
+					}
+					resolve();
+				});
+			}
+			});
+		});
+	}
 
 
+	//fill in all the items that osrsbox failed to fill
+	await new Promise(function (resolve, reject)
+	{
+		checkItemData(resolve);
+	});
 
+	//get graphdata and all item pictures for the newitems
+	await new Promise (async function(resolve, reject)
+	{
+		// pull all the images
+		initItemData(0, cloneArray(newItems));
+		// pull all the graph data
+		initGraphData(0, cloneArray(newItems), resolve);
+	}).catch(function (error) 
+	{
+		console.log("THIS SHOULDNT HAPPEN");
+	});
 
+	//make statdata
+	await new Promise (async function (resolve, reject)
+	{
+		console.log("_____________________");
+	console.log(newItems);
+		for (let i = 0; i < newItems.length; i ++)
+		{
+			await new Promise (function (resolve, reject)
+			{
+				statdata.create({id : newItems[i].id, name : newItems[i].name}, function (err, newstat)
+				{
+					if (err)
+					{
+						console.log("failed to create document with id of " + newItems[i].id);
+						process.exit();
+					}
+						else
+					{
+						newItems[i].statdata = newstat;
+						newItems[i].save();
+						console.log("succesfully created document with id of " + newItems[i].id);
+						resolve();
+					}
+				});
+			});
+		}
+		resolve();
+		console.log("_____________________");
+	console.log(newItems);
+	});
 
+	console.log("_____________________");
+	console.log(newItems);
+
+	//process.exit();
+	//then update statdata
+	await new Promise(function (resolve, reject)
+	{
+		initStatData(newItems, resolve);
+	});
 
 
 	if (typeof callback === "function")
