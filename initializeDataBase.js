@@ -179,7 +179,7 @@ async function initDatabase (callback)
 			setTimeout(function()
 			{
 				resolve();
-			}, 1000 * 60 * 3);
+			}, 1000 * 10);
 		});
 
 		for (let i = 0; i < allitems.length; i ++)

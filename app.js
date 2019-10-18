@@ -107,6 +107,10 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 //looks like app update is a day behind
 //userinvestments after update should be checked
 
+//ugly bug, items with the same name that arent screened out by the retrieving the graph data from the wiki
+//wont become invalid. as a result when retrieving the data for an item from the results / sorted screen for duplicate item names
+//only the data for ONE item will be retrieved (because we assum that the items in the db are unique by name) for all the duplicate items
+
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________

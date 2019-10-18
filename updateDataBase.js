@@ -112,43 +112,68 @@ async function updateDataBase (oldArr, orderedArr, callback)
 		}
 	}
 
-	//set invalid flags for all obsolete items, and push them into invalid collection
-	//if graphdata was requested for these obsolete items, then this is probably redundant, but whatever 
-	for (let i = 0; i < obsoleteItems.length; i++)
-	{
-		invalid.findOne({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
-		{
-			if (error)
-			{
-				console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
-				process.exit();
-			}
-			else if (!invalidItem)
-			{
-				invalid.create({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
-				{
-					if (error)
-					{
-						console.log("failed to create invalid document with id of " + obsoleteItems[i].id);
-						process.exit();
-					}
-				});
-			}
-		});
-	}
-
 	//console.log(orderedArr);
 	//console.log(newArr);
 	//create new items
 	console.log("found that " + newItems.length + " items have been added");
 	console.log("found that " + obsoleteItems.length + " items have been removed");
-	//console.log(obsoleteItems);
+
+	console.log(newItems);
+	console.log(obsoleteItems);
 
 	//clean up memory, only need newItems arr now
-	obsoleteItems = null
 	newArr = null;
 	oldArr = null;
 	orderedArr = null;
+
+	//set invalid flags for all obsolete items, and push them into invalid collection
+	//if graphdata was requested for these obsolete items, then this is probably redundant, but whatever 
+	for (let i = 0; i < obsoleteItems.length; i++)
+	{
+		await new Promise(function(resolve, reject)
+		{
+			invalid.findOne({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+			{
+				if (error)
+				{
+					console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
+					process.exit();
+				}
+				else if (!invalidItem)
+				{
+					invalid.create({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+					{
+						if (error)
+						{
+							console.log("failed to create invalid document with id of " + obsoleteItems[i].id);
+							process.exit();
+						}
+						else
+						{
+							console.log("created invalid document with id of " + obsoleteItems[i].id);
+						}
+					});
+				}
+			});
+
+			item.findOne({id: obsoleteItems[i].id}, function (error, foundItem)
+			{
+				if (error)
+				{
+					console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
+					process.exit();
+				}
+				else
+				{
+					foundItem.invalid = true;
+					foundItem.save();
+					console.log("set invalid flag for document with id of " + obsoleteItems[i].id);
+					resolve();
+				}
+			});
+		});
+	}
+
 
 	for (let i = 0; i < newItems.length; i ++)
 	{
