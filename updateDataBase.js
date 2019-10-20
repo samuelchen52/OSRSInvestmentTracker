@@ -118,8 +118,11 @@ async function updateDataBase (oldArr, orderedArr, callback)
 	console.log("found that " + newItems.length + " items have been added");
 	console.log("found that " + obsoleteItems.length + " items have been removed");
 
-	console.log(newItems);
-	console.log(obsoleteItems);
+	console.log("new items:");
+	newItems.forEach(function(item){console.log(item.name)});
+
+	console.log("obsolete items:");
+	obsoleteItems.forEach(function(item){console.log(item.name)});
 
 	//clean up memory, only need newItems arr now
 	newArr = null;
@@ -243,8 +246,6 @@ async function updateDataBase (oldArr, orderedArr, callback)
 	//make statdata
 	await new Promise (async function (resolve, reject)
 	{
-		console.log("_____________________");
-	console.log(newItems);
 		for (let i = 0; i < newItems.length; i ++)
 		{
 			await new Promise (function (resolve, reject)
@@ -267,12 +268,7 @@ async function updateDataBase (oldArr, orderedArr, callback)
 			});
 		}
 		resolve();
-		console.log("_____________________");
-	console.log(newItems);
 	});
-
-	console.log("_____________________");
-	console.log(newItems);
 
 	//process.exit();
 	//then update statdata
@@ -288,7 +284,60 @@ async function updateDataBase (oldArr, orderedArr, callback)
 	}
 }
 
-module.exports = updateDataBase;
+//goes through entire database, and fetches graphdata for each
+async function refreshDatabase(callback)
+{
+	//grab allitems AGAIN, to get rid of statdata references, just to save some space
+	await new Promise(function (resolve, reject)
+	{
+		fetchAllDocuments(resolve, {invalid : false});
+	}).then(function(alldocs){allitems = alldocs;});
+	await new Promise(function (resolve, reject)
+	{
+		setTimeout(function()
+		{
+			resolve();
+		}, 1000 * 10);
+	});
+	for (let i = 0; i < allitems.length; i ++)
+	{
+		setTimeout(async function()
+		{
+			console.log("updating item at index " +  i + "...")
+			initGraphData(0, [allitems[i]]);
+			initStatData([allitems[i]]);
+			allitems[i] = null;
+		}, i * 60000);
+	}
+	await new Promise(function (resolve, reject)
+	{
+		setTimeout(() => resolve(), 60000 * allitems.length);
+	});	
+	if (typeof callback === "function")
+	{
+		callback();
+	}	
+}
+
+async function update(oldArr, orderedArr, callback, appUpdating)
+{
+	appUpdating.updating = true;
+	await new Promise(function (resolve, reject)
+	{
+		updateDataBase(oldArr, orderedArr, resolve);
+	});
+	appUpdating.updating = false;
+	await new Promise(function (resolve, reject)
+	{
+		refreshDatabase(resolve);
+	});
+	if (typeof callback === "function")
+	{
+		callback();
+	}
+}
+
+module.exports = update;
 
 
 

@@ -87,8 +87,6 @@ function calculateStandardDeviation(dataArr, field, subfield)
 
 async function calculate(allitems, callback)
 {
-	console.log("_______________________________________________________________");
-	console.log(allitems);
 	for (var i = 0; i < allitems.length; i ++)
 		{
 			await new Promise (function (resolve, reject)

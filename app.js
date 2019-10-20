@@ -31,7 +31,7 @@ var app = express();
 var allitems = null;
 var allitemsOrdered = null;
 
-var appUpdating = true;
+var appUpdating = {updating : true};
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
@@ -47,7 +47,7 @@ app.use(session({
 
 //checks if user is logged in, if not, res.locals.user will be null
 app.use(function(req, res, next) {
-	if (appUpdating)
+	if (appUpdating.upating)
 	{
 		res.locals.user = null;
 		res.render("update.ejs");
@@ -487,39 +487,37 @@ async function fetchAllDocuments(callback, criteria)
 
 async function startapp (port)
 {	
+
 	await new Promise(function (resolve, reject)
 	{
-		initDataBase(resolve);
+		initDataBase(resolve, allitems, allitemsOrdered);
 		app.listen(port, function ()
 		{	
 			console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 		});
 	});
 
-	await new Promise(function (resolve, reject)
+	while(true)
 	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
-		//we're getting ALL the objects, so that update database doesnt unnecessarily create new items that were 
-		//excluded due to invalid flag
-		fetchAllDocuments(resolve);
-	}).then(function(alldocs){allitems = alldocs;});
+		await new Promise(function (resolve, reject)
+		{
+			//passes the promise object all the documents i.e. passes alldocs to the resolve function
+			fetchAllDocuments(resolve);
+		});
+		let tempallitems = allitems;
+		let tempallitemsOrdered = allitemsOrdered;
 
-	await new Promise(function (resolve, reject)
-	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
-		updateDataBase(allitems, allitemsOrdered, resolve);
-	});
+		await new Promise(function (resolve, reject)
+		{
+			//passes the promise object all the documents i.e. passes alldocs to the resolve function
+			fetchAllDocuments(resolve, {invalid : false});
+		});
 
-	await new Promise(function (resolve, reject)
-	{
-		//passes the promise object all the documents i.e. passes alldocs to the resolve function
-		fetchAllDocuments(resolve, {invalid : false});
-	}).then(function(alldocs){allitems = alldocs;});
-
-	console.log("getracker turned on!");
-	//once initDatabase is done, allow users on the site again
-	//appUpdating will also be used as a flag for when the site is doing a weekly update
-	appUpdating = false;
+		await new Promise(function(resolve, reject)
+		{
+			updateDataBase(tempallitems, tempallitemsOrdered, resolve, appUpdating)
+		});
+	}
 
 }
 

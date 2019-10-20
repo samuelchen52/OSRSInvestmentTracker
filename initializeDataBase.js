@@ -19,6 +19,7 @@ const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
 const checkItemData = require("./initData/checkItemData.js");
+const updateDataBase = require("./updateDataBase.js");
 
 const port = process.env.PORT || 80;
 
@@ -165,39 +166,6 @@ async function initDatabase (callback)
 	{
 		callback();
 	}
-
-	//continually update graphdata throughout the life time of the applictaion
-	while(true)
-	{
-		//grab allitems AGAIN, to get rid of statdata references, just to save some space
-		await new Promise(function (resolve, reject)
-		{
-			fetchAllDocuments(resolve, {invalid : false});
-		}).then(function(alldocs){allitems = alldocs;});
-		await new Promise(function (resolve, reject)
-		{
-			setTimeout(function()
-			{
-				resolve();
-			}, 1000 * 10);
-		});
-
-		for (let i = 0; i < allitems.length; i ++)
-		{
-			setTimeout(async function()
-			{
-				console.log("updating item at index " +  i + "...")
-				initGraphData(0, [allitems[i]]);
-				initStatData([allitems[i]]);
-				allitems[i] = null;
-			}, i * 60000);
-		}
-		await new Promise(function (resolve, reject)
-		{
-			setTimeout(() => resolve(), 60000 * allitems.length);
-		});
-	}
-		
 
 }
 
