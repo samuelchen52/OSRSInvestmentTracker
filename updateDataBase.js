@@ -37,7 +37,7 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 async function fetchAllDocuments(callback, criteria)
 {
 	//allitems will be the array being sorted that is 
-	var allitems = [];
+	let allitems = [];
 	criteria = criteria ? criteria : {};
 	await new Promise (function (resolve, reject)
 	{
@@ -287,18 +287,12 @@ async function updateDataBase (oldArr, orderedArr, callback)
 //goes through entire database, and fetches graphdata for each
 async function refreshDatabase(callback)
 {
-	//grab allitems AGAIN, to get rid of statdata references, just to save some space
+	var allitems = null;
 	await new Promise(function (resolve, reject)
 	{
 		fetchAllDocuments(resolve, {invalid : false});
 	}).then(function(alldocs){allitems = alldocs;});
-	await new Promise(function (resolve, reject)
-	{
-		setTimeout(function()
-		{
-			resolve();
-		}, 1000 * 10);
-	});
+
 	for (let i = 0; i < allitems.length; i ++)
 	{
 		setTimeout(async function()
@@ -307,12 +301,14 @@ async function refreshDatabase(callback)
 			initGraphData(0, [allitems[i]]);
 			initStatData([allitems[i]]);
 			allitems[i] = null;
-		}, i * 60000);
+		}, i * 25000);
 	}
+
 	await new Promise(function (resolve, reject)
 	{
-		setTimeout(() => resolve(), 60000 * allitems.length);
+		setTimeout(() => resolve(), 25000 * allitems.length);
 	});	
+
 	if (typeof callback === "function")
 	{
 		callback();
@@ -322,10 +318,14 @@ async function refreshDatabase(callback)
 async function update(oldArr, orderedArr, callback, appUpdating)
 {
 	appUpdating.updating = true;
+
 	await new Promise(function (resolve, reject)
 	{
 		updateDataBase(oldArr, orderedArr, resolve);
 	});
+	oldArr = null
+	orderedArr = null;
+
 	appUpdating.updating = false;
 	await new Promise(function (resolve, reject)
 	{

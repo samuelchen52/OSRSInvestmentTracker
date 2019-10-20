@@ -227,7 +227,10 @@ async function calculate(allitems, callback)
 				});
 			});
 			//cant seem to clean up graphdata from the object, forced to reretrieve the entire statdatas collection below
+			console.log("THIS IS I:" + i);
 			allitems[i] = null;
+			console.log(allitems);
+			console.log(process.memoryUsage());
 		}
 
 		await new Promise (function (resolve, reject)

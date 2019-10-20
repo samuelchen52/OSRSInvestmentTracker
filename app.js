@@ -47,7 +47,7 @@ app.use(session({
 
 //checks if user is logged in, if not, res.locals.user will be null
 app.use(function(req, res, next) {
-	if (appUpdating.upating)
+	if (appUpdating.updating)
 	{
 		res.locals.user = null;
 		res.render("update.ejs");
@@ -491,6 +491,7 @@ async function startapp (port)
 	await new Promise(function (resolve, reject)
 	{
 		initDataBase(resolve, allitems, allitemsOrdered);
+		resolve();
 		app.listen(port, function ()
 		{	
 			console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
