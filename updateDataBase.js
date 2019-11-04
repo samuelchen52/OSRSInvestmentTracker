@@ -203,7 +203,6 @@ async function updateDataBase (oldArr, orderedArr, callback)
 			}
 			else
 			{
-				console.log("succesfully created document with id of " + curItem.id);
 				graphdata.create({id : curItem.id, name : curItem.name}, function (err, newGraphData)
 				{
 					if (err)
@@ -213,6 +212,7 @@ async function updateDataBase (oldArr, orderedArr, callback)
 					}
 					else
 					{
+						console.log("succesfully created item/graph document with id of " + curItem.id);
 						newItem.graphdata = newGraphData;
 						newItem.save();
 						newItems[i] = newItem;
@@ -261,7 +261,7 @@ async function updateDataBase (oldArr, orderedArr, callback)
 					{
 						newItems[i].statdata = newstat;
 						newItems[i].save();
-						console.log("succesfully created document with id of " + newItems[i].id);
+						console.log("succesfully created stat document with id of " + newItems[i].id);
 						resolve();
 					}
 				});

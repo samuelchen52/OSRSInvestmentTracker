@@ -44,7 +44,7 @@ async function getItemList (callback, options)
           }
           if (typeof callback === "function")
           {
-            if (options.id)
+            if (options && options.id)
             {
               callback(GEItemsByID);
             }

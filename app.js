@@ -490,12 +490,11 @@ async function startapp (port)
 
 	await new Promise(function (resolve, reject)
 	{
-		initDataBase(resolve, allitems, allitemsOrdered);
-		resolve();
 		app.listen(port, function ()
 		{	
 			console.log("getracker started on port " + this.address().port + " at ip " + this.address().address);
 		});
+		initDataBase(resolve);
 	});
 
 	while(true)
@@ -505,9 +504,9 @@ async function startapp (port)
 			//passes the promise object all the documents i.e. passes alldocs to the resolve function
 			fetchAllDocuments(resolve);
 		});
+		//use temp variables, then get another copy, update database will set temp arrays to null
 		let tempallitems = allitems;
 		let tempallitemsOrdered = allitemsOrdered;
-
 		await new Promise(function (resolve, reject)
 		{
 			//passes the promise object all the documents i.e. passes alldocs to the resolve function
@@ -629,7 +628,7 @@ app.get("/item/search/:query", function (req, res)
 	var query = req.params.query;
 	query = query.trim();
 
-	var pattern = / +/;
+	var pattern = / +/; //regular expressions in javascript denoted by surrounding back slashes. this regexp means "one or more spaces"
 
 	item.find({name_lower : new RegExp( query.split(pattern).join("_").toLowerCase() ), invalid : false}, async function (err, items)
 	{
