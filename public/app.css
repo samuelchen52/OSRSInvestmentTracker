@@ -1,6 +1,6 @@
 body
 {
-	background-color : #f2f2f2;
+	background-color: #EEEBE4;
 }
 
 td
@@ -8,17 +8,14 @@ td
 	border : black solid 2px;
 }
 
-
-
+table tr:nth-child(even)
+{
+	background-color: lightgray;
+}
 
 .pointerpass
 {
 	pointer-events: none;
-}
-.navbar
-{
-	background-color: #EEEBE4;
-	box-shadow: 10px 1px 10px black;
 }
 
 .mainfeature
@@ -28,6 +25,8 @@ td
 	z-index : 0;
 	overflow-y: auto;
 	overflow-x: hidden;
+	border-bottom-right-radius: 25px;
+	border-bottom-left-radius: 25px;
 }
 
 .featureimage
@@ -111,6 +110,30 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
   margin-right: auto;
   margin-left: auto;
   margin-top: 75px;
+}
+
+#featurecontainer {
+  width: 100%;
+  padding-right: 13%;
+  padding-left: 13%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 50px;
+}
+
+.iconfeature
+{
+	transition: box-shadow .3s ease-in-out;
+}
+
+.iconfeature:hover
+{
+	box-shadow: 0 6px 2px -2px rgba(0,0,0,0.5);
+}
+
+.shadow-bottom
+{
+	box-shadow: 0 6px 2px -2px rgba(0,0,0,0.5);
 }
 
 #searchbox

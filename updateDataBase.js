@@ -301,12 +301,12 @@ async function refreshDatabase(callback)
 			initGraphData(0, [allitems[i]]);
 			initStatData([allitems[i]]);
 			allitems[i] = null;
-		}, i * 25000);
+		}, i * 600000);
 	}
 
 	await new Promise(function (resolve, reject)
 	{
-		setTimeout(() => resolve(), 25000 * allitems.length);
+		setTimeout(() => resolve(), 600000 * allitems.length);
 	});	
 
 	if (typeof callback === "function")

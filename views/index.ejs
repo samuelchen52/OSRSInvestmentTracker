@@ -2,111 +2,120 @@
 
 <div id = "iconcontainer">
 	<div class = "container">
-		<div class = "row justify-content-between">
-			<div class = "col-3">
-				<i class="fa fa-search fa-3x"></i>
+		<div class = "row">
+			<div class = "col-4">
+				<div class = "container iconfeature">
+					<div class = "row justify-content-center">
+						<i class="fa fa-search fa-3x"></i>
+					</div>
+				</div>
 			</div>
-			<div class = "col-3">
-				<i class="fa fa-line-chart fa-3x"></i>
+			<div class = "col-4">
+				<div class = "container iconfeature">
+					<div class = "row justify-content-center">
+						<i class="fa fa-line-chart fa-3x"></i>
+					</div>
+				</div>
 			</div>
-			<div class = "col-3">
-				<i class="fa fa-trophy fa-3x"></i>
+			<div class = "col-4">
+				<div class = "container iconfeature">
+					<div class = "row justify-content-center">
+						<i class="fa fa-trophy fa-3x"></i>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<div class = "container">
-	<div class = "row justify-content-around">
-		<div class = "col-md-5 col-sm-12 mt-5">
-			<div class = "mainfeature">
-				<div id = "searchform">
-					<h3 class = "text-center"> search </h3>
-					<form action = "./item/search" method = "POST">
-						<div class = "d-flex justify-content-center">
-										<input class = "text-center" id = "searchbox" type = "text" name = "searchQuery" placeholder= "enter item name" minlength="3" required><button  type="submit">
-								<i class="fa fa-search"></i>
-							</button>
-						</div>
-					</form>
+<div id = "featurecontainer">
+	<div class = "container position-absolute mainfeature" id = "searchfeature" hidden = "true">
+		<div id = "searchform">
+			<h3 class = "text-center"> search </h3>
+			<form action = "./item/search" method = "POST">
+				<div class = "d-flex justify-content-center">
+								<input class = "text-center" id = "searchbox" type = "text" name = "searchQuery" placeholder= "enter item name" minlength="3"required><button  type="submit">
+						<i class="fa fa-search"></i>
+					</button>
 				</div>
-			</div>	
+			</form>
 		</div>
-		<div class = "col-md-5 col-sm-12 mt-5">
-			<div class = "mainfeature position-relative">
-				<form class = "pl-5" id = "sortform" action = "./item/sort" method = "GET">
-					<h3 class = "text-center"> sort by </h3>
-					<p> 
-						<input type="radio" name = "typeSort" value="roundedSort"> rounded sort
-					</p>
-					<p> 
-						<input type="radio" name = "typeSort" value="weightedSort"> weighted sort
-					</p>
-					<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
-					<div class = "sortoptions">
-						<select class = "sortby" id = "firstselect" name = "sortby[0]">
-							<option value="sortByNone">none</option>
-							<option value="sortByPrice">by current price</option>
-							<option value="sortByVolume">by current volume</option>
-						</select>
-						<div class="progress position-relative d-none">
-							<div class="progress-bar" role="progressbar"></div>
-							<input name = "weight[0]" class = "position-absolute weightrange" type = "range">
-						</div>
+	</div>
+	<div class ="container position-absolute mainfeature" id = "sortfeature" hidden = "true">
+		<div class = "position-relative">
+			<form class = "pl-5" id = "sortform" action = "./item/sort" method = "GET">
+				<h3 class = "text-center"> sort </h3>
+				<p> 
+					<input type="radio" name = "typeSort" value="roundedSort"> rounded sort
+				</p>
+				<p> 
+					<input type="radio" name = "typeSort" value="weightedSort"> weighted sort
+				</p>
+				<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
+				<div class = "sortoptions">
+					<select class = "sortby" id = "firstselect" name = "sortby[0]">
+						<option value="sortByNone">none</option>
+						<option value="sortByPrice">by current price</option>
+						<option value="sortByVolume">by current volume</option>
+					</select>
+					<div class="progress position-relative d-none">
+						<div class="progress-bar" role="progressbar"></div>
+						<input name = "weight[0]" class = "position-absolute weightrange" type = "range">
 					</div>
-					<div class = "d-flex justify-content-center">
-						<button id = "sortsubmit" class = "btn btn-light">sort</button>
+				</div>
+				<div class = "d-flex justify-content-center">
+					<button id = "sortsubmit" class = "btn btn-light">sort</button>
+				</div>
+			</form>
+			<div id = "filterform" class = "position-absolute">
+				<div id = "filteroptions" class = "d-inline-block">
+					<div>
+						<h4 class = "text-center"> filters </h4>
+						<br>
+						<p> 
+							<input type="checkbox" name="filterByPosition" class = "filterdata" checked = "true"> show the first
+							<input type="number" name="position" class = "filterdata" value= "500">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByTrend" class = "filterdata"> trend
+							<select name = "trendType" class = "filterdata">
+								<option value="none">none</option>
+								<option value="filterByPositiveTrend">positive</option>
+								<option value="filterByNegativeTrend">negative</option>
+								<option value="filterByNeutralTrend">neutral</option>
+							</select>
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
+							<input type="number" name="priceLowerBound" class = "filterdata">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
+							<input type="number" name="priceUpperBound" class = "filterdata">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
+							<input type="number" name="volumeLowerBound" class = "filterdata">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
+							<input type="number" name="volumeUpperBound" class = "filterdata">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
+							<input type="number" name="itemLimitUpperBound" class = "filterdata">
+						</p>
+						<p> 
+							<input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
+							<input type="number" name="itemLimitLowerBound" class = "filterdata">
+						</p>
 					</div>
-				</form>
-				<div id = "filterform" class = "position-absolute">
-					<div id = "filteroptions" class = "d-inline-block">
-						<div>
-							<h4 class = "text-center"> filters </h4>
-							<br>
-							<p> 
-								<input type="checkbox" name="filterByPosition" class = "filterdata"> show the first
-								<input type="number" name="position" class = "filterdata">
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByTrend" class = "filterdata"> trend
-								<select name = "trendType" class = "filterdata">
-									<option value="filterByPositiveTrend">positive</option>
-									<option value="filterByNegativeTrend">negative</option>
-									<option value="filterByNeutralTrend">neutral</option>
-								</select>
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
-								<input type="number" name="priceLowerBound" class = "filterdata">
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
-								<input type="number" name="priceUpperBound" class = "filterdata">
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
-								<input type="number" name="volumeLowerBound" class = "filterdata">
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
-								<input type="number" name="volumeUpperBound" class = "filterdata">
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
-								<input type="number" name="itemLimitUpperBound" class = "filterdata">
-							</p>
-							<p> 
-								<input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
-								<input type="number" name="itemLimitLowerBound" class = "filterdata">
-							</p>
-						</div>
-					</div>
-					<div id = "filterslideout" class = "d-inline-flex align-items-center">
-						<div id = "slidebutton" class = "d-flex align-items-center"> 
-							<div>></div>
-						</div>
+				</div>
+				<div id = "filterslideout" class = "d-inline-flex align-items-center">
+					<div id = "slidebutton" class = "d-flex align-items-center"> 
+						<div>></div>
 					</div>
 				</div>
 			</div>
@@ -248,8 +257,17 @@ $("select").on("input", function()
 
 sortsubmit.click(function ()
 {
+	let checkboxes = $(".filterdata[type='checkbox']");
+	for (let i = 0; i < checkboxes.length; i++)
+	{
+		let checkbox = checkboxes[i];
+		if (!checkbox.checked)
+		{
+			$(checkbox).attr("disabled", true);
+			$(checkbox).siblings().attr("disabled", true);
+		}
+	};
 	sortform.append($(".filterdata").toggleClass("d-none"));
-	sortform.submit();
 });
 
 
@@ -282,6 +300,35 @@ sortsubmit.click(function ()
 		});
 		arr = arr.reverse();
 	});
+</script>
+
+<script>
+
+	$(".iconfeature").click(function()
+	{
+		$(".iconfeature").removeClass("shadow-bottom");
+		$(this).addClass("shadow-bottom");
+	});
+
+	$(".fa-search").parent().parent().click(function()
+	{
+		$(".mainfeature").attr("hidden", true)
+		$("#searchfeature").attr("hidden", false);
+	});
+
+	$(".fa-line-chart").parent().parent().click(function()
+	{
+		$(".mainfeature").attr("hidden", true)
+		$("#sortfeature").attr("hidden", false);
+	});
+
+	$(".fa-trophy").parent().parent().click(function()
+	{
+		$(".mainfeature").attr("hidden", true)
+	});
+
+
+
 </script>
 
 <% include ./partials/footer.ejs %>
