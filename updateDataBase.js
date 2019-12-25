@@ -177,52 +177,85 @@ async function updateDataBase (oldArr, orderedArr, callback)
 		});
 	}
 
-
+	//try to find the new item in database, if we do, set invalid flag to false, otherwise, make the new item, along with the stat and graph documents
 	for (let i = 0; i < newItems.length; i ++)
 	{
 		var curItem = newItems[i];
 		await new Promise (function (resolve, reject)
 		{
-			let tempObj = 
+			item.findOne({id : newItems[i].id}, function(err, foundItem)
 			{
-				id : curItem.id,
-				name : curItem.name,
-				name_lower : curItem.name.split(" ").join("_").toLowerCase(),
-				limit : curItem.buy_limit,
-				wikiName : curItem.wiki_name,
-				description : curItem.examine,
-				members : curItem.members,
-				iconFetched : false,
-				invalid : false
-			}
-			item.create(tempObj, function(err, newItem){
-			if (err)
-			{
-				console.log("failed to create document with id of " + curItem.id);
-				process.exit();
-			}
-			else
-			{
-				graphdata.create({id : curItem.id, name : curItem.name}, function (err, newGraphData)
+				if (err)
 				{
-					if (err)
+					console.log("failed to find document (database error)");
+					process.exit();
+				}
+				else if (!foundItem)
+				{
+					let tempObj = 
 					{
-						console.log("failed to create graphdata for id of " + curItem.id);
-						process.exit();
+						id : curItem.id,
+						name : curItem.name,
+						name_lower : curItem.name.split(" ").join("_").toLowerCase(),
+						limit : curItem.buy_limit,
+						wikiName : curItem.wiki_name,
+						description : curItem.examine,
+						members : curItem.members,
+						iconFetched : false,
+						invalid : false
 					}
-					else
-					{
-						console.log("succesfully created item/graph document with id of " + curItem.id);
-						newItem.graphdata = newGraphData;
-						newItem.save();
-						newItems[i] = newItem;
-					}
+					item.create(tempObj, function(err, newItem){
+						if (err)
+						{
+							console.log("failed to create document with id of " + curItem.id);
+							process.exit();
+						}
+						else
+						{
+							graphdata.create({id : curItem.id, name : curItem.name}, function (err, newGraphData)
+							{
+								if (err)
+								{
+									console.log("failed to create graphdata for id of " + curItem.id);
+									process.exit();
+								}
+								else
+								{
+									console.log("succesfully created new graph document with id of " + curItem.id);
+									newItem.graphdata = newGraphData;
+									//make statdata
+									statdata.create({id : curItem.id, name : curItem.name}, function (err, newstat)
+									{
+										if (err)
+										{
+											console.log("failed to create document with id of " + newItems[i].id);
+											process.exit();
+										}
+										else
+										{
+											newItem.statdata = newstat;
+											newItem.save();
+											
+											newItems[i] = newItem;
+											console.log("succesfully created new stat document with id of " + newItems[i].id);
+											resolve();
+										}
+									});
+								}
+							});
+						}
+					});
+				}
+				else
+				{
+					foundItem.invalid = false;
+					foundItem.save();
 					resolve();
-				});
-			}
+				}
 			});
 		});
 	}
+
 
 
 	//fill in all the items that osrsbox failed to fill
@@ -243,32 +276,6 @@ async function updateDataBase (oldArr, orderedArr, callback)
 		console.log("THIS SHOULDNT HAPPEN");
 	});
 
-	//make statdata
-	await new Promise (async function (resolve, reject)
-	{
-		for (let i = 0; i < newItems.length; i ++)
-		{
-			await new Promise (function (resolve, reject)
-			{
-				statdata.create({id : newItems[i].id, name : newItems[i].name}, function (err, newstat)
-				{
-					if (err)
-					{
-						console.log("failed to create document with id of " + newItems[i].id);
-						process.exit();
-					}
-						else
-					{
-						newItems[i].statdata = newstat;
-						newItems[i].save();
-						console.log("succesfully created stat document with id of " + newItems[i].id);
-						resolve();
-					}
-				});
-			});
-		}
-		resolve();
-	});
 
 	//process.exit();
 	//then update statdata

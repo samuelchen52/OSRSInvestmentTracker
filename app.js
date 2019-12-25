@@ -588,9 +588,10 @@ app.get("/item/sort", function(req, res)
 
 	var filterby = [];
 	populateFilterArr(req, filterby);
-	var filteredArr  = filter(allitems, filterby);
 
-	quicksort(filteredArr, 0, filteredArr.length - 1, sortby);
+	//sort then filter
+	quicksort(allitems, 0, allitems.length - 1, sortby);
+	var filteredArr  = filter(allitems, filterby);
 	if (typeSort === "weightedSort")
 	{
 		//populate the progressbars array with objects that will have the color for the progress bar
