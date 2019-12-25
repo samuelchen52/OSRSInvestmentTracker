@@ -258,12 +258,17 @@ async function calculate(allitems, callback)
 								else
 								{
 									allstats.push(doc.statdata);
+									if (!doc.statdata.currentPrice.price || !doc.statdata.currentVolume.volume)
+									{
+										console.log(doc.statdata);
+									}
 									resolve();
 								}
 							});
 						});
 					}
 					console.log("populating standardscore...");
+
 					populateStandardScore(allstats, "currentPrice", "price");
 					populateStandardScore(allstats, "currentVolume", "volume");
 					allstats.forEach(function(item)
