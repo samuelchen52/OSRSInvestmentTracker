@@ -32,10 +32,10 @@ async function populate(callback)
 				id : curItem.id,
 				name : curItem.name,
 				name_lower : curItem.name.split(" ").join("_").toLowerCase(),
-				limit : curItem.buy_limit,
+				//limit : curItem.buy_limit,
 				wikiName : curItem.wiki_name,
-				description : curItem.examine,
-				members : curItem.members,
+				//description : curItem.examine,
+				//members : curItem.members,
 				iconFetched : false,
 				invalid : false
 			}
