@@ -101,6 +101,8 @@ async function initDatabase (callback)
 	for (var i = 0; i < 10; i ++)
 	{
 		console.log(allitems[i]);
+		console.log(allitems[i].lastUpdated);
+		console.log(allitems[i].invalid);
 		if ((allitems[i].lastUpdated === undefined) && (!allitems[i].invalid))
 		{
 			graphDataUpdated = true;
