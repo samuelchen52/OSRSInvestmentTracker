@@ -100,8 +100,7 @@ async function initDatabase (callback)
 
 	for (var i = 0; i < allitems.length; i ++)
 	{
-		console.log((allitems[i].lastUpdated === undefined && (!allitems[i].invalid)));
-		if (allitems[i].lastUpdated === undefined && (!allitems[i].invalid))
+		if ((allitems[i].lastUpdated === undefined) && (!allitems[i].invalid))
 		{
 			graphDataUpdated = true;
 			arrItemsGraphDataNeeded.push(allitems[i]);
