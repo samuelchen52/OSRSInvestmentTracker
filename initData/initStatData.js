@@ -261,6 +261,7 @@ async function calculate(allitems, callback)
 									if (!doc.statdata.currentPrice || !doc.statdata.currentVolume || doc.statdata.currentPrice.price === undefined || doc.statdata.currentPrice.price === null || doc.statdata.currentVolume.volume === undefined || doc.statdata.currentVolume.volume === undefined)
 									{
 										console.log(doc.statdata);
+										process.exit();
 									}
 									resolve();
 								}
