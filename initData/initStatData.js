@@ -228,7 +228,6 @@ async function calculate(allitems, callback)
 			});
 			//cant seem to clean up graphdata from the object, forced to reretrieve the entire statdatas collection below
 			allitems[i] = null;
-			console.log(process.memoryUsage());
 		}
 
 		await new Promise (function (resolve, reject)
@@ -280,6 +279,7 @@ async function calculate(allitems, callback)
 				}
 			});
 		});
+		console.log(process.memoryUsage());
 
 		if (typeof callback === "function")
 		{
