@@ -136,7 +136,7 @@ async function makeRequests(start, documentarr, callback)
 			// temp.members = reqbody.members;
 			// temp.save();
 
-			console.log("item data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
+			console.log("icons for document with id of " + documentarr[start].id + " at index " + start + " fetched!");
 			documentarr[start] = null; // allow garbage collector to clean up
 			start ++;
 			//console.log(process.memoryUsage());
