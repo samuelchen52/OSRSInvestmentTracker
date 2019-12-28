@@ -115,7 +115,7 @@ async function checkItemData(callback)
 					{
 						const dom = new JSDOM(body);
 
-						let members = dom.window.document.querySelector("." + memberClass).textContent;
+						let members = dom.window.document.querySelector("." + memberClass).textContent.substring(6);
 						let limit = dom.window.document.querySelector("." + limitClass).textContent.substring(9).split(",").join("")
 						limit = limit === "Unknown" ? -1 : limit;
 						let id = dom.window.document.querySelector("." + idClass).textContent.substring(7).split(",").join("");
