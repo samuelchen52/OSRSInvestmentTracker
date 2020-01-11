@@ -230,55 +230,6 @@ async function calculate(allitems, callback)
 			allitems[i] = null;
 		}
 
-		await new Promise (function (resolve, reject)
-		{
-			item.find({invalid : false}, async function (err, allitems)
-			{
-				if (err)
-				{
-					console.log("couldnt fetch all item documents!");
-					resolve();
-					process.exit();
-				}
-				else
-				{
-					var allstats = [];
-					for (var i = 0; i < allitems.length; i ++)
-					{
-						await new Promise (function(resolve, reject)
-						{
-							item.populate(allitems[i], [{path: "statdata"}], function (err, doc)
-							{
-								if (err)
-								{
-									console.log("couldn't populate!");
-									process.exit();
-								}
-								else
-								{
-									allstats.push(doc.statdata);
-									if (!doc.statdata.currentPrice || !doc.statdata.currentVolume || doc.statdata.currentPrice.price === undefined || doc.statdata.currentPrice.price === null || doc.statdata.currentVolume.volume === undefined || doc.statdata.currentVolume.volume === undefined)
-									{
-										console.log(doc.statdata);
-										process.exit();
-									}
-									resolve();
-								}
-							});
-						});
-					}
-					console.log("populating standardscore...");
-
-					populateStandardScore(allstats, "currentPrice", "price");
-					populateStandardScore(allstats, "currentVolume", "volume");
-					allstats.forEach(function(item)
-					{
-						item.save();
-					});
-					resolve();
-				}
-			});
-		});
 		console.log(process.memoryUsage());
 
 		if (typeof callback === "function")

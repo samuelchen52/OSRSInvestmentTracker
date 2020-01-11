@@ -59,7 +59,7 @@
 						<div class = "col-4">
 							x<%=profits[i].numInvested%>
 							<img src = "/images/small/<%=profits[i].id%>.gif" title = "<%=profits[i].name%>">
-							<%= Math.floor( (profits[i].dateInvested - profits[i].lastUpdated) / (1000 * 60 * 60 * 24) )%> days ago
+							<%= Math.floor( (profits[i].dateInvested) / (1000 * 60 * 60 * 24) )%> days ago
 						</div>
 						<div class = "col-8">
 							<div>
@@ -79,7 +79,7 @@
 						<div class = "col-4">
 							x<%=losses[i].numInvested%>
 							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
-							<%= Math.floor( (losses[i].dateInvested - losses[i].lastUpdated) / (1000 * 60 * 60 * 24) )%> days ago
+							<%= Math.floor( (profits[i].dateInvested) / (1000 * 60 * 60 * 24) )%> days ago
 						</div>
 						<div class = "col-8">
 							<div>

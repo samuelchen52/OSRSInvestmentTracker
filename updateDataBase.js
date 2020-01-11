@@ -17,6 +17,7 @@ const initStat = require("./initData/initStat.js") //separate because stat model
 const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
+const initScore = require("./initData/initScore.js")
 
 const checkItemData = require("./initData/checkItemData.js");
 
@@ -314,6 +315,10 @@ async function refreshDatabase(callback)
 	await new Promise(function (resolve, reject)
 	{
 		setTimeout(() => resolve(), 25000 * allitems.length);
+	});	
+	await new Promise(function (resolve, reject)
+	{
+		initScore(resolve);
 	});	
 
 	if (typeof callback === "function")
