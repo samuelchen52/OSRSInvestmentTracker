@@ -306,7 +306,10 @@ async function refreshDatabase(callback)
 		setTimeout(async function()
 		{
 			console.log("updating item at index " +  i + "...")
-			initGraphData(0, [allitems[i]]);
+			await new Promise (function (resolve ,reject)
+			{
+				initGraphData(0, [allitems[i]], resolve);
+			});
 			initStatData([allitems[i]]);
 			allitems[i] = null;
 		}, i * 25000);
