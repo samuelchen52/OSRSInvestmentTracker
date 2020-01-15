@@ -59,13 +59,14 @@
 						<div class = "col-4">
 							x<%=profits[i].numInvested%>
 							<img src = "/images/small/<%=profits[i].id%>.gif" title = "<%=profits[i].name%>">
-							<%= Math.floor( (new Date() - profits[i].dateInvested) / (1000 * 60 * 60 * 24) )%> days ago
+							<%= Math.floor( (new Date().valueOf() - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
 						</div>
 						<div class = "col-8">
 							<div>
 								gp ea. <%=profits[i].pricePerItemInvested%> -> <%=profits[i].currentPricePerItem%>
 								total <%=profits[i].pricePerItemInvested * profits[i].numInvested%> -> <%=profits[i].currentPricePerItem * profits[i].numInvested%>
 								gains: <%=profits[i].currentPricePerItem * profits[i].numInvested - profits[i].pricePerItemInvested * profits[i].numInvested%>
+								<%= Math.floor( (new Date().valueOf()  - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
 							</div>
 						</div>
 					</div>
@@ -79,13 +80,14 @@
 						<div class = "col-4">
 							x<%=losses[i].numInvested%>
 							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
-							<%= Math.floor( (new Date() - profits[i].dateInvested) / (1000 * 60 * 60 * 24) )%> days ago
+							<%= Math.floor( (new Date().valueOf()  - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
 						</div>
 						<div class = "col-8">
 							<div>
 								gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
 								total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
 								losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
+								<%= Math.floor( (new Date().valueOf()  - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
 							</div>
 						</div>
 					</div>

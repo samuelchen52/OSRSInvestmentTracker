@@ -785,20 +785,20 @@ app.post("/item/data/:id", function(req, res)
 		}
 		else
 		{
-			if (itemarr.length === 0 || itemarr.length > 1)
+			if (itemarr.length !== 1)
 			{
 				res.render("error.ejs");
 			}
 			else
 			{
-				var itemToUpdate = itemarr[0];
-				await new Promise (function (resolve ,reject)
+				let itemToUpdate = itemarr[0];
+				if ((new Date().valueOf()  - allitemsOrdered[itemToUpdate.id].lastUpdated.valueOf()) >= 10800000)
 				{
-					initGraphData(0, itemarr, resolve);
-				});
-				itemarr[0] = itemToUpdate;
-				if (itemToUpdate.lastUpdated.toDateString() !== allitemsOrdered[itemToUpdate.id].lastUpdated.toDateString())
-				{
+					await new Promise (function (resolve ,reject)
+					{
+						initGraphData(0, itemarr, resolve);
+					});
+					itemarr[0] = itemToUpdate; //initGraphData sets array to zero to clean up memory, have to reassign
 					await new Promise (function (resolve ,reject)
 					{
 						initStatData(itemarr, resolve);
