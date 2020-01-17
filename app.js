@@ -792,7 +792,7 @@ app.post("/item/data/:id", function(req, res)
 			else
 			{
 				let itemToUpdate = itemarr[0];
-				if ((new Date().valueOf()  - allitemsOrdered[itemToUpdate.id].lastUpdated.valueOf()) >= 10800000)
+				if ((new Date().valueOf()  - allitemsOrdered[itemToUpdate.id].lastUpdated.valueOf()) >= 14400000)
 				{
 					await new Promise (function (resolve ,reject)
 					{
