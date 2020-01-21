@@ -22,92 +22,49 @@
 
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light">
-	  <a class="navbar-brand ml-4" href="/">GETracker</a>
-	  <div class="collapse navbar-collapse">
-	    <ul class="navbar-nav mr-auto">
+	<nav class="navbar navbar-light bg-light navbar-expand-sm">
+	  <a class="navbar-brand" href="/">GETracker</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+	  	<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id ="navbarText">
+	    <ul class="navbar-nav">
 	     	
 	    </ul>
-	    <span class="navbar-text mr-4">
-	    	<a href = "/about"> about </a>
+	    <span class="navbar-text">
+	    	<a class ="nav-link" href = "/about"> about </a>
 	    </span>
-	    <span class="navbar-text mr-4">
-	    	<% if (user !== null){ %>
+	    <span class="navbar-text">
+	    	<% if (user){ %>
 				<form action = "/logout" method = POST>
-					<button class = "btn btn-dark" type = "submit"> logout </button>
+					<button class = "btn btn-light" type = "submit"> logout </button>
 				</form>
 				<% } else {%>
-				<a href = "/login" > login </a>
+				<a class ="nav-link" href = "/login" > login </a>
 			<% }%>
 	    </span>
 	  </div>
 	</nav>
-
-	<% if (user !== null){ %>
-		<% var profits= []; var losses = []; %>
-		<% for (var i = 0; i < user.investments.length; i ++) { %>
-			<% if (user.investments[i].pricePerItemInvested <= user.investments[i].currentPricePerItem) { %>
-			<% profits.push(user.investments[i]); %>
-			<% } else { %>
-			<% losses.push(user.investments[i]); %>
-			<% } %>
-		<% } %>
-		<div id = "inthegreen">
-			<% for (var i = 0; i < profits.length; i ++) { %>
-				<div class = "container greeninvestment">
-					<div class = "row justify-content-between">
-						<div class = "col-4">
-							x<%=profits[i].numInvested%>
-							<img src = "/images/small/<%=profits[i].id%>.gif" title = "<%=profits[i].name%>">
-							<%= Math.floor( (new Date().valueOf() - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
-						</div>
-						<div class = "col-8">
-							<div>
-								gp ea. <%=profits[i].pricePerItemInvested%> -> <%=profits[i].currentPricePerItem%>
-								total <%=profits[i].pricePerItemInvested * profits[i].numInvested%> -> <%=profits[i].currentPricePerItem * profits[i].numInvested%>
-								gains: <%=profits[i].currentPricePerItem * profits[i].numInvested - profits[i].pricePerItemInvested * profits[i].numInvested%>
-								<%= Math.floor( (new Date().valueOf()  - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
-							</div>
-						</div>
-					</div>
-				</div>
-			<% } %>
-		</div>
-		<div id = "inthered">
-			<% for (var i = 0; i < losses.length; i ++) { %>
-				<div class = "container redinvestment">
-					<div class = "row justify-content-between">
-						<div class = "col-4">
-							x<%=losses[i].numInvested%>
-							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
-							<%= Math.floor( (new Date().valueOf()  - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
-						</div>
-						<div class = "col-8">
-							<div>
-								gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
-								total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
-								losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
-								<%= Math.floor( (new Date().valueOf()  - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
-							</div>
-						</div>
-					</div>
-				</div>
-			<% } %>
-		</div>
-	<% }%>
-
-	<script>
-		if ($(".greeninvestment").length > 0)
-		{
-			$("#inthegreen").css("background-image", "linear-gradient(#1fcf4e, #b2edc2, white)");
-		}
-		if ($(".redinvestment").length > 0)
-		{
-			$("#inthered").css("background-image", "linear-gradient(white, #eb918a, #e62315)");
-		}
-
-
-	</script>
-
-
 	
+	<!-- <nav class="navbar navbar-light bg-light">
+	  <a class="navbar-brand" href="#">Navbar</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNav">
+	    <ul class="navbar-nav">
+	    </ul>
+	    <span class="navbar-text">
+	    	<a class ="nav-link" href = "/about"> about </a>
+	    </span>
+	    <span class="navbar-text">
+	    	<% if (user){ %>
+				<form action = "/logout" method = POST>
+					<button class = "btn btn-light" type = "submit"> logout </button>
+				</form>
+				<% } else {%>
+				<a class ="nav-link" href = "/login" > login </a>
+			<% }%>
+	    </span>
+	  </div>
+	</nav> -->

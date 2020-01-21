@@ -1,3 +1,183 @@
-
 </body>
+
+
+<script>
+	$("#sortform").on("input", ".sortoptions input[type='range']", function(event)
+	{
+		$(this).siblings(".progress-bar").css("width", event.target.value + "%");
+	});
+</script>
+
+
+<script>
+		//for sortform
+	var sortform = $("#sortform");
+	var sortsubmit = $("#sortsubmit");
+
+	//for progressbar colors
+	var colors = 
+	{
+		sortByPrice : "#ebe34b",
+		sortByVolume : "#81adb5"
+	}
+	var options = 
+	{
+		//bn : {selected : false, string : "<option value=\"bn\">none</option>"},
+		sortByPrice : {selected : false, string : "<option value=\"sortByPrice\">by current price</option>"},
+		sortByVolume : {selected : false, string : "<option value=\"sortByVolume\">by current volume</option>"}
+	}
+	var optionIndex = 1; //number of options that have been selected, also serves as unique index for naming the new option for select element
+	var optionString = "";
+	var checked = {roundedSort : false, weightedSort : false};
+
+	sortform.on("submit", function ()
+	{
+		$("#sortform select").removeAttr('disabled');
+	});
+
+	$("#addoption").click(function () {
+		//only add options if first select isnt selected as none and last select doesnt only have one option
+		if ( ($(".sortby").first().prop("value") !== 'sortByNone') && ($(".sortby").last().children("option").length !== 1) )
+		{
+			$(".sortby").last().prop("disabled", true);
+			options[$(".sortby").last().prop("value")].selected = true;
+			optionString = "";
+
+			for (var option in options)
+			{
+				if (!options[option].selected)
+				{
+					optionString += options[option].string;
+				}
+			}
+
+			$(".sortoptions").last().after(
+				"<div class = \"sortoptions\">" +
+					"<h6> then by </h6>" +
+					"<select class = \"sortby\"name = \"sortby[" + optionIndex + "]\">" +
+						optionString +
+					"</select>" +
+					"<div class=\"progress position-relative " + (checked[$("input[value='weightedSort']").prop("value")] ? "" : "d-none") + "\">" +
+						"<div id = \"test\" class=\"progress-bar\"role=\"progressbar\"></div>" +
+						"<input name = \"weight[" + optionIndex + "]\" class = \"position-absolute weightrange\" type = \"range\"> "+
+					"</div>" +	
+				"</div"
+				);
+			$(".progress").last().children(".progress-bar").css("background-color", colors[$(".progress").last().siblings().children("option:selected").val()]);
+			optionIndex ++;
+
+
+		}
+	});
+
+
+	$("input[type='radio']").click(function()
+	{
+		//if user tries toggling weighted when sorting by none, dont let em
+		if ($(this).prop("value") === "weightedSort" && $("#firstselect option:selected").val() === "sortByNone")
+		{
+			$(this).prop("checked", false);
+			checked[$(this).prop("value")] = false;
+		}
+		else
+		{
+			//if already checked, uncheck it
+			if (checked[$(this).prop("value")])
+			{
+				$(this).prop("checked", false);
+				checked[$(this).prop("value")] = false;
+				//if weightedsort, toggle progressbars
+				if ($(this).prop("value") === "weightedSort")
+				{
+					$(".progress").toggleClass("d-none");
+				}
+				else // hide bars
+				{
+					$(".progress").addClass("d-none");
+				}
+			}
+			//otherwise, check it and uncheck everything else
+			else
+			{
+				for (sorttype in checked)
+				{
+					checked[sorttype] = false;
+				}
+				checked[$(this).prop("value")] = true;
+				//if weightedsort, toggle progressbars
+				if ($(this).prop("value") === "weightedSort")
+				{
+					$(".progress").toggleClass("d-none");
+				}
+				else // hide bars
+				{
+					$(".progress").addClass("d-none");
+				}
+			}
+		}
+	});
+
+	//uncheck weightedsort and hide bar if user goes back to sortbynone
+	$("select").on("input", function()
+	{
+		if ($("#firstselect option:selected").val() === "sortByNone")
+		{
+			$("input[value='weightedSort']").prop("checked", false);
+			checked["weightedSort"] = false;
+			$(".progress").addClass("d-none");
+		}
+		//set the correct color for the progress bar
+		else
+		{
+			$(".progress").last().children(".progress-bar").css("background-color", colors[$(this).children("option:selected").val()]);
+		}
+	});
+
+	sortsubmit.click(function ()
+	{
+		let checkboxes = $(".filterdata[type='checkbox']");
+		for (let i = 0; i < checkboxes.length; i++)
+		{
+			let checkbox = checkboxes[i];
+			if (!checkbox.checked)
+			{
+				$(checkbox).attr("disabled", true);
+				$(checkbox).siblings().attr("disabled", true);
+			}
+		};
+		sortform.append($(".filterdata").toggleClass("d-none"));
+	});
+
+
+</script>
+
+
+<script>
+	// for sliding animations
+
+	var filteroptions = $("#filteroptions");
+	var buttonstate = false;
+	var buttonactive = false;
+	//make a new array just to make use of the foreach function lol
+	var arr = new Array();
+	for (var i = 0; i < 100; i ++)
+	{
+		arr.push(i);
+	}
+
+	$("#slidebutton").click(function()
+	{
+		buttonstate = !buttonstate;
+		buttonactive = true;
+		arr.forEach(function(value, index)
+		{
+			setTimeout(function()
+			{
+				filteroptions.css("width", value * 4);
+			}, index * 5);
+		});
+		arr = arr.reverse();
+	});
+</script>
+
 </html>

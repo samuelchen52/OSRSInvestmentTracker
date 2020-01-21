@@ -1,0 +1,33 @@
+<% if (user){ %>
+		<% var profits= []; var losses = []; %>
+		<% for (var i = 0; i < user.investments.length; i ++) { %>
+			<% if (user.investments[i].pricePerItemInvested <= user.investments[i].currentPricePerItem) { %>
+			<% profits.push(user.investments[i]); %>
+			<% } else { %>
+			<% losses.push(user.investments[i]); %>
+			<% } %>
+		<% } %>
+	<% }%>
+<% if (user){ %>
+	<div class = "col-2">
+		<% for (var i = 0; i < losses.length; i ++) { %>
+			<div class = "container">
+				<div class = "row justify-content-between">
+					<div class = "col-4">
+						x<%=losses[i].numInvested%>
+						<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
+						<%= Math.floor( (new Date().valueOf()  - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
+					</div>
+					<div class = "col-8">
+						<div>
+							gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
+							total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
+							losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
+							<%= Math.floor( (new Date().valueOf()  - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
+						</div>
+					</div>
+				</div>
+			</div>
+		<% } %>
+	</div>
+<% }%>
