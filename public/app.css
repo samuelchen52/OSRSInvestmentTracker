@@ -22,12 +22,12 @@ table tr:nth-child(even)
 {
 	/*#eeebe4 light nav + wrap evreything in light boxes, background navy*/
 	/*background-color: #1c2a37;*/
-	box-shadow: 0 15px 6px -6px #888888;
+	/*box-shadow: 0 15px 6px -6px #888888;
 	z-index : 0;
 	overflow-y: auto;
 	overflow-x: hidden;
 	border-bottom-right-radius: 25px;
-	border-bottom-left-radius: 25px;
+	border-bottom-left-radius: 25px;*/
 }
 
 .featureimage
@@ -111,11 +111,6 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
   margin-right: auto;
   margin-left: auto;
   margin-top: 75px;
-}
-
-#featurecontainer {
-  
-  margin-top: 50px;
 }
 
 .iconfeature

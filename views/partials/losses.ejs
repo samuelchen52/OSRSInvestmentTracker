@@ -8,22 +8,45 @@
 			<% } %>
 		<% } %>
 	<% }%>
+
 <% if (user){ %>
-	<div class = "col-2">
+	<div class = "col-2 mt-5">
 		<% for (var i = 0; i < losses.length; i ++) { %>
-			<div class = "container">
+			<div class = "container border mb-2">
 				<div class = "row justify-content-between">
 					<div class = "col-4">
+						<div style = "font-size: 12px; font-weight: 800">
+							<%=losses[i].name%>
+						</div>
+						<a href = "/item/data/<%=losses[i].name.split(" ").join("_").toLowerCase()%>">
+							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
+						</a>
 						x<%=losses[i].numInvested%>
-						<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
-						<%= Math.floor( (new Date().valueOf()  - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
+						<!-- <%= Math.floor((new Date().valueOf() - losses[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24)) %> days ago
+						<%= Math.floor(Math.floor((new Date().valueOf() - losses[i].dateInvested.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %> hours ago -->
 					</div>
-					<div class = "col-8">
+					<div class = "col-8" style = "font-size: 12px">
 						<div>
-							gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
-							total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
-							losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
-							<%= Math.floor( (new Date().valueOf()  - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24) )%> days ago
+							<div style = "color : red; font-weight: 700"> 
+								-<%=Math.abs((losses[i].currentPricePerItem * losses[i].numInvested) - (losses[i].pricePerItemInvested * losses[i].numInvested))%>
+							</div>
+							<div>
+								gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
+							</div>
+							<div>
+								total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
+							</div>
+							<div>
+								losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
+							</div>
+							<div>
+								invested in: <%=losses[i].dateInvested.toDateString().substring(4)%>
+							</div>
+							<div>
+								price updated:
+								<%= Math.floor((new Date().valueOf() - losses[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24)) %> d,
+								<%= Math.floor(Math.floor((new Date().valueOf() - losses[i].lastUpdated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %> h ago
+							</div>
 						</div>
 					</div>
 				</div>
