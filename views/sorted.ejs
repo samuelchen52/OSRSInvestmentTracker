@@ -103,8 +103,6 @@
         {
             let ppi = parseInt($("input[name='pricePerItem']")[0].value);
             let qty = parseInt($("input[name='quantity']")[0].value);
-            console.log(ppi);
-            console.log(qty);
             if (ppi > 0 && qty > 0)
             {
                 $("#totalPrice").text((ppi * qty) + " gp");
