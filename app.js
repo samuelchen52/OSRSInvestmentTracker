@@ -819,29 +819,28 @@ app.post("/item/search", function(req, res)
 });
 
 //add item to user investments
-app.post("/item/add/:itemname/:prevurl", function(req, res)
+app.post("/item/add/:itemid/:prevurl", function(req, res)
 {
 	//not logged in or session expired
 	if (res.locals.user === null)
 	{
 		res.redirect("/login");
 	}
-	else if (!req.params.itemname || !req.params.prevurl || !parseInt(req.body.quantity) || !parseInt(req.body.pricePerItem))
+	else if (!req.params.itemid || !req.params.prevurl || !parseInt(req.body.quantity) || !parseInt(req.body.pricePerItem) || !parseInt(req.body.lastUpdated))
 	{
 		res.render("error.ejs");
 	}
 	else
 	{
-		var lastUpdated = new Date(req.body.lastUpdated);
+		var lastUpdated = new Date(parseInt(req.body.lastUpdated));
 		var currentPricePerItem = req.body.itemPrice;
 
 		var pricePerItem = req.body.pricePerItem;
 		var quantity = req.body.quantity;
 
-		var itemName = req.params.itemname;
 		var investments = res.locals.user.investments;
 
-		item.findOne({name_lower : req.params.itemname}, function (err, foundItem)
+		item.findOne({id : req.params.itemid}, function (err, foundItem)
 		{
 			if (err || !foundItem)
 			{
@@ -849,7 +848,6 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 			}
 			else 
 			{
-				var investments = res.locals.user.investments;
 				investments.push({
 					name : foundItem.name, 
 					id : foundItem.id, 
@@ -862,6 +860,7 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 					lastUpdated : lastUpdated,
 					currentPricePerItem: currentPricePerItem,
 				});
+				console.log("hello");
 				res.locals.user.save(() => res.redirect(req.params.prevurl.split("_").join("/").split("-").join("?")));
 
 				//rebuild the url from the post request

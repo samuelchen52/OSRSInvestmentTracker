@@ -22,7 +22,11 @@
 							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
 						</a>
 						x<%=losses[i].numInvested%>
-						
+						<form action = "/item/delete/<%=losses[i]._id%>" method = POST>
+							<button class="btn btn-dark">
+								<i class="fa fa-trash"></i>
+							</button>
+						</form>
 					</div>
 					<div class = "col-8" style = "font-size: 12px">
 						<div>

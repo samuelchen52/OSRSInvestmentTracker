@@ -26,7 +26,8 @@
                             data-item-name = "<%= items[i].name %>" 
                             data-item-name-lower = "<%= items[i].name_lower %>" 
                             data-item-price = "<%= items[i].statdata.currentPrice.price %>"
-                            data-item-updated = "<%= items[i].lastUpdated %>">
+                            data-item-updated = "<%= items[i].lastUpdated.valueOf() %>"
+                            data-item-id = "<%= items[i].id %>">
                                 <i class = "fa fa-plus"> </i> 
                             </button>
                         <% } %>
@@ -79,11 +80,11 @@
         var itemNameLower = $(this).data().itemNameLower;
         var itemPrice = $(this).data().itemPrice;
         var lastUpdated = $(this).data().itemUpdated;
-
+        var itemId = $(this).data().itemId;
         
         var form = $(
                     "<div class = 'container itemtab'>" +
-                        "<form method = 'POST' action = '/item/add/" + itemNameLower + "/" + window.location.href.split("/").join("_").split("?").join("-") + "'>" +
+                        "<form method = 'POST' action = '/item/add/" + itemId + "/" + window.location.href.split("/").join("_").split("?").join("-") + "'>" +
                             "<h1>" + itemName + " (" + itemPrice + "gp each)</h1>" +
                             "<h3> quantity </h3>" +
                             "<input name = 'quantity' type = 'number' min = 1 required>" +
