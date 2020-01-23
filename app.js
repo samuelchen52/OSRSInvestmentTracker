@@ -873,7 +873,8 @@ app.post("/item/add/:itemname/:prevurl", function(req, res)
 });
 
 //delete item from user investments
-app.post("/item/delete/:itemid", function(req, res)
+//will just use obj id to identify investment as user can invest in the same item multiple times
+app.post("/item/delete/:objid", function(req, res)
 {
 	//not logged in or session expired
 	if (res.locals.user === null)
@@ -882,7 +883,7 @@ app.post("/item/delete/:itemid", function(req, res)
 	}
 	else
 	{
-		res.locals.user.investments.pull({_id : req.params.itemid});
+		res.locals.user.investments.pull(req.params.objid);
 		res.locals.user.save();
 		res.redirect("/");
 	}

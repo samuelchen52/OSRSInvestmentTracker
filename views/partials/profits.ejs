@@ -11,7 +11,7 @@
 <% if (user){ %>
 	<div class = "col-2 mt-5">
 		<% for (var i = 0; i < profits.length; i ++) { %>
-			<div class = "container border mb-2">
+			<div class = "container border border-success mb-2">
 				<div class = "row justify-content-between">
 					<div class = "col-4">
 						<div style = "font-size: 12px; font-weight: 800">
@@ -21,8 +21,12 @@
 							<img src = "/images/small/<%=profits[i].id%>.gif" title = "<%=profits[i].name%>">
 						</a>
 						x<%=profits[i].numInvested%>
-						<!-- <%= Math.floor((new Date().valueOf() - profits[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24)) %> days ago
-						<%= Math.floor(Math.floor((new Date().valueOf() - profits[i].dateInvested.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %> hours ago -->
+						<form action = "/item/delete/<%=profits[i]._id%>" method = POST>
+							<button class="btn btn-dark">
+								<i class="fa fa-trash"></i>
+							</button>
+						</form>
+						
 					</div>
 					<div class = "col-8" style = "font-size: 12px">
 						<div>

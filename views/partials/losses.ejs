@@ -12,7 +12,7 @@
 <% if (user){ %>
 	<div class = "col-2 mt-5">
 		<% for (var i = 0; i < losses.length; i ++) { %>
-			<div class = "container border mb-2">
+			<div class = "container border border-danger mb-2">
 				<div class = "row justify-content-between">
 					<div class = "col-4">
 						<div style = "font-size: 12px; font-weight: 800">
@@ -22,8 +22,7 @@
 							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
 						</a>
 						x<%=losses[i].numInvested%>
-						<!-- <%= Math.floor((new Date().valueOf() - losses[i].dateInvested.valueOf() ) / (1000 * 60 * 60 * 24)) %> days ago
-						<%= Math.floor(Math.floor((new Date().valueOf() - losses[i].dateInvested.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %> hours ago -->
+						
 					</div>
 					<div class = "col-8" style = "font-size: 12px">
 						<div>
