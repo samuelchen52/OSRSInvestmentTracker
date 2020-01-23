@@ -21,7 +21,7 @@
 							<img src = "/images/small/<%=profits[i].id%>.gif" title = "<%=profits[i].name%>">
 						</a>
 						x<%=profits[i].numInvested%>
-						<form class = "deleteitem" action = "hello" method = POST data-item-id = "<%= profits[i]._id %>">
+						<form class = "deleteitem" method = POST data-item-id = "<%= profits[i]._id %>">
 							<button class="btn btn-dark">
 								<i class="fa fa-trash"></i>
 							</button>
@@ -58,9 +58,3 @@
 	</div>
 <% }%>
 
-<script>
-	$(".deleteitem").submit(function(e)
-	{
-		 $(this).attr("action", "/item/delete/" + $(this).data().itemId + "/" + window.location.href.split("/").join("_").split("?").join("-"));
-	})
-</script>
