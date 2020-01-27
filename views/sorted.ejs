@@ -57,24 +57,25 @@
                     </tr>
                 <% } %>
             </table>
+            <% if (items.length > 0) { %>
+                <div class = "d-flex justify-content-center">
+                    <div>
+                        <button class = "btn btn-outline-primary" id = "prevRow"> << </button>
+                        <button class = "btn btn-outline-primary" id = "prev"> < </button>
+                        <% for(var i = 1; i <= Math.ceil((items.length) / 10); i++) { %>
+                        <a class = "btn btn-outline-primary d-none" href = "#<%=i%>"><%=i%> </a>
+                        <% } %>
+                        <button class = "btn btn-outline-primary" id = "next"> > </button>
+                        <button class = "btn btn-outline-primary" id = "nextRow"> >> </button>
+                    </div>
+                </div>
+            <% } %>
         </div>
         <% include ./partials/losses.ejs %>
     </div>
 </div>
 
-<% if (items.length > 0) { %>
-        <div class = "d-flex justify-content-center">
-            <div>
-                <button class = "btn btn-outline-primary" id = "prevRow"> << </button>
-                <button class = "btn btn-outline-primary" id = "prev"> < </button>
-                <% for(var i = 1; i <= Math.ceil((items.length) / 10); i++) { %>
-                <a class = "btn btn-outline-primary d-none" href = "#<%=i%>"><%=i%> </a>
-                <% } %>
-                <button class = "btn btn-outline-primary" id = "next"> > </button>
-                <button class = "btn btn-outline-primary" id = "nextRow"> >> </button>
-            </div>
-        </div>
-    <% } %>
+
 
 
 <script>
