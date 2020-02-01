@@ -150,30 +150,15 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 
 #filterform
 {
-	height : 100%;
-	top : 0px;
-	font-size: 0;
-	z-index: 5;
+	background-color : lightgray;
 }
 
 #filteroptions
 {
 	
-	overflow-y: auto;
-	overflow-x: hidden;
-	background-color: #cfc4b0;
-	width : 0px;
-	height : 100%;
-	font-size: 1rem;
-	border-top-right-radius: 50px;
-	border-bottom-right-radius: 50px;
+	
 }
 
-#filterslideout
-{
-	vertical-align : top;
-	height : 100%;
-}
 #slidebutton
 {
 	font-size: 30px;

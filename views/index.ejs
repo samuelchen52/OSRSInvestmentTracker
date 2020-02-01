@@ -3,11 +3,15 @@
 <div class = "container-fluid">
 	<div class = "row justify-content-around">
 		<% include ./partials/profits.ejs %>
-		<div id = "featurecontainer" class = "col-8 mt-5">
+		<div id = "featurecontainer" class = "col-8 mt-4">
 			<div class = "container-fluid">
 				<div class = "row justify-content-around">
 					<div class ="col-5 border">
-						<i class="fa fa-search fa-3x"></i>
+						<div class = "container-fluid">
+							<div class = "row justify-content-center">
+								<i class="fa fa-search fa-3x"></i>
+							</div>
+						</div>
 						<div class = "container mainfeature" id = "searchfeature">
 							<div id = "searchform">
 								<h3 class = "text-center"> search </h3>
@@ -23,8 +27,64 @@
 						</div>
 					</div>
 					<div class ="col-5 border">
-						<div class ="container mainfeature" id = "sortfeature">
-							<i class="fa fa-line-chart fa-3x"></i>
+						<div class = "container-fluid position-absolute">
+							<button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#filterform" aria-expanded="false" aria-controls="filterform">
+								<i class="fa fa-cog"></i>
+							</button>
+							<div class="collapse container" id="filterform">
+										<div id = "filteroptions">
+												<h4 class = "text-center"> filters </h4>
+												<br>
+												<p> 
+													<input type="checkbox" name="filterByPosition" class = "filterdata" checked = "true"> show the first
+													<input type="number" name="position" class = "filterdata" value= "500">
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByTrend" class = "filterdata"> trend
+													<select name = "trendType" class = "filterdata">
+														<option value="none">none</option>
+														<option value="filterByPositiveTrend">positive</option>
+														<option value="filterByNegativeTrend">negative</option>
+														<option value="filterByNeutralTrend">neutral</option>
+													</select>
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
+													<input type="number" name="priceLowerBound" class = "filterdata">
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
+													<input type="number" name="priceUpperBound" class = "filterdata">
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
+													<input type="number" name="volumeLowerBound" class = "filterdata">
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
+													<input type="number" name="volumeUpperBound" class = "filterdata">
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
+													<input type="number" name="itemLimitUpperBound" class = "filterdata">
+												</p>
+												<p> 
+													<input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
+													<input type="number" name="itemLimitLowerBound" class = "filterdata">
+												</p>
+							  	</div>
+							</div>
+						</div>
+
+						<div class ="container-fluid mainfeature" id = "sortfeature">
+							<div class = "container-fluid">
+								<div class = "row justify-content-center">
+									<i class="fa fa-line-chart fa-3x"></i>
+								</div>
+							</div>
 							<form class = "pl-5" id = "sortform" action = "./item/sort" method = "GET">
 								<h3 class = "text-center"> sort </h3>
 								<p> 
@@ -49,59 +109,6 @@
 									<button id = "sortsubmit" class = "btn btn-light">sort</button>
 								</div>
 							</form>
-							<div id = "filterform" class = "position-absolute">
-								<div id = "filteroptions" class = "d-inline-block">
-									<div>
-										<h4 class = "text-center"> filters </h4>
-										<br>
-										<p> 
-											<input type="checkbox" name="filterByPosition" class = "filterdata" checked = "true"> show the first
-											<input type="number" name="position" class = "filterdata" value= "500">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByTrend" class = "filterdata"> trend
-											<select name = "trendType" class = "filterdata">
-												<option value="none">none</option>
-												<option value="filterByPositiveTrend">positive</option>
-												<option value="filterByNegativeTrend">negative</option>
-												<option value="filterByNeutralTrend">neutral</option>
-											</select>
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
-											<input type="number" name="priceLowerBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
-											<input type="number" name="priceUpperBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
-											<input type="number" name="volumeLowerBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
-											<input type="number" name="volumeUpperBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
-											<input type="number" name="itemLimitUpperBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
-											<input type="number" name="itemLimitLowerBound" class = "filterdata">
-										</p>
-									</div>
-								</div>
-								<div id = "filterslideout" class = "d-inline-flex align-items-center">
-									<div id = "slidebutton" class = "d-flex align-items-center"> 
-										<div>></div>
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
