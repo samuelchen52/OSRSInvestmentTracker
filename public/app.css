@@ -8,15 +8,15 @@ table tr:nth-child(even)
 	background-color: lightgray;
 }
 
+body
+{
+	background-color : #1c2a37;
+}
+
 .pointerpass
 {
 	pointer-events: none;
 }
-
-/*.navbar
-{
-	background-color: #eeebe4;
-}*/
 
 .mainfeature
 {
@@ -28,6 +28,7 @@ table tr:nth-child(even)
 	overflow-x: hidden;
 	border-bottom-right-radius: 25px;
 	border-bottom-left-radius: 25px;*/
+	background-color: #eeebe4;
 }
 
 .featureimage
@@ -54,6 +55,11 @@ table tr:nth-child(even)
 .progress-bar
 {
 	width: 50%;
+}
+
+.progress
+{
+	z-index : 0;
 }
 
 .weightrange
@@ -128,6 +134,11 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 	box-shadow: 0 6px 2px -2px rgba(0,0,0,0.5);
 }
 
+.navbar
+{
+	background-color: #eeebe4;
+}
+
 #searchbox
 {
 	width : 77%;
@@ -159,34 +170,37 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 	
 }
 
-#slidebutton
-{
-	font-size: 30px;
-	height: 20%;
-	background-color: white;
-	opacity: 1;
-	border-bottom-right-radius: 60px;
-	border-top-right-radius: 60px;
-	background-color: #F2F2F2;
-}
-
 #message
 {
 	border-radius: 25px;
 }
 
-#profits
+#sorted
 {
-	position : absolute;
-	width: 13%;
-	top: 70px;
+	background-color: #eeebe4;
 }
 
-#losses
+#results
 {
-	position : absolute;
-	width: 13%;
-	top: 70px;
-	right: 0px;
-	background-color: red;
+	background-color: #eeebe4;
+}
+
+#login
+{
+	background-color: #eeebe4;
+}
+
+#register
+{
+	background-color: #eeebe4;
+}
+
+.profits
+{
+	background-color: #eeebe4;
+}
+
+.losses
+{
+	background-color: #eeebe4;
 }

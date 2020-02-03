@@ -4,8 +4,8 @@
 <div class = "container-fluid">
     <div class = "row justify-content-around">
         <% include ./partials/profits.ejs %>
-        <div class = "col-8 mt-5">
-            <h1> sorted results </h1>
+        <div class = "col-8 mt-4" id = "sorted">
+            <h1 class = "text-center"> sorted results </h1>
         	<table id = "results">
         		<tr>
         		    <th></th>
@@ -60,6 +60,7 @@
             <% if (items.length > 0) { %>
                 <div class = "d-flex justify-content-center">
                     <div>
+                        <button class = "btn btn-outline-primary mr-5" id = "first"> 1 </button>
                         <button class = "btn btn-outline-primary" id = "prevRow"> << </button>
                         <button class = "btn btn-outline-primary" id = "prev"> < </button>
                         <% for(var i = 1; i <= Math.ceil((items.length) / 10); i++) { %>
@@ -67,6 +68,7 @@
                         <% } %>
                         <button class = "btn btn-outline-primary" id = "next"> > </button>
                         <button class = "btn btn-outline-primary" id = "nextRow"> >> </button>
+                        <button class = "btn btn-outline-primary ml-5" id = "last"> <%=Math.ceil((items.length) / 10)%> </button>
                     </div>
                 </div>
             <% } %>
@@ -219,6 +221,18 @@
         }
        
     });
+
+    $("#first").click(function ()
+    {
+         window.location.hash = 1;
+       
+    });
+
+    $("#last").click(function ()
+    {
+        window.location.hash = numPages;
+       
+    }); 
 </script>
 
 
