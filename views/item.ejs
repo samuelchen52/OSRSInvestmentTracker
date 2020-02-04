@@ -27,7 +27,7 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item label border-0">Current Price / Price Change</li>
                                     <li class="list-group-item">
-                                        <%=item.statdata.currentPrice.price != -1 ? item.statdata.currentPrice.price.toLocaleString() : "N/A" %> gp / <%=change ? (change >= 0 ? "+" : "-") + change.toLocaleString() : ""%>
+                                        <%=item.statdata.currentPrice.price != -1 ? item.statdata.currentPrice.price.toLocaleString() : "N/A" %> gp / <%=change != null ? (change >= 0 ? "+" : "-") + change.toLocaleString() : ""%>
                                     </li>
                                     <li class="list-group-item label border-0">Avg. Positive / Avg. Negative Price Change</li>
                                     <li class="list-group-item">

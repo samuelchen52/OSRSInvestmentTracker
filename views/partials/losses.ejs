@@ -34,13 +34,10 @@
 								-<%=Math.abs((losses[i].currentPricePerItem * losses[i].numInvested) - (losses[i].pricePerItemInvested * losses[i].numInvested))%>
 							</div>
 							<div>
-								gp ea. <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
+								gp each: <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
 							</div>
 							<div>
-								total <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
-							</div>
-							<div>
-								losses: <%=losses[i].currentPricePerItem * losses[i].numInvested - losses[i].pricePerItemInvested * losses[i].numInvested%>
+								total: <%=losses[i].pricePerItemInvested * losses[i].numInvested%> -> <%=losses[i].currentPricePerItem * losses[i].numInvested%>
 							</div>
 							<div>
 								invested in: <%=losses[i].dateInvested.toDateString().substring(4)%>
