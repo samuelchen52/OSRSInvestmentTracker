@@ -97,14 +97,7 @@ app.use(function(req, res, next) {
 mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker', {useNewUrlParser: true});
 
 //todo
-//will need to update allitems periodically, just fetch the documents from database every so often
-//new idea - load array of docs, iterate and update each one 
-//use same array for sorting, simply allocate another array, and copy over all references that make it past the filter
-//faster than fetching every time
-//make graph more readable
 //statdata volatility
-//make sure to handle spam requests for updates
-//looks like app update is a day behind
 //userinvestments after update should be checked
 
 //ugly bug, items with the same name that arent screened out by the retrieving the graph data from the wiki
@@ -289,6 +282,13 @@ var filterFunctions = {
 		{
 			return index <= position;
 		}
+	},
+	filterByTrendDuration : function(trendDuration)
+	{
+		return function (item)
+		{
+			return item.statdata.currentTrendDuration >= trendDuration;
+		}
 	}
 
 
@@ -433,6 +433,13 @@ function populateFilterArr(req, filterby)
 		if (parseInt(req.query.position))
 		{
 			filterby.push(filterFunctions["filterByPosition"](parseInt(req.query.position)));
+		}
+	}
+	if (req.query.filterByTrendDuration)
+	{
+		if (parseInt(req.query.trendDuration))
+		{
+			filterby.push(filterFunctions["filterByTrendDuration"](parseInt(req.query.trendDuration)));
 		}
 	}
 }
@@ -598,7 +605,7 @@ app.get("/item/sort", function(req, res)
 		//and an array holding numbers representing the percentages of an attribute relative to the total score
 		functions.forEach(function(getColor)
 		{
-			progressbars.push({color: getColor(), percentages: new Array()});
+			progressbars.push({color: getColor(), percentages: new Array(), scores : new Array()});
 		});
 
 		var temparr = new Array(functions.length);
@@ -616,6 +623,7 @@ app.get("/item/sort", function(req, res)
 			temparr.forEach(function(score, index)
 			{
 				progressbars[index].percentages.push(Math.round( (score / sum) * 100 ));
+				progressbars[index].scores.push(score);
 			});
 			sum = 0;
 		}
@@ -684,7 +692,11 @@ app.get("/item/data/:itemname", function (req, res)
 					}
 					else
 					{
-						res.render("item.ejs", {item : itemarr[0], priceData : itemarr[0].graphdata.priceData, volumeData : itemarr[0].graphdata.volumeData});
+						let item = itemarr[0];
+						let len = item.graphdata.priceData.length; 
+						let change = item.graphdata.priceData.length > 1 ? item.graphdata.priceData[len - 1].price - item.graphdata.priceData[len - 2].price : null;
+							change = item.graphdata.priceData.length === 2 ? null : change; // might be invalid dummy data that i put
+						res.render("item.ejs", {item : itemarr[0], priceData : itemarr[0].graphdata.priceData, volumeData : itemarr[0].graphdata.volumeData, change : change});
 					}
 				});
 			}

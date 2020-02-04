@@ -6,18 +6,18 @@
         <% include ./partials/profits.ejs %>
         <div class = "col-8 mt-4" id = "sorted">
             <h1 class = "text-center"> sorted results </h1>
-        	<table id = "results">
+        	<table class="table table-bordered table-striped table-sm">
         		<tr>
         		    <th></th>
-                    <th>ID</th> 
-                    <th>ITEM LIMIT</th> 
-                    <th>CURRENT PRICE</th>
-                    <th>CURRENT VOLUME</th>
-                    <th>CURRENT TREND</th>
-                    <th>CURRENT TREND DURATION</th>
-                    <th>MEMBERS ONLY</th>
+                    <!-- <th>ID</th> 
+                    <th>ITEM LIMIT</th>  -->
+                    <th>Current Price</th>
+                    <th>Current Volume</th>
+                    <th>Current Price Trend</th>
+                    <!-- <th>CURRENT TREND DURATION</th>
+                    <th>MEMBERS ONLY</th> -->
                     <% if (progressbars) { %>
-                        <th>SCORE</th>
+                        <th>Item Score</th>
                     <% } %>
         		</tr>
                 <% for(var i=0; i < items.length; i++) { %>
@@ -36,19 +36,20 @@
                             <a href = "/item/data/<%= items[i].name_lower %>"><%= items[i].name %> </a> 
                             <img src = "/images/small/<%=items[i].id%>.gif">
                          </td>
-                        <td> <%= items[i].id %> </td>
-                        <td> <%= items[i].limit %> </td>
+                        <!-- <td> <%= items[i].id %> </td>
+                        <td> <%= items[i].limit %> </td> -->
                         <td> <%= items[i].statdata.currentPrice.price.toLocaleString() %> </td>
                         <td> <%= items[i].statdata.currentVolume.volume.toLocaleString() %> </td>
                         <td> <%= items[i].statdata.currentTrend%> </td>
-                        <td> <%= items[i].statdata.currentTrendDuration%> </td>
-                        <td> <%= items[i].members %> </td>
+                        <!-- <td> <%= items[i].statdata.currentTrendDuration%> </td>
+                        <td> <%= items[i].members %> </td> -->
                         <% if (progressbars) { %>
                             <td>
                                  <div class="progress">
                                 <%  for (var q = 0; q < progressbars.length; q ++) { %>
                                   <div class="progress-bar" role="progressbar" 
                                   style="width:<%=progressbars[q].percentages[i]%>%; background-color:<%=progressbars[q].color%>">
+                                    <%=Math.floor(progressbars[q].scores[i] * 1000) / 1000%>
                                   </div>
                                 <% } %>
                                 </div>

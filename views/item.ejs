@@ -1,33 +1,79 @@
 <% include ./partials/header.ejs %>
 
-<div class = "container">
-    <div class = "pl-2 pr-2">
-        <div> last updated: <%= item.lastUpdated.toDateString() %>
-                <form class = "d-inline" action = "/item/data/<%=item.id%>" method = "POST">
-                    <button type = "submit"> <i class = "fa fa-refresh"> </i> </button>
-                </form>
-            </div>
-        <div class = "row">
-            <div class = "col-sm-6 col-md-3">
-                <div class="card">
-                <img class = "card-img-top" alt= "<%= item.name %>" src= "/images/big/<%=item.id%>.gif">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= item.name %></h5>
-                        <p class="card-text"><%= item.description %></p>
+<div class = "container-fluid">
+    <div class = "row justify-content-around">
+        <% include ./partials/profits.ejs %>
+        <div class = "col-8 mt-4" id = "itemdata">
+            <div class = "row mt-4">
+                <div class = "col-4 px-0">
+                    <div class = "container-fluid">
+                        <div class = "row">
+                            <div class = "col-6 pl-2">
+                                <div class="card">
+                                    <h6 class="card-header text-center border-bottom border-dark"><%= item.name %></h6>
+                                    <img class = "card-img-top" alt= "<%= item.name %>" src= "/images/big/<%=item.id%>.gif">
+                                        <div class="card-body">
+                                            <p class="card-text border-bottom">"<%= item.description %>"</p>
+                                            <p class = "border-bottom"> 
+                                                Item ID : <%=item.id%>
+                                            </p>
+                                            <p>
+                                                Members: <%=item.members ? "True" : "False"%>
+                                            </p>
+                                        </div>  
+                                </div>
+                            </div>
+                            <div class = "col-6 px-0">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item label border-0">Current Price / Price Change</li>
+                                    <li class="list-group-item">
+                                        <%=item.statdata.currentPrice.price != -1 ? item.statdata.currentPrice.price.toLocaleString() : "N/A" %> gp / <%=change ? (change >= 0 ? "+" : "-") + change.toLocaleString() : ""%>
+                                    </li>
+                                    <li class="list-group-item label border-0">Avg. Positive / Avg. Negative Price Change</li>
+                                    <li class="list-group-item">
+                                        <%=(Math.floor(item.statdata.averagePositivePriceChange * 1000) / 1000).toLocaleString()%> / <%=(Math.floor(item.statdata.averageNegativePriceChange * 1000) / 1000).toLocaleString()%>
+                                    </li>
+                                    <li class="list-group-item label border-0">Min. / Max / Avg. Price</li>
+                                    <li class="list-group-item">
+                                        <%=item.statdata.minPrice.toLocaleString()%> / <%=item.statdata.maxPrice.toLocaleString()%> / <%=(Math.floor(item.statdata.averagePrice * 1000) / 1000).toLocaleString()%>
+                                    </li>
+                                    <li class="list-group-item label border-0">Current Volume</li>
+                                    <li class="list-group-item"><%=item.statdata.currentVolume.volume.toLocaleString()%></li>
+                                    <li class="list-group-item label border-0">Avg. Positive / Avg. Negative / Avg. Neutral Price Trend Duration</li>
+                                    <li class="list-group-item"><%=Math.floor(item.statdata.averagePositiveTrendDuration * 1000) / 1000%> / <%=Math.floor(item.statdata.averageNegativeTrendDuration * 1000) / 1000%> / <%=Math.floor(item.statdata.averageNeutralTrendDuration * 1000) / 1000%></li>
+                                </ul>
+                            </div>
+                            <div class = "col-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class = "col-8">
+                    <div class = "container-fluid">
+                        <div class = "row justify-content-center mt-2">  
+                            <div class = "col-6">
+                                <form class = "d-inline" action = "/item/data/<%=item.id%>" method = "POST">
+                                    <button type = "submit"> <i class = "fa fa-refresh"> </i> </button>
+                                </form>
+                                Last Updated: <%= item.lastUpdated.toDateString().substring(3) %>
+                            </div>
+                            <div class = "col-12">
+                                <canvas id= "myChart" width="225" height="100"></canvas>
+                            </div>
+                            <div class = "col-5">
+                                <input id = "daterangeindicator" class = "text-center" type = "text" disabled> 
+                            </div>
+                        </div>
+                        <div class = "row justify-content-between mt-3">
+                            <button id = "decrease"> <i class = "fa fa-minus"> </i> </button>
+                            <input id = "daterange" type="range" min="1" max="1500" value="1">
+                            <button id = "increase"> <i class = "fa fa-plus"> </i> </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class = "col-sm-6 col-md-9">
-                <canvas id= "myChart" width="225" height="100"></canvas>
-                <div class = "d-flex justify-content-center">  
-                    <input id = "daterangeindicator" class = "text-center" type = "text" disabled> 
-                </div>
-                <div class = "d-flex justify-content-between">
-                    <button id = "decrease"> <i class = "fa fa-minus"> </i> </button>
-                    <input id = "daterange" type="range" min="1" max="1500" value="1">
-                    <button id = "increase"> <i class = "fa fa-plus"> </i> </button>
-                </div>
-            </div>
+        </div>
+        <% include ./partials/losses.ejs %>
         </div>
     </div>
 </div> 

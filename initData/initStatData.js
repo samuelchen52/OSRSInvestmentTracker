@@ -106,8 +106,8 @@ async function calculate(allitems, callback)
 						var graph = doc.graphdata; 
 
 						//default dummy data if for some bizarre reason priceData nad volumeData have no data in them
-						var priceData = graph.priceData.length === 0 ? [{price : 0, date : new Date()},{price : 0, date : new Date()}] : graph.priceData;
-						var volumeData = graph.volumeData.length === 0 ? [{volume : 0, date : new Date()},{volume : 0, date : new Date()}] : graph.volumeData;
+						var priceData = graph.priceData.length === 0 ? [{price : -1, date : new Date()},{price : -1, date : new Date()}] : graph.priceData;
+						var volumeData = graph.volumeData.length === 0 ? [{volume : -1, date : new Date()},{volume : -1, date : new Date()}] : graph.volumeData;
 
 						var currentTrend = helper(priceData[0].price, priceData[1].price);
 						var currentTrendDuration = 1;

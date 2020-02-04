@@ -47,13 +47,17 @@
 											<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
 										</p>
 										<p> 
-											<input type="checkbox" name="filterByTrend" class = "filterdata"> trend
+											<input type="checkbox" name="filterByTrend" class = "filterdata"> price trend
 											<select name = "trendType" class = "filterdata">
 												<option value="none">none</option>
 												<option value="filterByPositiveTrend">positive</option>
 												<option value="filterByNegativeTrend">negative</option>
 												<option value="filterByNeutralTrend">neutral</option>
 											</select>
+										</p>
+										<p> 
+											<input type="checkbox" name="filterByTrendDuration" class = "filterdata"> minimum price trend duration
+											<input type="number" name="trendDuration" class = "filterdata">
 										</p>
 										<p> 
 											<input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
@@ -92,13 +96,13 @@
 								<h3 class = "text-center"> sort </h3>
 								<p> 
 									<input type="radio" name = "typeSort" value="roundedSort"> rounded values
-									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="values are rounded down before comparison e.g. 123 -> 100, 4321 -> 1000">
+									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="values are rounded down before comparison e.g. 123 -> 100, 4321 -> 1000">
 										<i class="fa fa-info-circle"></i>
 									</button>
 								</p>
 								<p> 
 									<input type="radio" name = "typeSort" value="weightedSort"> weighted values
-									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="weighted values (adjusted by you) are compared instead of the raw value, must select a value to sort by before toggling">
+									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="weighted values (adjusted by you) are compared instead of the raw value, must select a value to sort by before toggling">
 										<i class="fa fa-info-circle"></i>
 									</button>
 								</p>
@@ -109,7 +113,7 @@
 										<option value="sortByVolume">by current volume</option>
 									</select>
 									<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
-									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="select a value to sort by">
+									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="select a value to sort by">
 										<i class="fa fa-info-circle"></i>
 									</button>
 									<div class="progress position-relative d-none">

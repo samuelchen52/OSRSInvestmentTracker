@@ -3,11 +3,6 @@ td
 	border : black solid 2px;
 }
 
-table tr:nth-child(even)
-{
-	background-color: lightgray;
-}
-
 body
 {
 	background-color : #1c2a37;
@@ -119,6 +114,7 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
   margin-top: 75px;
 }
 
+.listgroupitem
 .iconfeature
 {
 	transition: box-shadow .3s ease-in-out;
@@ -155,8 +151,9 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 
 #daterangeindicator
 {
-	width: 25%;
 	border-radius: 5px;
+	width: 100%;
+	border : none;
 }
 
 #filterform
@@ -193,6 +190,24 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 #register
 {
 	background-color: #eeebe4;
+}
+
+#itemdata
+{
+	background-color: #eeebe4;
+}
+
+.list-group-item
+{
+	background-color: #eeebe4;
+	font-size : 12px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.label
+{
+	font-weight : 800;
 }
 
 .profits
