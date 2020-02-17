@@ -5,6 +5,8 @@ require('dotenv').config();
 //itemData now comes from massive file from osrsbox
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
+var invalid = require("./models/invalid.js");
+
 
 var mongoose = require("mongoose");
 var request = require("request");
@@ -50,14 +52,22 @@ async function populate(start, documentarr, callback) //fetches all document obj
 async function makeRequests(start, documentarr, callback)
 {
 	var reqbody = null;
+	var responseCode = null;
 	var arr = [];
 	while (start < documentarr.length)
 	{
+		if (documentarr[start].invalid)
+		{
+			start ++;
+			continue;
+		}
+
 		var url = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=" + documentarr[start].id;
 		await new Promise (function (resolve, reject)
 		{
-			request.get({url : url},  function (error, response, body)
+			request.get({url : url},  async function (error, response, body)
 			{
+				responseCode = response.statusCode;
 				if (error)
 				{
 					console.log("error:" +  error);
@@ -67,11 +77,44 @@ async function makeRequests(start, documentarr, callback)
 				{
 					if (response.statusCode === 404)
 					{
-						console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange! ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
-						arr.push("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
-						start ++;
+						//console.log("item with id of "  + documentarr[start].id + " doesn't seem to be in the grand exchange!");
 						//this shouldnt happen, as this is done with an up to date item list
-						process.exit();
+						//process.exit();
+						//nope, this CAN happen, when pulling from osrsbox, some items are NOT valid
+						//fetching data from the osrs api with their item ids gives a 404
+						//e.g. items with ids 894, 895, 896, 897 (all of which are bronze arrows, wtf?)
+						await new Promise (function (resolve, reject)
+						{
+							invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+							{
+								if (error)
+								{
+									console.log("failed to find invalid document with id of " + documentarr[start].id);
+									process.exit();
+								}
+								else if (!invalidItem)
+								{
+									invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+									{
+										if (error)
+										{
+											console.log("failed to create invalid document with id of " + documentarr[start].id);
+											process.exit();
+										}
+										else
+										{
+											resolve();
+											console.log("created invalid document with id of " + documentarr[start].id);
+										}
+									});
+								}
+							});
+						});
+						//set invalid to true
+						documentarr[start].invalid = true;
+						documentarr[start].save();
+						start ++;
+
 					}
 					reqbody = null;
 					resolve();
@@ -105,13 +148,15 @@ async function makeRequests(start, documentarr, callback)
 
 		if (reqbody === null)
 		{
-
-			console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "! waiting 60 seconds...");
-			await new Promise(function (resolve, reject) 
-				{
-					setTimeout(resolve, 60000);
-				});
-			console.log("60 seconds up, trying again...");
+			if (responseCode !== 404)
+			{
+				console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "! waiting 60 seconds...");
+				await new Promise(function (resolve, reject) 
+					{
+						setTimeout(resolve, 60000);
+					});
+				console.log("60 seconds up, trying again...");
+			}
 		}
 		else
 		{

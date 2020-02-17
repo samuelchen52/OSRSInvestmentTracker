@@ -265,11 +265,24 @@ async function updateDataBase (oldArr, orderedArr, callback)
 		checkItemData(resolve);
 	});
 
-	//get graphdata and all item pictures for the newitems
+	//get all item pictures for the newitems
+	//before we put this in with the graphdata promise
+	//however, now inititemdata also checks if an item is invalid
+	//thus, we now have to wait for inititemdata to check for invalidity as well
+	//unfortunately, this will be pretty slow, but it ensures that invalid items wont
+	//go through to the live site
 	await new Promise (async function(resolve, reject)
 	{
 		// pull all the images
-		initItemData(0, cloneArray(newItems));
+		initItemData(0, cloneArray(newItems), resolve);
+	}).catch(function (error) 
+	{
+		console.log("THIS SHOULDNT HAPPEN");
+	});
+
+	//get graphdata for the newitems
+	await new Promise (async function(resolve, reject)
+	{
 		// pull all the graph data
 		initGraphData(0, cloneArray(newItems), resolve);
 	}).catch(function (error) 

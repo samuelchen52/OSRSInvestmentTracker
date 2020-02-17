@@ -100,10 +100,10 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 //statdata volatility
 //userinvestments after update should be checked
 
-//ugly bug, items with the same name that arent screened out by the retrieving the graph data from the wiki
-//wont become invalid. as a result when retrieving the data for an item from the results / sorted screen for duplicate item names
-//only the data for ONE item will be retrieved (because we assum that the items in the db are unique by name) for all the duplicate items
 
+
+//invalid flag doesnt just mean duplicate items or missing items now, as osrsbox has returned a list with duplicate items
+//e.g. bronze arrows, all with different ids that give 404s when data is fetched from the osrs api 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________

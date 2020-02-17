@@ -120,6 +120,10 @@ async function makeRequests(start, documentarr, callback)
 										console.log("failed to create invalid document with id of " + documentarr[start].id);
 										process.exit();
 									}
+									else
+									{
+										console.log("created invalid document with id of " + documentarr[start].id);
+									}
 								});
 							}
 						});
