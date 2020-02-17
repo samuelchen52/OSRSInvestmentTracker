@@ -62,6 +62,7 @@ async function makeRequests(start, documentarr, callback)
 			continue;
 		}
 
+
 		var url = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=" + documentarr[start].id;
 		await new Promise (function (resolve, reject)
 		{
@@ -107,6 +108,11 @@ async function makeRequests(start, documentarr, callback)
 											console.log("created invalid document with id of " + documentarr[start].id);
 										}
 									});
+								}
+								else
+								{
+									resolve();
+									console.log("There is invalid document with id of " + documentarr[start].id);
 								}
 							});
 						});

@@ -84,6 +84,7 @@ async function makeRequests(start, documentarr, callback)
 	//var deletedoc = false;
 	while (start < documentarr.length)
 	{
+		
 		//var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + documentarr[start].id + ".json";
 		//if wikiName is just a longer version of actual name, then thats probably for duplicates, in which case it will be correct
 		//var wikiName = documentarr[start].wikiName.split(" ").join("_");

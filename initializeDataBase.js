@@ -132,7 +132,13 @@ async function initDatabase (callback)
 		console.log("cleaning up memory for itemdata...");
 		arrItemsItemDataNeeded = null;
 		allitems = null;
+	}).catch(function (error) 
+	{
+		console.log("THIS SHOULDNT HAPPEN");
+	});
 
+	await new Promise (async function(resolve, reject)
+	{
 		initGraphData(0, arrItemsGraphDataNeeded, resolve);
 		//throw away all references, so garbage collector can clean up
 		console.log("cleaning up memory for graphdata...");
