@@ -127,7 +127,7 @@ async function initDatabase (callback)
 	await new Promise (async function(resolve, reject)
 	{
 		// pull all the images
-		initItemData(0, arrItemsItemDataNeeded);
+		initItemData(0, arrItemsItemDataNeeded, resolve);
 		// throw away all references, so garbage collector can clean up
 		console.log("cleaning up memory for itemdata...");
 		arrItemsItemDataNeeded = null;
