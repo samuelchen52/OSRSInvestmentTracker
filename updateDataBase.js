@@ -69,13 +69,39 @@ function cloneArray(arr)
 	return cloneArr;
 }
 
+//updates item names (if they have changed), as well as their invalid status
+//three reasons for item invalidity
+//1. failed to grab graphdata (wiki url not following usual format)
+//2. item is obsolete, and no longer on the GE
+//3. item name has been changed, and must be changed here
+//reason 3 can be checked here (just check for name equality) and invalid status can be reset
+//however, reasons 1 and 2 cant be checked, so unfortunately, we cant reset invalid status 
+//for the sole reason of the item being in the newArr (updating the graph data will just reset it back, waste of time)
+//could add a different flag in the future to differentiate
+function updateItemNames(orderedArr, newArr)
+{
+	for (let itemid in newArr)
+	{
+		let item = orderedArr[itemid];
+		if (orderedArr[itemid] !== undefined) //not a new item, check if name is up to date
+		{
+			//check name
+			if (item.name !== newArr[itemid].name)	
+			{
+				console.log("updating " + item.name + " with id of " + item.id + " with new name " + newArr[itemid].name);
+				item.name = newArr[itemid].name;
+				item.invalid = false; //set this to false, and the item data refresh cycle will check if the new url (with the new name) is valid
+			}
+		}
+	}
+}
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 
 //oldarr is the current array of allitems
 //newarr is the up to date (fresh) item list pulled from osrsbox, items are indexed by id
-//ordered arr is the array of allitems, indexed by id
+//ordered arr is the array of allitems, indexed by id as well
 async function updateDataBase (oldArr, orderedArr, callback)
 {
 	console.log("updating database...");
@@ -94,6 +120,7 @@ async function updateDataBase (oldArr, orderedArr, callback)
 		newArr = GEItems;
 	});
 
+	console.log("checking for obsolete items...");
 	//check for items that have been removed
 	for (let i = 0; i < oldArr.length; i ++)
 	{
@@ -103,7 +130,9 @@ async function updateDataBase (oldArr, orderedArr, callback)
 			obsoleteItems.push(oldItem);
 		}
 	}
+	console.log("found that " + obsoleteItems.length + " items have been removed");
 
+	console.log("checking for new items...");
 	//check for items that have been added
 	for (let itemid in newArr)
 	{
@@ -112,18 +141,17 @@ async function updateDataBase (oldArr, orderedArr, callback)
 			newItems.push(newArr[itemid]);
 		}
 	}
-
-	//console.log(orderedArr);
-	//console.log(newArr);
-	//create new items
 	console.log("found that " + newItems.length + " items have been added");
-	console.log("found that " + obsoleteItems.length + " items have been removed");
+
+	console.log("obsolete items:");
+	obsoleteItems.forEach(function(item){console.log(item.name)});
 
 	console.log("new items:");
 	newItems.forEach(function(item){console.log(item.name)});
 
-	console.log("obsolete items:");
-	obsoleteItems.forEach(function(item){console.log(item.name)});
+
+	console.log("updating item names...");
+	updateItemNames(orderedArr, newArr);
 
 	//clean up memory, only need newItems arr now
 	newArr = null;
@@ -136,29 +164,29 @@ async function updateDataBase (oldArr, orderedArr, callback)
 	{
 		await new Promise(function(resolve, reject)
 		{
-			invalid.findOne({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
-			{
-				if (error)
-				{
-					console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
-					process.exit();
-				}
-				else if (!invalidItem)
-				{
-					invalid.create({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
-					{
-						if (error)
-						{
-							console.log("failed to create invalid document with id of " + obsoleteItems[i].id);
-							process.exit();
-						}
-						else
-						{
-							console.log("created invalid document with id of " + obsoleteItems[i].id);
-						}
-					});
-				}
-			});
+			// invalid.findOne({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+			// {
+			// 	if (error)
+			// 	{
+			// 		console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
+			// 		process.exit();
+			// 	}
+			// 	else if (!invalidItem)
+			// 	{
+			// 		invalid.create({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+			// 		{
+			// 			if (error)
+			// 			{
+			// 				console.log("failed to create invalid document with id of " + obsoleteItems[i].id);
+			// 				process.exit();
+			// 			}
+			// 			else
+			// 			{
+			// 				console.log("created invalid document with id of " + obsoleteItems[i].id);
+			// 			}
+			// 		});
+			// 	}
+			// });
 
 			item.findOne({id: obsoleteItems[i].id}, function (error, foundItem)
 			{
@@ -314,7 +342,7 @@ async function refreshDatabase(callback)
 		fetchAllDocuments(resolve, {invalid : false});
 	}).then(function(alldocs){allitems = alldocs;});
 
-	for (let i = 0; i < allitems.length; i ++)
+	for (let i = 360; i < allitems.length; i ++)
 	{
 		setTimeout(async function()
 		{
@@ -325,7 +353,7 @@ async function refreshDatabase(callback)
 			});
 			initStatData([allitems[i]]);
 			allitems[i] = null;
-		}, i * 25000);
+		}, (i - 360) * 25000);
 	}
 
 	await new Promise(function (resolve, reject)
