@@ -91,6 +91,7 @@ function updateItemNames(orderedArr, newArr)
 				console.log("updating " + item.name + " with id of " + item.id + " with new name " + newArr[itemid].name);
 				item.name = newArr[itemid].name;
 				item.invalid = false; //set this to false, and the item data refresh cycle will check if the new url (with the new name) is valid
+				item.save();
 			}
 		}
 	}
