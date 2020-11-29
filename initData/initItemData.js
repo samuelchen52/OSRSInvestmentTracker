@@ -5,7 +5,7 @@ require('dotenv').config();
 //itemData now comes from massive file from osrsbox
 var item = require("./models/item.js");
 var graphdata = require("./models/graphdata.js");
-var invalid = require("./models/invalid.js");
+//var invalid = require("./models/invalid.js");
 
 
 var mongoose = require("mongoose");
@@ -84,38 +84,38 @@ async function makeRequests(start, documentarr, callback)
 						//nope, this CAN happen, when pulling from osrsbox, some items are NOT valid
 						//fetching data from the osrs api with their item ids gives a 404
 						//e.g. items with ids 894, 895, 896, 897 (all of which are bronze arrows, wtf?)
-						await new Promise (function (resolve, reject)
-						{
-							invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
-							{
-								if (error)
-								{
-									console.log("failed to find invalid document with id of " + documentarr[start].id);
-									process.exit();
-								}
-								else if (!invalidItem)
-								{
-									invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
-									{
-										if (error)
-										{
-											console.log("failed to create invalid document with id of " + documentarr[start].id);
-											process.exit();
-										}
-										else
-										{
-											resolve();
-											console.log("created invalid document with id of " + documentarr[start].id);
-										}
-									});
-								}
-								else
-								{
-									resolve();
-									console.log("There is invalid document with id of " + documentarr[start].id);
-								}
-							});
-						});
+						// await new Promise (function (resolve, reject)
+						// {
+						// 	invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+						// 	{
+						// 		if (error)
+						// 		{
+						// 			console.log("failed to find invalid document with id of " + documentarr[start].id);
+						// 			process.exit();
+						// 		}
+						// 		else if (!invalidItem)
+						// 		{
+						// 			invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+						// 			{
+						// 				if (error)
+						// 				{
+						// 					console.log("failed to create invalid document with id of " + documentarr[start].id);
+						// 					process.exit();
+						// 				}
+						// 				else
+						// 				{
+						// 					resolve();
+						// 					console.log("created invalid document with id of " + documentarr[start].id);
+						// 				}
+						// 			});
+						// 		}
+						// 		else
+						// 		{
+						// 			resolve();
+						// 			console.log("There is invalid document with id of " + documentarr[start].id);
+						// 		}
+						// 	});
+						// });
 						//set invalid to true
 						documentarr[start].invalid = true;
 						documentarr[start].save();

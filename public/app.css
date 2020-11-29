@@ -3,10 +3,10 @@ td
 	border : black solid 2px;
 }
 
-body
+/*body
 {
 	background-color : #1c2a37;
-}
+}*/
 
 .pointerpass
 {
@@ -71,38 +71,6 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
    /* Remove this if you don't want the 3D effect */
 }
 
-/* This container is needed to position the front and back side */
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-/* Do an horizontal flip when you move the mouse over the flip box container */
-.flipthecard
-{
-	transform : rotateY(180deg);
-}
-
-/* Position the front and back side */
-.flip-card-front, .flip-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-}
-
-/* Style the front side (fallback if image is missing) */
-.flip-card-front {
-  color: black;
-}
-
-/* Style the back side */
-.flip-card-back {
-  transform: rotateY(180deg);
-}
 
 
 #iconcontainer {
@@ -130,9 +98,9 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 	box-shadow: 0 6px 2px -2px rgba(0,0,0,0.5);
 }
 
-.navbar
+.navbar-light
 {
-	background-color: #eeebe4;
+	background-color: #eeebe4;	
 }
 
 #searchbox
@@ -218,4 +186,26 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 .losses
 {
 	background-color: #eeebe4;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#allitemlink 
+{
+	font-size : 10px;
+	top : -20px;
 }

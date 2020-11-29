@@ -88,25 +88,25 @@ async function checkItemData(callback)
 					else if (response.statusCode !== 200)
 					{
 						console.log("can't pull wiki item data for item with id of "  + item.id + "!");
-						invalid.findOne({name : item.name, id : item.id}, function (error, invalidItem)
-						{
-							if (error)
-							{
-								console.log("failed to find invalid document with id of " + item.id);
-								process.exit();
-							}
-							else if (!invalidItem)
-							{
-								invalid.create({name : item.name, id : item.id}, function (error, invalidItem)
-								{
-									if (error)
-									{
-										console.log("failed to create invalid document with id of " + item.id);
-										process.exit();
-									}
-								});
-							}
-						});
+						// invalid.findOne({name : item.name, id : item.id}, function (error, invalidItem)
+						// {
+						// 	if (error)
+						// 	{
+						// 		console.log("failed to find invalid document with id of " + item.id);
+						// 		process.exit();
+						// 	}
+						// 	else if (!invalidItem)
+						// 	{
+						// 		invalid.create({name : item.name, id : item.id}, function (error, invalidItem)
+						// 		{
+						// 			if (error)
+						// 			{
+						// 				console.log("failed to create invalid document with id of " + item.id);
+						// 				process.exit();
+						// 			}
+						// 		});
+						// 	}
+						// });
 						item.invalid = true;
 						item.save();
 						resolve();

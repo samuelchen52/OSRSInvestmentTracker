@@ -105,29 +105,29 @@ async function makeRequests(start, documentarr, callback)
 					if (response.statusCode === 404)
 					{
 						console.log("can't pull wiki graph data for item with id of "  + documentarr[start].id + "!");
-						invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
-						{
-							if (error)
-							{
-								console.log("failed to find invalid document with id of " + documentarr[start].id);
-								process.exit();
-							}
-							else if (!invalidItem)
-							{
-								invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
-								{
-									if (error)
-									{
-										console.log("failed to create invalid document with id of " + documentarr[start].id);
-										process.exit();
-									}
-									else
-									{
-										console.log("created invalid document with id of " + documentarr[start].id);
-									}
-								});
-							}
-						});
+						// invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+						// {
+						// 	if (error)
+						// 	{
+						// 		console.log("failed to find invalid document with id of " + documentarr[start].id);
+						// 		process.exit();
+						// 	}
+						// 	else if (!invalidItem)
+						// 	{
+						// 		invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
+						// 		{
+						// 			if (error)
+						// 			{
+						// 				console.log("failed to create invalid document with id of " + documentarr[start].id);
+						// 				process.exit();
+						// 			}
+						// 			else
+						// 			{
+						// 				console.log("created invalid document with id of " + documentarr[start].id);
+						// 			}
+						// 		});
+						// 	}
+						// });
 						//set invalid to true
 						documentarr[start].invalid = true;
 						documentarr[start].save();
@@ -207,7 +207,7 @@ async function makeRequests(start, documentarr, callback)
 						var priceData = [];
 						var volumeData = [];
 
-						for (var i = 0; i < nodelist.length; i ++)
+						for (var i = Math.max(nodelist.length - 365, 0); i < nodelist.length; i ++)
 						{
 							var data = nodelist[i].textContent;
 							//substring because of the apostrophes at the beginning and end

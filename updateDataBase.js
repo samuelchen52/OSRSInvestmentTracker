@@ -107,7 +107,6 @@ async function updateDataBase (oldArr, orderedArr, callback)
 {
 	console.log("updating database...");
 
-	let allitems = null;
 	let newArr = null;
 
 	let obsoleteItems = [];
@@ -159,55 +158,37 @@ async function updateDataBase (oldArr, orderedArr, callback)
 	oldArr = null;
 	orderedArr = null;
 
-	//set invalid flags for all obsolete items, and push them into invalid collection
-	//if graphdata was requested for these obsolete items, then this is probably redundant, but whatever 
+	//remove all obsolete items
 	for (let i = 0; i < obsoleteItems.length; i++)
 	{
-		await new Promise(function(resolve, reject)
+		await new Promise(async function(resolve, reject)
 		{
-			// invalid.findOne({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
+			await item.deleteOne({ id: obsoleteItems[i].id});
+			await statdata.deleteOne({ id: obsoleteItems[i].id});
+			await graphdata.deleteOne({ id: obsoleteItems[i].id});
+			console.log("deleted obsolete item " + obsoleteItems[i].name);
+			resolve();
+			// item.findOne({id: obsoleteItems[i].id}, function (error, foundItem)
 			// {
 			// 	if (error)
 			// 	{
 			// 		console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
 			// 		process.exit();
 			// 	}
-			// 	else if (!invalidItem)
+			// 	else
 			// 	{
-			// 		invalid.create({name : obsoleteItems[i].name, id : obsoleteItems[i].id}, function (error, invalidItem)
-			// 		{
-			// 			if (error)
-			// 			{
-			// 				console.log("failed to create invalid document with id of " + obsoleteItems[i].id);
-			// 				process.exit();
-			// 			}
-			// 			else
-			// 			{
-			// 				console.log("created invalid document with id of " + obsoleteItems[i].id);
-			// 			}
-			// 		});
+			// 		// foundItem.invalid = true;
+			// 		// foundItem.save();
+			// 		// console.log("set invalid flag for document with id of " + obsoleteItems[i].id);
+			// 		resolve();
 			// 	}
 			// });
-
-			item.findOne({id: obsoleteItems[i].id}, function (error, foundItem)
-			{
-				if (error)
-				{
-					console.log("failed to find invalid document with id of " + obsoleteItems[i].id);
-					process.exit();
-				}
-				else
-				{
-					foundItem.invalid = true;
-					foundItem.save();
-					console.log("set invalid flag for document with id of " + obsoleteItems[i].id);
-					resolve();
-				}
-			});
 		});
 	}
 
-	//try to find the new item in database, if we do, set invalid flag to false, otherwise, make the new item, along with the stat and graph documents
+	//try to find the new item in database, if we cant, its a new item
+	//if we can, its an invalid item that we couldnt fetch data from (duplicate names, etc.), we'll set invalid to false again
+	//and next update database cycle will test it again when it is the items turn
 	for (let i = 0; i < newItems.length; i ++)
 	{
 		var curItem = newItems[i];
@@ -335,7 +316,7 @@ async function updateDataBase (oldArr, orderedArr, callback)
 }
 
 //goes through entire database, and fetches graphdata for each
-async function refreshDatabase(callback)
+async function refreshDataBase(callback)
 {
 	var allitems = null;
 	await new Promise(function (resolve, reject)
@@ -343,7 +324,7 @@ async function refreshDatabase(callback)
 		fetchAllDocuments(resolve, {invalid : false});
 	}).then(function(alldocs){allitems = alldocs;});
 
-	for (let i = 360; i < allitems.length; i ++)
+	for (let i = 0; i < allitems.length; i ++)
 	{
 		setTimeout(async function()
 		{
@@ -354,7 +335,7 @@ async function refreshDatabase(callback)
 			});
 			initStatData([allitems[i]]);
 			allitems[i] = null;
-		}, (i - 360) * 25000);
+		}, (i - 0) * 25000);
 	}
 
 	await new Promise(function (resolve, reject)
@@ -372,29 +353,33 @@ async function refreshDatabase(callback)
 	}	
 }
 
-async function update(oldArr, orderedArr, callback, appUpdating)
-{
-	appUpdating.updating = true;
+// async function update(oldArr, orderedArr, callback, appUpdating)
+// {
+// 	appUpdating.updating = true;
 
-	await new Promise(function (resolve, reject)
-	{
-		updateDataBase(oldArr, orderedArr, resolve);
-	});
-	oldArr = null
-	orderedArr = null;
+// 	await new Promise(function (resolve, reject)
+// 	{
+// 		updateDataBase(oldArr, orderedArr, resolve);
+// 	});
+// 	oldArr = null
+// 	orderedArr = null;
 
-	appUpdating.updating = false;
-	await new Promise(function (resolve, reject)
-	{
-		refreshDatabase(resolve);
-	});
-	if (typeof callback === "function")
-	{
-		callback();
-	}
-}
+// 	appUpdating.updating = false;
 
-module.exports = update;
+// 	await new Promise(function (resolve, reject)
+// 	{
+// 		refreshDatabase(resolve);
+// 	});
+// 	if (typeof callback === "function")
+// 	{
+// 		callback();
+// 	}
+// }
+
+module.exports = {
+	updateDataBase : updateDataBase,
+	refreshDataBase : refreshDataBase
+};
 
 
 

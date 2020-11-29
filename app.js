@@ -21,17 +21,22 @@ const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
 
 const initDataBase = require("./initializeDataBase.js");
-const updateDataBase = require("./updateDataBase.js");
+const updateDataBase = require("./updateDataBase.js").updateDataBase;
+const refreshDataBase = require("./updateDataBase.js").refreshDataBase;
 
+const bcrypt = require('bcrypt');
 
 const port = process.env.PORT || 80;
-const numItems = 3506; 
 
 var app = express(); 
 var allitems = null;
 var allitemsOrdered = null;
 
-var appUpdating = {updating : true};
+var topPriceIncrease;
+var topPriceDecrease;
+var topPriceNeutral;
+
+var appUpdating = true;
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
@@ -98,12 +103,16 @@ mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost:27017/getracker'
 
 //todo
 //statdata volatility
-//userinvestments after update should be checked
+//userinvestments (invalidity) after update should be checked
+//check if item is added back after an update (when it was previously made obsolete)
+//update names in updatedatabase (item ids seem to always refer to the same item, but item names can be changed in updates)
+//e.g. item with id 1065, green dhide vambs -> green dhide vambraces
 
 
 
-//invalid flag doesnt just mean duplicate items or missing items now, as osrsbox has returned a list with duplicate items
-//e.g. bronze arrows, all with different ids that give 404s when data is fetched from the osrs api 
+//invalid flag doesnt just mean or missing items now, 
+//as osrsbox has returned a list with duplicate items (duplicate flag set to true)
+//e.g. bronze arrows or mith arrows, all with different ids that give 404s when data is fetched from the osrs api 
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________________________________
@@ -492,6 +501,38 @@ async function fetchAllDocuments(callback, criteria)
 	callback(allitems);
 }
 
+async function updateDailyBest ()
+{
+	console.log(allitems[0]);
+}
+
+async function updateData()
+{
+	await new Promise(function (resolve, reject)
+	{
+		refreshDataBase(resolve);
+	});
+
+	////update////////////
+	await new Promise(function (resolve, reject) //sets the global allitems and allitemsordered
+	{
+		fetchAllDocuments(resolve);
+	});
+	appUpdating.updating = true;
+	await new Promise(function (resolve, reject)
+	{
+		updateDataBase(allitems, allitemsOrdered, resolve);
+	});
+	appUpdating.updating = false;
+	await new Promise(function (resolve, reject) //sets the global allitems and allitemsordered to valid items only
+	{
+		fetchAllDocuments(resolve, {invalid : false});
+	});
+	////update////////////
+
+	updateData();
+}
+
 async function startapp (port)
 {	
 
@@ -504,27 +545,25 @@ async function startapp (port)
 		initDataBase(resolve);
 	});
 
-	while(true)
+	////update////////////	
+	await new Promise(function (resolve, reject) //sets the global allitems and allitemsordered
 	{
-		await new Promise(function (resolve, reject)
-		{
-			//passes the promise object all the documents i.e. passes alldocs to the resolve function
-			fetchAllDocuments(resolve);
-		});
-		//use temp variables, then get another copy, update database will set temp arrays to null
-		let tempallitems = allitems;
-		let tempallitemsOrdered = allitemsOrdered;
-		await new Promise(function (resolve, reject)
-		{
-			//passes the promise object all the documents i.e. passes alldocs to the resolve function
-			fetchAllDocuments(resolve, {invalid : false});
-		});
+		fetchAllDocuments(resolve);
+	});
+	appUpdating.updating = true;
+	await new Promise(function (resolve, reject)
+	{
+		updateDataBase(allitems, allitemsOrdered, resolve);
+	});
+	appUpdating.updating = false;
+	await new Promise(function (resolve, reject) //sets the global allitems and allitemsordered to valid items only
+	{
+		fetchAllDocuments(resolve, {invalid : false});
+	});
+	////update////////////
 
-		await new Promise(function(resolve, reject)
-		{
-			updateDataBase(tempallitems, tempallitemsOrdered, resolve, appUpdating)
-		});
-	}
+	updateData(); //continously updates item data
+	updateDailyBest(); //continuously updates daily highs (highest price increase, highest price falls, most stable items)
 
 }
 
@@ -706,11 +745,12 @@ app.get("/item/data/:itemname", function (req, res)
 
 app.post("/login", function(req, res)
 {
-	var username = req.body.username;
-	var password = req.body.password;
+	const username = req.body.username;
+	const password = req.body.password;
 
 	//invalid post request
-	if (!username || !password)
+	//or user didnt fill out the form
+	if (!username || !password || (username.length == 0) || (password.length == 0))
 	{
 		res.render("login.ejs", {message : "username and password must be filled out!"});
 	}
@@ -721,7 +761,7 @@ app.post("/login", function(req, res)
 	}
 	else
 	{
-		user.findOne({username: username, password : password}, function (err, foundUser)
+		user.findOne({username: username}, function (err, foundUser)
 		{
 			if (err)
 			{
@@ -733,8 +773,24 @@ app.post("/login", function(req, res)
 			}
 			else
 			{
-				req.session.user = foundUser;
-				res.redirect("/");
+				bcrypt.compare(password, foundUser.password, function(err, result) {
+			    	if (err)
+			    	{
+			    		res.render("error.ejs");
+			    	}
+			    	else
+			    	{
+			    		if (result)
+			    		{
+			    			req.session.user = foundUser;
+								res.redirect("/");
+			    		}
+			    		else
+			    		{
+			    			res.render("login.ejs", {message : "invalid username or password", border: "border border-danger"});
+			    		}
+			    	}
+				});
 			}
 		});
 	}
@@ -763,16 +819,25 @@ app.post("/register", function(req, res)
 			}
 			else
 			{
-				user.create({username : username, password : password}, function(err, newuser)
-				{
+				bcrypt.hash(pass, 12, function(err, hash) {
 					if (err)
 					{
 						res.render("error.ejs");
 					}
-					else
-					{
-						res.render("register.ejs", {message: "succesfully registered!", border: "border border-success"});
-					}
+				    else
+				    {
+				    	user.create({username : username, password : hash}, function(err, newuser)
+						{
+							if (err)
+							{
+								res.render("error.ejs");
+							}
+							else
+							{
+								res.render("register.ejs", {message: "succesfully registered!", border: "border border-success"});
+							}
+						});
+				    }
 				});
 			}
 		});

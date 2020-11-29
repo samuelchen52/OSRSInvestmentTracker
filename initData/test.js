@@ -19,8 +19,13 @@ var testdata = new mongoose.model("testdata", testSchema);
 
 
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost:27017/getracker', {useNewUrlParser: true});
+mongoose.connect('mongodb+srv://heroku_dp0r87q4:hdQrLpEDMbjgFzSi@cluster-dp0r87q4.fwzzd.mongodb.net/heroku_dp0r87q4?retryWrites=true&w=majority', {useNewUrlParser: true}, function (error){
+	console.log("ERROR: " + error)
+});
 
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 var counter = 0;
 
@@ -316,5 +321,17 @@ var stream = function(){
     };
 
 
+// var pass = "hallo";
+// bcrypt.hash(pass, 12, function(err, hash) {
+// 	if (err)
+// 	{
+// 		console.log(err);
+// 	}
+//     console.log("this is the pass: " + pass);
+//     console.log("this is the hash: " + hash);
+//     bcrypt.compare(pass, hash, function(err, result) {
+//     	console.log(result);
+// 	});
+// });
 
 
