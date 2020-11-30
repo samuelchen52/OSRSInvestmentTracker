@@ -326,22 +326,23 @@ async function refreshDataBase(callback)
 
 	for (let i = 0; i < allitems.length; i ++)
 	{
-		setTimeout(async function()
+		console.log("updating item at index " +  i + "...")
+		// await new Promise (function (resolve ,reject)
+		// {
+		// 	initGraphData(0, [allitems[i]], resolve);
+		// });
+		// await new Promise (function (resolve ,reject)
+		// {
+		// 	initStatData([allitems[i]], resolve);
+		// });
+		// allitems[i] = null;
+
+		await new Promise (function (resolve, reject)
 		{
-			console.log("updating item at index " +  i + "...")
-			await new Promise (function (resolve ,reject)
-			{
-				initGraphData(0, [allitems[i]], resolve);
-			});
-			initStatData([allitems[i]]);
-			allitems[i] = null;
-		}, (i - 0) * 25000);
+			setTimeout(resolve, 25000);
+		});
 	}
 
-	await new Promise(function (resolve, reject)
-	{
-		setTimeout(() => resolve(), 25000 * allitems.length);
-	});	
 	await new Promise(function (resolve, reject)
 	{
 		initScore(resolve);

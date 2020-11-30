@@ -15,11 +15,11 @@ averageNeutralTrendDuration: Number,
 averagePositiveTrendDuration: Number,
 averageNegativeTrendDuration: Number,
 
-currentPrice : {price : Number, score : Number},
+currentPrice : {price : Number, change : Number, score : Number},
 averagePrice : Number,
 maxPrice : Number,
 minPrice : Number,
-currentVolume : {volume : Number, score : Number},
+currentVolume : {volume : Number, change : Number, score : Number},
 averageVolume : Number,
 
 averageNegativePriceChange : Number, //day to day

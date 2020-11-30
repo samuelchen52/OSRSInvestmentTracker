@@ -205,11 +205,13 @@ async function calculate(allitems, callback)
 						stat.averageNegativeTrendDuration = negativeTrend.numDuration === 0 ? 0 : negativeTrend.totalDuration / negativeTrend.numDuration;
 
 						stat.currentPrice.price = priceData[priceData.length - 1].price;
+						stat.currentPrice.change = (graph.priceData.length <= 1) ? 0 : priceData[priceData.length - 1].price - priceData[priceData.length - 2].price;
 						stat.averagePrice = totalPrice / priceData.length;
 						stat.minPrice = minPrice;
 						stat.maxPrice = maxPrice;
 
 						stat.currentVolume.volume = volumeData[volumeData.length - 1].volume;
+						stat.currentVolume.change = (graph.volumeData.length <= 1) ? 0 : volumeData[volumeData.length - 1].volume - volumeData[volumeData.length - 2].volume;
 						stat.averageVolume = totalVolume / volumeData.length;
 
 						stat.averageNegativePriceChange = negativeTrend.numDays === 0 ? 0 : totalNegativePriceChange / negativeTrend.numDays;
@@ -237,7 +239,6 @@ async function calculate(allitems, callback)
 			callback();
 		}
 		console.log("finished calculations!");
-		//process.exit();
 }
 
 module.exports = calculate;

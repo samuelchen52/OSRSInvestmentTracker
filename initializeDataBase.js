@@ -17,6 +17,7 @@ const initStat = require("./initData/initStat.js") //separate because stat model
 const initItemData = require("./initData/initItemData.js");
 const initStatData = require("./initData/initStatData.js");
 const initGraphData = require("./initData/initGraphData.js");
+const initScore = require("./initData/initScore.js");
 
 const checkItemData = require("./initData/checkItemData.js");
 const updateDataBase = require("./updateDataBase.js");
@@ -97,6 +98,21 @@ async function initDatabase (callback)
 	var arrItemsGraphDataNeeded = [];
 	var arrItemsItemDataNeeded = [];
 	var graphDataUpdated = false;
+	var stats = await statdata.find({});
+
+	//handle us deleting statdata
+	if (stats.length === 0)
+	{
+		await new Promise (function(resolve, reject)
+		{
+			console.log("making stats....");
+			initStat(resolve);
+		}).catch(function (error) 
+		{
+			console.log("THIS SHOULDNT HAPPEN");
+		});;
+		graphDataUpdated = true;
+	}
 
 	for (var i = 0; i < allitems.length; i ++)
 	{
@@ -166,6 +182,10 @@ async function initDatabase (callback)
 		{
 			initStatData(allitems, resolve);
 		});
+		await new Promise(function (resolve, reject)
+		{
+			initScore(resolve);
+		});	
 	}
 	
 	if (typeof callback === "function")

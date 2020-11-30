@@ -148,28 +148,15 @@ var sortFunctions = {
 		{
 			if (typeSort)
 			{
-				if (typeSort === "weightedSort")
+				return function (item) 
 				{
-					return function (item) 
+					if (item)
 					{
-						if (item)
-						{
-							return item.statdata.currentVolume.score * weight;
-						}
-						else
-						{
-							return colors["volume"];
-						}
+						return item.statdata.currentVolume.score * weight;
 					}
-				}
-				else if (typeSort === "roundedSort")
-				{
-					return function (item1, item2)
+					else
 					{
-						var item1volume = item1.statdata.currentVolume.volume;
-						var item2volume = item2.statdata.currentVolume.volume;
-						return item1volume.toString().length === item2volume.toString().length  
-						? 0 : (item1volume.toString().length  > item2volume.toString().length  ? 1 : -1);
+						return colors["volume"];
 					}
 				}
 			}
@@ -186,30 +173,17 @@ var sortFunctions = {
 		//sort by current price
 		sortByPrice : function(typeSort, weight)
 		{
-			if (typeSort)
+			if (typeSort === "weightedSort")
 			{
-				if (typeSort === "weightedSort")
+				return function (item)
 				{
-					return function (item)
+					if (item)
 					{
-						if (item)
-						{
-							return item.statdata.currentPrice.score * weight;
-						}
-						else
-						{
-							return colors["price"];
-						}
+						return item.statdata.currentPrice.score * weight;
 					}
-				}
-				else if (typeSort === "roundedSort")
-				{
-					return function (item1, item2)
+					else
 					{
-						var item1price = item1.statdata.currentPrice.price;
-						var item2price = item2.statdata.currentPrice.price;
-						return item1price.toString().length === item2price.toString().length 
-						? 0 : (item1price.toString().length > item2price.toString().length ? 1 : -1);
+						return colors["price"];
 					}
 				}
 			}
@@ -503,7 +477,57 @@ async function fetchAllDocuments(callback, criteria)
 
 async function updateDailyBest ()
 {
-	console.log(allitems[0]);
+	let sortby = [];
+
+	let sortByScore = function (item1, item2) 
+	{
+		let score1 = item1.statdata.currentPrice.score + item1.statdata.currentVolume.score;
+		let score2 = item2.statdata.currentPrice.score + item2.statdata.currentVolume.score;
+
+		return (score1 >= score2) ? 1 : -1;
+	}
+
+	let sortByNeutral = function (item1, item2) 
+	{
+		let item1stat = item1.statdata;
+		let item2stat = item2.statdata;
+
+		let score1 = (item1.statdata.currentTrend === "neutral") ? item1.statdata.currentTrendDuration : -1;
+		let score2 = (item2.statdata.currentTrend === "neutral") ? item2.statdata.currentTrendDuration : -1;
+
+		return (score1 >= score2) ? 1 : -1;
+	};
+
+	let sortByPriceIncrease = function (item1, item2) 
+	{
+		let score1 = item1.statdata.currentPrice.score + item1.statdata.currentVolume.score;
+		let score2 = item2.statdata.currentPrice.score + item2.statdata.currentVolume.score;
+
+		return (score1 >= score2) ? 1 : -1;
+	};
+
+	let sortByPriceDecrease = function (item1, item2) 
+	{
+		let score1 = item1.statdata.currentPrice.score + item1.statdata.currentVolume.score;
+		let score2 = item2.statdata.currentPrice.score + item2.statdata.currentVolume.score;
+
+		return (score1 >= score2) ? 1 : -1;
+	};
+
+	sortby.push(function (item1, item2) 
+	{
+		let item1stat = item1.statdata;
+		let item2stat = item2.statdata;
+
+		let score1 = (item1.statdata.currentTrend === "neutral") ? item1.statdata.currentTrendDuration : -1;
+		let score2 = (item2.statdata.currentTrend === "neutral") ? item2.statdata.currentTrendDuration : -1;
+
+		return (score1 >= score2) ? 1 : -1;
+	});
+
+	//quicksort(allitems, 0, allitems.length - 1, sortby);
+	//const stats = await statdata.find({});
+	//console.log(stats.slice(0, 50));
 }
 
 async function updateData()
