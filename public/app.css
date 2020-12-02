@@ -3,10 +3,14 @@ td
 	border : black solid 2px;
 }
 
-/*body
-{
-	background-color : #1c2a37;
-}*/
+html {
+  height: 100%;
+}
+
+body {
+	position : relative;
+  min-height: 100%;
+}
 
 .pointerpass
 {
@@ -208,4 +212,49 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 {
 	font-size : 10px;
 	top : -20px;
+}
+
+#footer {
+	height: 150px;
+	position: absolute;
+	bottom: 0px;
+}
+
+a:-webkit-any-link{
+text-decoration:none !important;
+}
+
+.carousel-indicators li {
+	background-color: #6c757d;
+	opacity: .2;
+	height: 4px;
+}
+
+.carousel {
+	height: 250px;	
+}
+
+.carousel-inner {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.carousel-control-next {
+	width: 20px;
+	opacity: 1 !important;
+	background-color: white;
+}
+
+.carousel-control-prev {
+	width: 20px;
+	opacity: 1 !important;
+	background-color: white;
+}
+
+#carouselTopPriceIncrease ol {
+	bottom : 25px;
+}
+
+#carouselTopPriceDecrease ol {
+	bottom : 25px;
 }

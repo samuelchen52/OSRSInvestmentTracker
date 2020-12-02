@@ -32,9 +32,10 @@ var app = express();
 var allitems = null;
 var allitemsOrdered = null;
 
-var topPriceIncrease;
-var topPriceDecrease;
-var topPriceNeutral;
+var topPriceIncrease = new Array(128);
+var topPriceDecrease = new Array(128);
+var topScore = new Array(128);
+var dateCalculated;
 
 var appUpdating = true;
 
@@ -148,16 +149,33 @@ var sortFunctions = {
 		{
 			if (typeSort)
 			{
-				return function (item) 
+				if (typeSort === "weightedSort")
 				{
-					if (item)
+					return function (item) 
 					{
-						return item.statdata.currentVolume.score * weight;
+						if (item)
+						{
+							return item.statdata.currentVolume.score * weight;
+						}
+						else
+						{
+							return colors["volume"];
+						}
 					}
-					else
+				}
+				else if (typeSort === "roundedSort")
+				{
+					return function (item1, item2)
 					{
-						return colors["volume"];
+						var item1volume = item1.statdata.currentVolume.volume;
+						var item2volume = item2.statdata.currentVolume.volume;
+						return item1volume.toString().length === item2volume.toString().length  
+						? 0 : (item1volume.toString().length  > item2volume.toString().length  ? 1 : -1);
 					}
+				}
+				else
+				{
+					return function () {};
 				}
 			}
 			else
@@ -173,18 +191,35 @@ var sortFunctions = {
 		//sort by current price
 		sortByPrice : function(typeSort, weight)
 		{
-			if (typeSort === "weightedSort")
+			if (typeSort)
 			{
-				return function (item)
+				if (typeSort === "weightedSort")
 				{
-					if (item)
+					return function (item)
 					{
-						return item.statdata.currentPrice.score * weight;
+						if (item)
+						{
+							return item.statdata.currentPrice.score * weight;
+						}
+						else
+						{
+							return colors["price"];
+						}
 					}
-					else
+				}
+				else if (typeSort === "roundedSort")
+				{
+					return function (item1, item2)
 					{
-						return colors["price"];
+						var item1price = item1.statdata.currentPrice.price;
+						var item2price = item2.statdata.currentPrice.price;
+						return item1price.toString().length === item2price.toString().length 
+						? 0 : (item1price.toString().length > item2price.toString().length ? 1 : -1);
 					}
+				}
+				else
+				{
+					return function () {};
 				}
 			}
 			else
@@ -259,13 +294,13 @@ var filterFunctions = {
 			return item.limit >= itemLimitLowerBound;
 		}
 	},
-	filterByPosition : function(position)
-	{
-		return function(item, index)
-		{
-			return index <= position;
-		}
-	},
+	// filterByPosition : function(position)
+	// {
+	// 	return function(item, index)
+	// 	{
+	// 		return index <= position;
+	// 	}
+	// },
 	filterByTrendDuration : function(trendDuration)
 	{
 		return function (item)
@@ -353,7 +388,7 @@ function filter(docArr, filterArr)
 		passedFilter = true;
 	}
 
-	return ret.slice(0, retIndex);
+	return ret.slice(0, Math.min(retIndex, filterArr.position ? filterArr.position : retIndex));
 }
 
 function populateFilterArr(req, filterby)
@@ -415,7 +450,8 @@ function populateFilterArr(req, filterby)
 	{
 		if (parseInt(req.query.position))
 		{
-			filterby.push(filterFunctions["filterByPosition"](parseInt(req.query.position)));
+			filterby.position = req.query.position;
+			//filterby.push(filterFunctions["filterByPosition"](parseInt(req.query.position)));
 		}
 	}
 	if (req.query.filterByTrendDuration)
@@ -478,13 +514,20 @@ async function fetchAllDocuments(callback, criteria)
 async function updateDailyBest ()
 {
 	let sortby = [];
+	let filteredArr;
 
 	let sortByScore = function (item1, item2) 
 	{
-		let score1 = item1.statdata.currentPrice.score + item1.statdata.currentVolume.score;
-		let score2 = item2.statdata.currentPrice.score + item2.statdata.currentVolume.score;
+		let score1 = item1.statdata.currentPrice.score * 10000 + item1.statdata.currentVolume.score;
+		let score2 = item2.statdata.currentPrice.score * 10000 + item2.statdata.currentVolume.score;
 
 		return (score1 >= score2) ? 1 : -1;
+	}
+
+	let filterByScore = function (item)
+	{
+		let percentage = item.statdata.currentVolume.score  / (item.statdata.currentPrice.score * 10000 + item.statdata.currentVolume.score);
+		return (percentage >= .05) && (percentage <= .95);
 	}
 
 	let sortByNeutral = function (item1, item2) 
@@ -500,34 +543,41 @@ async function updateDailyBest ()
 
 	let sortByPriceIncrease = function (item1, item2) 
 	{
-		let score1 = item1.statdata.currentPrice.score + item1.statdata.currentVolume.score;
-		let score2 = item2.statdata.currentPrice.score + item2.statdata.currentVolume.score;
+		let score1 = item1.statdata.currentPrice.change;
+		let score2 = item2.statdata.currentPrice.change;
 
 		return (score1 >= score2) ? 1 : -1;
 	};
 
 	let sortByPriceDecrease = function (item1, item2) 
 	{
-		let score1 = item1.statdata.currentPrice.score + item1.statdata.currentVolume.score;
-		let score2 = item2.statdata.currentPrice.score + item2.statdata.currentVolume.score;
+		let score1 = item1.statdata.currentPrice.change;
+		let score2 = item2.statdata.currentPrice.change;
 
-		return (score1 >= score2) ? 1 : -1;
+		return (score1 < score2) ? 1 : -1;
 	};
 
-	sortby.push(function (item1, item2) 
+	quicksort(allitems, 0, allitems.length - 1, [sortByScore]);
+	filteredArr = filter(allitems, [filterByScore]);
+	for (let i = 0; i < Math.min(filteredArr.length, 128); i ++)
 	{
-		let item1stat = item1.statdata;
-		let item2stat = item2.statdata;
+		topScore[i] = filteredArr[i];
+	}
 
-		let score1 = (item1.statdata.currentTrend === "neutral") ? item1.statdata.currentTrendDuration : -1;
-		let score2 = (item2.statdata.currentTrend === "neutral") ? item2.statdata.currentTrendDuration : -1;
+	quicksort(allitems, 0, 1000, [sortByPriceIncrease]);
+	for (let i = 0; i < 128; i ++)
+	{
+		topPriceIncrease[i] = allitems[i];
+	}
 
-		return (score1 >= score2) ? 1 : -1;
-	});
+	quicksort(allitems, 0, 1000, [sortByPriceDecrease]);
+	for (let i = 0; i < 128; i ++)
+	{
+		topPriceDecrease[i] = allitems[i];
+	}
 
-	//quicksort(allitems, 0, allitems.length - 1, sortby);
-	//const stats = await statdata.find({});
-	//console.log(stats.slice(0, 50));
+	dateCalculated = new Date();
+	setTimeout(updateDailyBest, 1000 * 60 * 60 * 24);
 }
 
 async function updateData()
@@ -552,6 +602,18 @@ async function updateData()
 	{
 		fetchAllDocuments(resolve, {invalid : false});
 	});
+
+	let users = await user.find({}); //update all user investments
+	for (let i = 0; i < users.length; i ++)
+	{
+		let investments = users[i].investments;
+		for (let p = 0; p < investments.length; p ++)
+		{
+			investments[p].lastUpdated = allitemsOrdered[investments[p].id].lastUpdated;
+			investments[p].currentPricePerItem = allitemsOrdered[investments[p].id].statdata.currentPrice.price;
+		}
+		await users[i].save();
+	}
 	////update////////////
 
 	updateData();
@@ -584,6 +646,18 @@ async function startapp (port)
 	{
 		fetchAllDocuments(resolve, {invalid : false});
 	});
+
+	let users = await user.find({}); //update all user investments
+	for (let i = 0; i < users.length; i ++)
+	{
+		let investments = users[i].investments;
+		for (let p = 0; p < investments.length; p ++)
+		{
+			investments[p].lastUpdated = allitemsOrdered[investments[p].id].lastUpdated;
+			investments[p].currentPricePerItem = allitemsOrdered[investments[p].id].statdata.currentPrice.price;
+		}
+		await users[i].save();
+	}
 	////update////////////
 
 	updateData(); //continously updates item data
@@ -597,7 +671,7 @@ async function startapp (port)
 
 app.get("/", async function(req, res)
 {
-	res.render("index.ejs");
+	res.render("index.ejs", {dateCalculated, topPriceIncrease, topPriceDecrease, topScore});
 });
 
 app.get("/login", function(req, res)
@@ -843,14 +917,14 @@ app.post("/register", function(req, res)
 			}
 			else
 			{
-				bcrypt.hash(pass, 12, function(err, hash) {
+				bcrypt.hash(password, 12, function(err, hash) {
 					if (err)
 					{
 						res.render("error.ejs");
 					}
-				    else
-				    {
-				    	user.create({username : username, password : hash}, function(err, newuser)
+			    else
+			    {
+			    	user.create({username : username, password : hash}, function(err, newuser)
 						{
 							if (err)
 							{
@@ -861,7 +935,7 @@ app.post("/register", function(req, res)
 								res.render("register.ejs", {message: "succesfully registered!", border: "border border-success"});
 							}
 						});
-				    }
+			    }
 				});
 			}
 		});

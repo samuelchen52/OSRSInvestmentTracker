@@ -339,7 +339,7 @@ async function refreshDataBase(callback)
 
 		await new Promise (function (resolve, reject)
 		{
-			setTimeout(resolve, 25000);
+			setTimeout(resolve, 22000);
 		});
 	}
 

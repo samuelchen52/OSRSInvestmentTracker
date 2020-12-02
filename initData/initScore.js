@@ -48,7 +48,7 @@ function populateStandardScore(allitems, field, subfield)
 		allitems[i][field].score = (allitems[i][field][subfield] - mean) / std;
 		min = Math.min(min, allitems[i][field].score);
 	}
-	min = Math.abs(min) + 1;
+	min = Math.abs(min);
 	//make all the scores positive, so that a custom weight can be multiplied to them
 	//added 1 just so that the bottom scores have just a teensy little bit of weight to them
 	for (var i = 0; i < allitems.length; i ++)

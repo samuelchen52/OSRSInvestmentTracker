@@ -1,6 +1,5 @@
 <% include ./partials/header.ejs %>
 
-
 <div class = "container-fluid">
 	<div class = "row">
 		<div class = "col-3" id = "optionContainer"> 
@@ -8,35 +7,186 @@
 		</div>
 		<div class = "col-6" id = "mainContainer">
 			<div class = "text-right">
-				last updated: 15h ago
+				last updated:
+				<%= Math.floor((new Date().valueOf() - dateCalculated.valueOf() ) / (1000 * 60 * 60 * 24)) %>d,
+				<%= Math.floor(Math.floor((new Date().valueOf() - dateCalculated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %>h ago
 			</div>
 
-			<div class = "border-bottom">
-				top price increases
-			</div>
-			<div>
+			<h5 class = "border-bottom">
+				Top Items (based on item price and volume)
+			</h5>	
+			<div id="carouselTopItems" class="carousel slide" data-ride="carousel" data-interval="false">
+			  <ol class="carousel-indicators">
+			    <li data-target="#carouselTopItems" data-slide-to="0" class="active"></li>
+			    <% for (var i = 8; i < topScore.length; i +=8) { %>
+			    	<li data-target="#carouselTopItems" data-slide-to="<%=i/8%>"></li>
+			    <%}%>
+			  </ol>
+			  <div class="carousel-inner">
+			    <div class="carousel-item active" data-interval="false">
+			    	<div class = "container-fluid">
+				      <div class = "row justify-content-between">
+							<% for (var i = 0; i < 8; i ++) { %>
+								<div class = "col-3">
+									<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topScore[i].name.split(" ").join("_").toLowerCase()%>">
+										<img src = "/images/small/<%=topScore[i].id%>.gif" title = "<%=topScore[i].name%>">
+										<%=topScore[i].name%>
+									</a>
+									<div>price: <%=topScore[i].statdata.currentPrice.price.toLocaleString()%></div>
+									<div>volume: <%=topScore[i].statdata.currentVolume.volume.toLocaleString()%></div>
+								</div>
+							<% } %>
+							</div>
+						</div>
+			    </div>
+			    <% for (var i = 8; i < topScore.length; i +=8) { %>
+		    		<div class = "carousel-item" data-interval="false">
+		    			<div class = "container-fluid">
+		    				<div class = "row justify-content-between">
+		    					<% for (let p = 0; p < 8; p ++) {%>
+		    						<div class = "col-3">
+											<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topScore[i + p].name.split(" ").join("_").toLowerCase()%>">
+												<img src = "/images/small/<%=topScore[i + p].id%>.gif" title = "<%=topScore[i + p].name%>">
+												<%=topScore[i + p].name%>
+											</a>
+											<div>price: <%=topScore[i + p].statdata.currentPrice.price.toLocaleString()%></div>
+											<div>volume: <%=topScore[i + p].statdata.currentVolume.volume.toLocaleString()%></div>
+										</div>
+		    					<%}%>
+		    				</div>
+		    			</div>
+		    		</div>
+					<% } %>
+			  </div>
+			  <a class="carousel-control-prev" href="#carouselTopItems" role="button" data-slide="prev">
+			    <span class="carousel-control-prev-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
+			    <span class="sr-only">Previous</span>
+			  </a>
+			  <a class="carousel-control-next" href="#carouselTopItems" role="button" data-slide="next">
+			    <span class="carousel-control-next-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
+			    <span class="sr-only">Next</span>
+			  </a>
 			</div>
 
-			<div class = "border-bottom">
-				top price increases
-			</div>
-			<div>
+
+			<h5 class = "border-bottom">
+				Top Price Increases
+			</h5>	
+			<div id="carouselTopPriceIncrease" class="carousel slide" data-ride="carousel" data-interval="false">
+			  <ol class="carousel-indicators">
+			    <li data-target="#carouselTopPriceIncrease" data-slide-to="0" class="active"></li>
+			    <% for (var i = 8; i < topPriceIncrease.length; i +=8) { %>
+			    	<li data-target="#carouselTopPriceIncrease" data-slide-to="<%=i/8%>"></li>
+			    <%}%>
+			  </ol>
+			  <div class="carousel-inner">
+			    <div class="carousel-item active" data-interval="false">
+			    	<div class = "container-fluid">
+				      <div class = "row justify-content-between">
+							<% for (var i = 0; i < 8; i ++) { %>
+								<div class = "col-3">
+									<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceIncrease[i].name.split(" ").join("_").toLowerCase()%>">
+										<img src = "/images/small/<%=topPriceIncrease[i].id%>.gif" title = "<%=topPriceIncrease[i].name%>">
+										<%=topPriceIncrease[i].name%>
+									</a>
+									<div class = "text-center"> <span style="color:green">+</span><%=topPriceIncrease[i].statdata.currentPrice.change.toLocaleString()%></div>
+								</div>
+							<% } %>
+							</div>
+						</div>
+			    </div>
+			    <% for (var i = 8; i < topPriceIncrease.length; i +=8) { %>
+		    		<div class = "carousel-item" data-interval="false">
+		    			<div class = "container-fluid">
+		    				<div class = "row justify-content-between">
+		    					<% for (let p = 0; p < 8; p ++) {%>
+		    						<div class = "col-3">
+											<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceIncrease[i + p].name.split(" ").join("_").toLowerCase()%>">
+												<img src = "/images/small/<%=topPriceIncrease[i + p].id%>.gif" title = "<%=topPriceIncrease[i + p].name%>">
+												<%=topPriceIncrease[i + p].name%>
+											</a>
+											<div class = "text-center"> <span style="color:green">+</span><%=topPriceIncrease[i].statdata.currentPrice.change.toLocaleString()%></div>
+										</div>
+		    					<%}%>
+		    				</div>
+		    			</div>
+		    		</div>
+					<% } %>
+			  </div>
+			  <a class="carousel-control-prev" href="#carouselTopPriceIncrease" role="button" data-slide="prev">
+			    <span class="carousel-control-prev-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
+			    <span class="sr-only">Previous</span>
+			  </a>
+			  <a class="carousel-control-next" href="#carouselTopPriceIncrease" role="button" data-slide="next">
+			    <span class="carousel-control-next-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
+			    <span class="sr-only">Next</span>
+			  </a>
 			</div>
 
-			<div class = "border-bottom">
-				most stable items
-			</div>	
-			<div>
+
+			<h5 class = "border-bottom">
+				Top Price Decreases
+			</h5>	
+			<div id="carouselTopPriceDecrease" class="carousel slide" data-ride="carousel" data-interval="false">
+			  <ol class="carousel-indicators">
+			    <li data-target="#carouselTopPriceDecrease" data-slide-to="0" class="active"></li>
+			    <% for (var i = 8; i < topPriceDecrease.length; i +=8) { %>
+			    	<li data-target="#carouselTopPriceDecrease" data-slide-to="<%=i/8%>"></li>
+			    <%}%>
+			  </ol>
+			  <div class="carousel-inner">
+			    <div class="carousel-item active" data-interval="false">
+			    	<div class = "container-fluid">
+				      <div class = "row justify-content-between">
+							<% for (var i = 0; i < 8; i ++) { %>
+								<div class = "col-3">
+									<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceDecrease[i].name.split(" ").join("_").toLowerCase()%>">
+										<img src = "/images/small/<%=topPriceDecrease[i].id%>.gif" title = "<%=topPriceDecrease[i].name%>">
+										<%=topPriceDecrease[i].name%>
+									</a>
+									<div class = "text-center"> <span style="color:red">-</span><%=Math.abs(topPriceDecrease[i].statdata.currentPrice.change).toLocaleString()%></div>
+								</div>
+							<% } %>
+							</div>
+						</div>
+			    </div>
+			    <% for (var i = 8; i < topPriceDecrease.length; i +=8) { %>
+		    		<div class = "carousel-item" data-interval="false">
+		    			<div class = "container-fluid">
+		    				<div class = "row justify-content-between">
+		    					<% for (let p = 0; p < 8; p ++) {%>
+		    						<div class = "col-3">
+											<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceDecrease[i + p].name.split(" ").join("_").toLowerCase()%>">
+												<img src = "/images/small/<%=topPriceDecrease[i + p].id%>.gif" title = "<%=topPriceDecrease[i + p].name%>">
+												<%=topPriceDecrease[i + p].name%>
+											</a>
+											<div class = "text-center"> <span style="color:red">-</span><%=Math.abs(topPriceDecrease[i].statdata.currentPrice.change).toLocaleString()%></div>
+										</div>
+		    					<%}%>
+		    				</div>
+		    			</div>
+		    		</div>
+					<% } %>
+			  </div>
+			  <a class="carousel-control-prev" href="#carouselTopPriceDecrease" role="button" data-slide="prev">
+			    <span class="carousel-control-prev-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
+			    <span class="sr-only">Previous</span>
+			  </a>
+			  <a class="carousel-control-next" href="#carouselTopPriceDecrease" role="button" data-slide="next">
+			    <span class="carousel-control-next-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
+			    <span class="sr-only">Next</span>
+			  </a>
 			</div>
+
+		
 			
 		</div>
 		<div class = "col-3" id = "investmentContainer">
-			hallo
+			<% include ./partials/profits.ejs %>
+			<% include ./partials/losses.ejs %>
 		</div>
 	</div>
 </div>
-
-
 
 
 
@@ -133,7 +283,7 @@
 								<h3 class = "text-center"> search </h3>
 								<form action = "./item/search" method = "POST">
 									<div class = "d-flex justify-content-center">
-										<input class = "text-center" id = "searchbox" type = "text" name = "searchQuery" placeholder= "enter item name" minlength="3"required>
+										<input class = "text-center" type = "text" name = "searchQuery" placeholder= "enter item name" minlength="3"required>
 										<button  type="submit">
 											<i class="fa fa-search"></i>
 										</button>
@@ -233,8 +383,8 @@
 										<i class="fa fa-info-circle"></i>
 									</button>
 									<div class="progress position-relative d-none">
-										<div class="progress-bar" role="progressbar"></div>
-										<input name = "weight[0]" class = "position-absolute weightrange" type = "range">
+										<div class="progress-bar" role="progressbar" style="width: 1%; color:black">1x</div>
+										<input name = "weight[0]" min = 0 max = 100000 value = 1 class = "position-absolute weightrange" type = "range">
 									</div>
 								</div>
 								<div class = "d-flex justify-content-center mt-2">
@@ -248,12 +398,13 @@
 		</div>
 		<% include ./partials/losses.ejs %>
 	</div>
-</div>
+</div> -->
 
 <script>
 	$("#sortform").on("input", ".sortoptions input[type='range']", function(event)
 	{
-		$(this).siblings(".progress-bar").css("width", event.target.value + "%");
+		$(this).siblings(".progress-bar").css("width", (event.target.value / 1000) + "%");
+		$(this).siblings(".progress-bar").html((event.target.value) + "x");
 	});
 </script>
 
@@ -307,8 +458,8 @@
 						optionString +
 					"</select>" +
 					"<div class=\"progress position-relative " + (checked[$("input[value='weightedSort']").prop("value")] ? "" : "d-none") + "\">" +
-						"<div id = \"test\" class=\"progress-bar\"role=\"progressbar\"></div>" +
-						"<input name = \"weight[" + optionIndex + "]\" class = \"position-absolute weightrange\" type = \"range\"> "+
+						"<div class=\"progress-bar\"role=\"progressbar\" style=\"width: 1%; color:black\">1x</div>" +
+						"<input name = \"weight[" + optionIndex + "]\" class = \"position-absolute weightrange\" type = \"range\" min=\"1\" max=\"100000\" value = \"1\" >"+
 					"</div>" +	
 				"</div"
 				);
@@ -427,6 +578,6 @@
 		});
 		arr = arr.reverse();
 	});
-</script> -->
+</script>
 
 <% include ./partials/footer.ejs %>

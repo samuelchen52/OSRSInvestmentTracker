@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html> 
 <head>
-<title>GE Tracker</title>
+<title>OSRS Tracker</title>
 
 <!-- bootstrap js-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -30,10 +30,10 @@
 </head>
 <body>
 	<nav class="navbar navbar-light bg-light">
-	  <a class="navbar-brand" href="/">GETracker</a>
-	  <form class="form-inline">
-	    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-	    <button class = "btn btn-outline-dark my-2 my-sm-0" type="submit">
+	  <a class="navbar-brand" href="/">OSRS Tracker</a>
+	  <form action = "./item/search" method = "POST" class="form-inline">
+			<input class = "form-control mr-sm-2" id = "searchbox" type = "search" name = "searchQuery" placeholder= "enter item name" minlength="3"required>
+			<button class = "btn btn-outline-dark my-2 my-sm-0" type="submit">
 				<i class="fa fa-search"></i>
 			</button>
 		</form>
@@ -51,7 +51,7 @@
 	</nav>
 	<nav class="navbar">
 		<a> </a>
-		<a id = "allitemlink" class = "position-relative" href = "/search"> browse all items</a>
+		<a id = "allitemlink" class = "position-relative" href = "/item/sort?sortby%5B0%5D=sortByNone&weight%5B0%5D=50&filterByPosition=on&position=500&trendType=none"> browse / sort all items</a>
 		<a> </a>
 	</nav>
 
