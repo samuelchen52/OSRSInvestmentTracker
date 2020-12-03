@@ -5,9 +5,8 @@
 			<div class = "col-2">
 				<b>About</b>
 				<div style = "font-size: 10px">
-					This website uses the OSRS Grand Exchange item API for the images of the items on the site,
-					<a href = "https://www.osrsbox.com/">OSRSBox</a> for an up to date item list / item data, 
-					and the <a href = "https://oldschool.runescape.wiki/">OSRS Wiki</a> for item data / item pricing and volume history.
+					Item data is fetched from both the <a href = "https://oldschool.runescape.wiki/">OSRS Wiki</a> and the official OSRS item database API.
+					<a href = "https://www.osrsbox.com/">OSRSBox</a> is also used for an up to date item list.
 				</div>
 			</div>
 			<div class = "col-2">
@@ -20,4 +19,15 @@
 	</div>
 
 	</body>
+
+	<script> 
+		if ($("body").height() < (window.innerHeight - 150))
+		{
+			$("body").height(window.innerHeight);
+		}
+		else
+		{
+			$("body").height($("body").height() + 150);
+		}
+	</script>
 </html>

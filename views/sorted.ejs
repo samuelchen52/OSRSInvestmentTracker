@@ -1,14 +1,122 @@
 <% include ./partials/header.ejs %>
 
-
 <div class = "container-fluid">
-    <div class = "row justify-content-around">
-        <% include ./partials/profits.ejs %>
-        <div class = "col-8 mt-4" id = "sorted">
-            <h1 class = "text-center"> sorted results </h1>
-        	<table class="table table-bordered table-striped table-sm">
-        		<tr>
-        		    <th></th>
+    <div class = "row">
+        <div class = "col-3" id = "optionContainer"> 
+
+            <div class = "container-fluid">
+                <div class = "row justify-content-around">
+                    <div class ="col-12 border mainfeature">
+                        <div class = "container-fluid position-absolute" style = "left : 0px; z-index : 1">
+                            <div class = "row justify-content-end">
+                                <div class = "col-2 mt-3">
+                                    <button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#filterform" aria-expanded="false" aria-controls="filterform">
+                                        <i class="fa fa-cog"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="collapse container-fluid" id="filterform">
+                                <div id = "filteroptions">
+                                        <h4 class = "text-center"> filters </h4>
+                                        <br>
+                                        <p> 
+                                            <input type="checkbox" name="filterByPosition" class = "filterdata" checked = "true"> show the first
+                                            <input type="number" name="position" class = "filterdata" value= "500">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByTrend" class = "filterdata"> price trend
+                                            <select name = "trendType" class = "filterdata">
+                                                <option value="none">none</option>
+                                                <option value="filterByPositiveTrend">positive</option>
+                                                <option value="filterByNegativeTrend">negative</option>
+                                                <option value="filterByNeutralTrend">neutral</option>
+                                            </select>
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByTrendDuration" class = "filterdata"> minimum price trend duration
+                                            <input type="number" name="trendDuration" class = "filterdata">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
+                                            <input type="number" name="priceLowerBound" class = "filterdata">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
+                                            <input type="number" name="priceUpperBound" class = "filterdata">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
+                                            <input type="number" name="volumeLowerBound" class = "filterdata">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
+                                            <input type="number" name="volumeUpperBound" class = "filterdata">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
+                                            <input type="number" name="itemLimitUpperBound" class = "filterdata">
+                                        </p>
+                                        <p> 
+                                            <input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
+                                            <input type="number" name="itemLimitLowerBound" class = "filterdata">
+                                        </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class ="container-fluid" id = "sortfeature">
+                            <div class = "container-fluid">
+                                <div class = "row justify-content-center">
+                                    <i class="fa fa-line-chart fa-3x"></i>
+                                </div>
+                            </div>
+                            <form id = "sortform" action = "/item/sort" method = "GET">
+                                <h3 class = "text-center"> sort </h3>
+                                <p> 
+                                    <input type="radio" name = "typeSort" value="roundedSort"> rounded values
+                                    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="values are rounded down before comparison e.g. 123 -> 100, 4321 -> 1000">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </p>
+                                <p> 
+                                    <input type="radio" name = "typeSort" value="weightedSort"> weighted values
+                                    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="weighted values (adjusted by you) are compared instead of the raw value, must select a value to sort by before toggling">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </p>
+                                <div class = "sortoptions">
+                                    <select class = "sortby" id = "firstselect" name = "sortby[0]">
+                                        <option value="sortByNone">none</option>
+                                        <option value="sortByPrice">by current price</option>
+                                        <option value="sortByVolume">by current volume</option>
+                                    </select>
+                                    <button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
+                                    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="select a value to sort by">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                    <div class="progress position-relative d-none">
+                                        <div class="progress-bar" role="progressbar" style="width: 1%; color:black">1x</div>
+                                        <input name = "weight[0]" min = 0 max = 100000 value = 1 class = "position-absolute weightrange" type = "range">
+                                    </div>
+                                </div>
+                                <div class = "d-flex justify-content-center mt-2">
+                                    <button id = "sortsubmit" class = "btn btn-light">sort</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class = "col-6" id = "mainContainer">
+
+            <h1 class = "text-center"> <%=items.length%> sorted results</h1>
+            <table class="table table-bordered table-striped table-sm">
+                <tr>
+                    <th></th>
                     <!-- <th>ID</th> 
                     <th>ITEM LIMIT</th>  -->
                     <th>Current Price</th>
@@ -19,7 +127,7 @@
                     <% if (progressbars) { %>
                         <th>Item Score</th>
                     <% } %>
-        		</tr>
+                </tr>
                 <% for(var i=0; i < items.length; i++) { %>
                     <tr class = "item d-none">
                         <td> 
@@ -73,10 +181,15 @@
                     </div>
                 </div>
             <% } %>
+      
         </div>
-        <% include ./partials/losses.ejs %>
+        <div class = "col-3" id = "investmentContainer">
+            <% include ./partials/profits.ejs %>
+            <% include ./partials/losses.ejs %>
+        </div>
     </div>
 </div>
+
 
 
 
@@ -239,6 +352,182 @@
 
 
 
+<script>
+    $("#sortform").on("input", ".sortoptions input[type='range']", function(event)
+    {
+        $(this).siblings(".progress-bar").css("width", (event.target.value / 1000) + "%");
+        $(this).siblings(".progress-bar").html((event.target.value) + "x");
+    });
+</script>
 
 
-<% include ./partials/footer.ejs %>
+<script>
+        //for sortform
+    var sortform = $("#sortform");
+    var sortsubmit = $("#sortsubmit");
+
+    //for progressbar colors
+    var colors = 
+    {
+        sortByPrice : "#ebe34b",
+        sortByVolume : "#81adb5"
+    }
+    var options = 
+    {
+        //bn : {selected : false, string : "<option value=\"bn\">none</option>"},
+        sortByPrice : {selected : false, string : "<option value=\"sortByPrice\">by current price</option>"},
+        sortByVolume : {selected : false, string : "<option value=\"sortByVolume\">by current volume</option>"}
+    }
+    var optionIndex = 1; //number of options that have been selected, also serves as unique index for naming the new option for select element
+    var optionString = "";
+    var checked = {roundedSort : false, weightedSort : false};
+
+    sortform.on("submit", function ()
+    {
+        $("#sortform select").removeAttr('disabled');
+    });
+
+    $("#addoption").click(function () {
+        //only add options if first select isnt selected as none and last select doesnt only have one option
+        if ( ($(".sortby").first().prop("value") !== 'sortByNone') && ($(".sortby").last().children("option").length !== 1) )
+        {
+            $(".sortby").last().prop("disabled", true);
+            options[$(".sortby").last().prop("value")].selected = true;
+            optionString = "";
+
+            for (var option in options)
+            {
+                if (!options[option].selected)
+                {
+                    optionString += options[option].string;
+                }
+            }
+
+            $(".sortoptions").last().after(
+                "<div class = \"sortoptions\">" +
+                    "<h6> then by </h6>" +
+                    "<select class = \"sortby\"name = \"sortby[" + optionIndex + "]\">" +
+                        optionString +
+                    "</select>" +
+                    "<div class=\"progress position-relative " + (checked[$("input[value='weightedSort']").prop("value")] ? "" : "d-none") + "\">" +
+                        "<div class=\"progress-bar\"role=\"progressbar\" style=\"width: 1%; color:black\">1x</div>" +
+                        "<input name = \"weight[" + optionIndex + "]\" class = \"position-absolute weightrange\" type = \"range\" min=\"1\" max=\"100000\" value = \"1\" >"+
+                    "</div>" +  
+                "</div"
+                );
+            $(".progress").last().children(".progress-bar").css("background-color", colors[$(".progress").last().siblings().children("option:selected").val()]);
+            optionIndex ++;
+
+
+        }
+    });
+
+
+    $("input[type='radio']").click(function()
+    {
+        //if user tries toggling weighted when sorting by none, dont let em
+        if ($(this).prop("value") === "weightedSort" && $("#firstselect option:selected").val() === "sortByNone")
+        {
+            $(this).prop("checked", false);
+            checked[$(this).prop("value")] = false;
+        }
+        else
+        {
+            //if already checked, uncheck it
+            if (checked[$(this).prop("value")])
+            {
+                $(this).prop("checked", false);
+                checked[$(this).prop("value")] = false;
+                //if weightedsort, toggle progressbars
+                if ($(this).prop("value") === "weightedSort")
+                {
+                    $(".progress").toggleClass("d-none");
+                }
+                else // hide bars
+                {
+                    $(".progress").addClass("d-none");
+                }
+            }
+            //otherwise, check it and uncheck everything else
+            else
+            {
+                for (sorttype in checked)
+                {
+                    checked[sorttype] = false;
+                }
+                checked[$(this).prop("value")] = true;
+                //if weightedsort, toggle progressbars
+                if ($(this).prop("value") === "weightedSort")
+                {
+                    $(".progress").toggleClass("d-none");
+                }
+                else // hide bars
+                {
+                    $(".progress").addClass("d-none");
+                }
+            }
+        }
+    });
+
+    //uncheck weightedsort and hide bar if user goes back to sortbynone
+    $("select").on("input", function()
+    {
+        if ($("#firstselect option:selected").val() === "sortByNone")
+        {
+            $("input[value='weightedSort']").prop("checked", false);
+            checked["weightedSort"] = false;
+            $(".progress").addClass("d-none");
+        }
+        //set the correct color for the progress bar
+        else
+        {
+            $(".progress").last().children(".progress-bar").css("background-color", colors[$(this).children("option:selected").val()]);
+        }
+    });
+
+    sortsubmit.click(function ()
+    {
+        let checkboxes = $(".filterdata[type='checkbox']");
+        for (let i = 0; i < checkboxes.length; i++)
+        {
+            let checkbox = checkboxes[i];
+            if (!checkbox.checked)
+            {
+                $(checkbox).attr("disabled", true);
+                $(checkbox).siblings().attr("disabled", true);
+            }
+        };
+        sortform.append($(".filterdata").toggleClass("d-none"));
+    });
+
+
+</script>
+
+
+<script>
+    // for sliding animations
+
+    var filteroptions = $("#filteroptions");
+    var buttonstate = false;
+    var buttonactive = false;
+    //make a new array just to make use of the foreach function lol
+    var arr = new Array();
+    for (var i = 0; i < 100; i ++)
+    {
+        arr.push(i);
+    }
+
+    $("#slidebutton").click(function()
+    {
+        buttonstate = !buttonstate;
+        buttonactive = true;
+        arr.forEach(function(value, index)
+        {
+            setTimeout(function()
+            {
+                filteroptions.css("width", value * 4);
+            }, index * 5);
+        });
+        arr = arr.reverse();
+    });
+</script>

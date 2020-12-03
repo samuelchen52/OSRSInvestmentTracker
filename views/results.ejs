@@ -1,9 +1,12 @@
 <% include ./partials/header.ejs %>
 
 <div class = "container-fluid">
-    <div class = "row justify-content-around">
-        <% include ./partials/profits.ejs %>
-        <div class = "col-8 mt-4" id = "results">
+    <div class = "row">
+        <div class = "col-3" id = "optionContainer"> 
+            hallo
+        </div>
+        <div class = "col-6" id = "mainContainer">
+
             <h1 class = "text-center"> <%=items.length%> results for "<%= query %>"</h1>
             <table class="table table-bordered table-striped table-sm">
                 <% if (items.length > 0) { %>
@@ -59,10 +62,15 @@
                     </div>
                 </div>
             <% } %>
+            
         </div>
-        <% include ./partials/losses.ejs %>
+        <div class = "col-3" id = "investmentContainer">
+            <% include ./partials/profits.ejs %>
+            <% include ./partials/losses.ejs %>
+        </div>
     </div>
 </div>
+
 
 <script>
 //for adding investments

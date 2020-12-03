@@ -232,7 +232,7 @@ async function calculate(allitems, callback)
 			allitems[i] = null;
 		}
 
-		console.log(process.memoryUsage());
+		//console.log(process.memoryUsage());
 
 		if (typeof callback === "function")
 		{

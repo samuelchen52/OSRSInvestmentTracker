@@ -23,6 +23,7 @@ const checkItemData = require("./initData/checkItemData.js");
 
 var getItemList = require ("./initData/itemList.js");
 
+var refreshCount = 0;
 
 const port = process.env.PORT || 80;
 
@@ -319,6 +320,9 @@ async function updateDataBase (oldArr, orderedArr, callback)
 async function refreshDataBase(callback)
 {
 	var allitems = null;
+	var getPriceOnly = refreshCount;
+	refreshCount = (refreshCount + 1) % 7;
+
 	await new Promise(function (resolve, reject)
 	{
 		fetchAllDocuments(resolve, {invalid : false});
@@ -329,7 +333,7 @@ async function refreshDataBase(callback)
 		console.log("updating item at index " +  i + "...")
 		// await new Promise (function (resolve ,reject)
 		// {
-		// 	initGraphData(0, [allitems[i]], resolve);
+		// 	initGraphData(0, [allitems[i]], resolve, refreshCount);
 		// });
 		// await new Promise (function (resolve ,reject)
 		// {

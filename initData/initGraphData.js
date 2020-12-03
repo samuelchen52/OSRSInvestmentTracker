@@ -54,11 +54,11 @@ var detailurl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/
 
 // }
 
-async function populate(start, documentarr, callback) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
+async function populate(start, documentarr, callback, getPriceOnly) //fetches all document objects in mongodb and then passes it to another function that will then make the requests
 {
 	if (documentarr)
 	{
-		makeRequests(start, documentarr, callback);
+		makeRequests(start, documentarr, callback, getPriceOnly);
 	}
 	else
 	{
@@ -71,185 +71,237 @@ async function populate(start, documentarr, callback) //fetches all document obj
 			}
 			else
 			{
-				makeRequests(start, allItems, callback);
+				makeRequests(start, allItems, callback, getPriceOnly);
 			}
 		});
 	}
 }
 
-async function makeRequests(start, documentarr, callback)
+async function pullFromWiki(start, documentarr, resolve)
+{
+	//var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + documentarr[start].id + ".json";
+	//if wikiName is just a longer version of actual name, then thats probably for duplicates, in which case it will be correct
+	//var wikiName = documentarr[start].wikiName.split(" ").join("_");
+	var actualName = documentarr[start].name.split(" ").join("_");
+	var statusCode = 200;
+	var reqbody = null;
+
+	var url = "https://oldschool.runescape.wiki/w/Module:Exchange/"+ actualName +"/Data";
+	await new Promise (function (resolve, reject)
+	{
+		request.get({url : url},  function (error, response, body)
+		{
+			if (error)
+			{
+				console.log("error:" +  error);
+				process.exit();
+			}
+			else if (response.statusCode !== 200)
+			{
+				if (response.statusCode === 404)
+				{
+					console.log("can't pull wiki graph data for item with id of "  + documentarr[start].id + "!");
+					documentarr[start].invalid = true;
+					documentarr[start].save();
+			  }
+
+			  statusCode = response.statusCode;
+				reqbody = null;
+				resolve();
+			}
+			else
+			{
+				reqbody = body;
+				resolve();
+			}
+		})
+	});
+
+	if (reqbody === null) 
+	{
+		if (statusCode !== 404)
+		{
+			console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "!");
+			// await new Promise(function (resolve, reject) 
+			// 	{
+			// 		setTimeout(resolve, 60000);
+			// 	});
+			// console.log("60 seconds up, trying again...");
+			return;
+		}
+		else
+		{
+			documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+		}
+	}
+	else
+	{
+		await new Promise (function (resolve, reject)
+		{
+			item.populate(documentarr[start], [{path: "graphdata"}], function (err, populatedDoc)
+			{
+				if (err)
+				{
+					console.log("document with id of " + documentarr[start].id + " at index " + start + " had trouble populating!");
+					console.log(err);
+					//console.dir(documentarr[start]);
+					process.exit();
+				}
+				else
+				{
+					var graphdata = populatedDoc.graphdata;
+
+					const dom = new JSDOM(reqbody);
+					var nodelist = dom.window.document.querySelectorAll(".s1");
+
+					var priceData = [];
+					var volumeData = [];
+
+					for (var i = Math.max(nodelist.length - 365, 0); i < nodelist.length; i ++)
+					{
+						var data = nodelist[i].textContent;
+						//substring because of the apostrophes at the beginning and end
+						data = data.substring(1, data.length - 1).split(":");
+						priceData.push({date: new Date(parseInt(data[0]) * 1000), price: parseInt(data[1])});
+
+						//volume data isnt available for every date for each item
+						if (data.length === 3)
+						{
+							volumeData.push({date: new Date(parseInt(data[0]) * 1000), volume: parseInt(data[2])});
+						}
+
+					}
+					
+					graphdata.priceData = priceData;
+					graphdata.volumeData = volumeData;
+
+					graphdata.save();
+					//console.log("graph data for document with id of " + documentarr[start].id + " at index " + start + " updated from wiki!");
+					populatedDoc.lastUpdated = new Date();
+					populatedDoc.save();
+					resolve();
+				}
+			});
+		});
+		documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+
+		await new Promise(function (resolve, reject) 
+		{
+			setTimeout(resolve, 500);
+		});
+		//console.log(process.memoryUsage());
+	}
+
+	resolve();
+}
+
+async function pullFromOSRSAPI(itemDocument, resolve)
+{
+	var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + itemDocument.id + ".json";
+	var statusCode = 200;
+	var reqbody = null;
+
+	await new Promise (function (resolve, reject)
+	{
+		request.get({url : url},  function (error, response, body)
+		{
+			if (error)
+			{
+				console.log("error:" +  error);
+				process.exit();
+			}
+			else if (response.statusCode !== 200)
+			{
+				if (response.statusCode === 404)
+				{
+					console.log("can't pull wiki graph data for item with id of "  + itemDocument.id + "!");
+					itemDocument.invalid = true;
+					itemDocument.save();
+			  }
+
+			  statusCode = response.statusCode;
+				reqbody = null;
+				resolve();
+			}
+			else
+			{
+				reqbody = body;
+				resolve();
+			}
+		})
+	});
+
+	if (reqbody === null) 
+	{
+		if (statusCode !== 404)
+		{
+			console.log("request was rejected for item with id of " + itemDocument.id + "!");
+			return;
+		}
+	}
+	else
+	{
+		if (!itemDocument.populated("graphdata"))
+		{
+			await item.populate(itemDocument, [{path: "graphdata"}]);
+		}
+		
+		reqbody = JSON.parse(reqbody);
+
+		let priceData = itemDocument.graphdata.priceData;
+		let newPriceData = reqbody.daily;
+		let lastUpdated = (priceData.length - 1) ? priceData[priceData.length - 1].date.getTime() : 0;
+
+
+		if (newPriceData[lastUpdated])
+		{
+			for (let i = lastUpdated + 86400000; newPriceData[i]; i += 86400000) //86400000 === 24 * 60 * 60 * 1000
+			{
+				priceData.push({
+					date : new Date(i),
+					price : newPriceData[i]
+				});
+			}
+
+			itemDocument.graphdata.save();
+			//console.log("graph data for document with id of " + itemDocument.id + " updated from api!");
+
+			itemDocument.lastUpdated = new Date();
+			itemDocument.save();
+
+			await new Promise(function (resolve, reject) 
+			{
+				setTimeout(resolve, 500);
+			});
+		}
+		//console.log(process.memoryUsage());
+	}
+
+	resolve();
+}
+
+async function makeRequests(start, documentarr, callback, getPriceOnly)
 {
 	var reqbody = null;
 	var statusCode = 200;
 	//var deletedoc = false;
 	while (start < documentarr.length)
 	{
-		
-		//var url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/" + documentarr[start].id + ".json";
-		//if wikiName is just a longer version of actual name, then thats probably for duplicates, in which case it will be correct
-		//var wikiName = documentarr[start].wikiName.split(" ").join("_");
-		var actualName = documentarr[start].name.split(" ").join("_");
-
-		var url = "https://oldschool.runescape.wiki/w/Module:Exchange/"+ actualName +"/Data";
-		await new Promise (function (resolve, reject)
-		{
-			request.get({url : url},  function (error, response, body)
-			{
-				if (error)
-				{
-					console.log("error:" +  error);
-					process.exit();
-				}
-				else if (response.statusCode !== 200)
-				{
-					if (response.statusCode === 404)
-					{
-						console.log("can't pull wiki graph data for item with id of "  + documentarr[start].id + "!");
-						// invalid.findOne({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
-						// {
-						// 	if (error)
-						// 	{
-						// 		console.log("failed to find invalid document with id of " + documentarr[start].id);
-						// 		process.exit();
-						// 	}
-						// 	else if (!invalidItem)
-						// 	{
-						// 		invalid.create({name : documentarr[start].name, id : documentarr[start].id}, function (error, invalidItem)
-						// 		{
-						// 			if (error)
-						// 			{
-						// 				console.log("failed to create invalid document with id of " + documentarr[start].id);
-						// 				process.exit();
-						// 			}
-						// 			else
-						// 			{
-						// 				console.log("created invalid document with id of " + documentarr[start].id);
-						// 			}
-						// 		});
-						// 	}
-						// });
-						//set invalid to true
-						documentarr[start].invalid = true;
-						documentarr[start].save();
-
-				    }
-
-				    statusCode = response.statusCode;
-					reqbody = null;
-					resolve();
-				}
-				else
-				{
-					// try 
-					// {
-					// reqbody = JSON.parse(body);
-					// resolve();
-					// }
-					// catch (err)
-					// {
-					// 	// console.log("err: " + err);
-					// 	// console.log("error:" +  error);
-					// 	// console.log("statusCode: " + response.statusCode);
-					// 	// console.log("body: " + body);
-					// 	//console.dir(response);
-					// 	// process.exit();
-					// 	reqbody = null;
-					// 	console.log("body was empty: ");
-					// 	resolve();
-					// }
-					reqbody = body;
-					resolve();
-				}
-			})
-		}).catch(function(err) 
-		{
-			console.log("this shouldnt be happening!");
-			process.exit();
-		});
-
-		if (reqbody === null) 
-		{
-			if (statusCode !== 404)
-			{
-				console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "! waiting 60 seconds...");
-				await new Promise(function (resolve, reject) 
-					{
-						setTimeout(resolve, 60000);
-					});
-				console.log("60 seconds up, trying again...");
-			}
-			else
-			{
-				documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
-				start ++;
-			}
-		}
-		else
+		let itemDocument = documentarr[start];
+		//also fetch volume (and price data) from osrs wiki
+		if (!getPriceOnly)
 		{
 			await new Promise (function (resolve, reject)
 			{
-				item.populate(documentarr[start], [{path: "graphdata"}], function (err, populatedDoc)
-				{
-					if (err)
-					{
-						console.log("document with id of " + documentarr[start].id + " at index " + start + " had trouble populating!");
-						console.log(err);
-						//console.dir(documentarr[start]);
-						process.exit();
-					}
-					else
-					{
-						var graphdata = populatedDoc.graphdata;
-
-						const dom = new JSDOM(reqbody);
-						var nodelist = dom.window.document.querySelectorAll(".s1");
-
-						var priceData = [];
-						var volumeData = [];
-
-						for (var i = Math.max(nodelist.length - 365, 0); i < nodelist.length; i ++)
-						{
-							var data = nodelist[i].textContent;
-							//substring because of the apostrophes at the beginning and end
-							data = data.substring(1, data.length - 1).split(":");
-							priceData.push({date: new Date(parseInt(data[0]) * 1000), price: parseInt(data[1])});
-
-							//volume data isnt available for every date for each item
-							if (data.length === 3)
-							{
-								volumeData.push({date: new Date(parseInt(data[0]) * 1000), volume: parseInt(data[2])});
-							}
-
-						}
-						
-						graphdata.priceData = priceData;
-						graphdata.volumeData = volumeData;
-
-						// for (var key in reqbody.daily)
-						// {
-						// 	graphdata.daily.push({date: new Date (parseInt(key)), price: reqbody.daily[key]});
-						// }
-						// for (var key in reqbody.average)
-						// {
-						// 	graphdata.average.push({date: new Date (parseInt(key)), price: reqbody.average[key]});
-						// }
-						graphdata.save();
-						console.log("graph data for document with id of " + documentarr[start].id + " at index " + start + " updated!");
-						populatedDoc.lastUpdated = new Date();
-						populatedDoc.save();
-						resolve();
-					}
-				});
+				pullFromWiki(start, documentarr, resolve);
 			});
-			documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
-			start ++;
-
-			await new Promise(function (resolve, reject) 
-			{
-				setTimeout(resolve, 500);
-			});
-			console.log(process.memoryUsage());
 		}
+		//fetch price data from osrs api
+		await new Promise (function (resolve, reject)
+		{
+			pullFromOSRSAPI(itemDocument, resolve);
+		});
+		start ++;
 	}
 
 	if (typeof callback === "function")

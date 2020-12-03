@@ -335,3 +335,16 @@ var stream = function(){
 // });
 
 
+request.get({url : "https://secure.runescape.com/m=itemdb_oldschool/api/graph/7394.json"},  function (error, response, body)
+{
+	if (response.statusCode !== 200)
+	{
+		console.log("THERE WAS A PROBLEM WITH " + url);
+		arr.push(url);
+	}
+	else
+	{
+		console.log("the " + url + " worked just fine!");
+		console.log(JSON.parse(body).daily);
+	}
+});
