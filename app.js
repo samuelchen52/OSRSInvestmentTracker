@@ -1035,7 +1035,6 @@ app.post("/item/add/:itemid/:prevurl", function(req, res)
 					lastUpdated : lastUpdated,
 					currentPricePerItem: currentPricePerItem,
 				});
-				console.log("hello");
 				res.locals.user.save(() => res.redirect(req.params.prevurl.split("_").join("/").split("-").join("?")));
 
 				//rebuild the url from the post request

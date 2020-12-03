@@ -222,7 +222,7 @@ async function calculate(allitems, callback)
 						//allitems[i] = null; //doesnt work for some reason, have to do this outside of the promise
 											  //found the bug, looks like this i is NOT referencing the outer loop i
 											  //the i it was referecing was the i in the volumedata loop
-						console.log("stat data calculated for " + doc.name + " with id of " + doc.id);
+						//console.log("stat data calculated for " + doc.name + " with id of " + doc.id);
 						//console.log(process.memoryUsage());
 						resolve();
 					}
