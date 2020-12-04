@@ -113,7 +113,9 @@
         </div>
         <div class = "col-6" id = "mainContainer">
 
-            <h1 class = "text-center"> <%=items.length%> sorted results</h1>
+            <h5 class = "border-bottom">
+                Sorted Results <span id = "itemnumrange"></span>
+            </h5>   
             <table class="table table-bordered table-striped table-sm">
                 <tr>
                     <th></th>
@@ -132,7 +134,7 @@
                     <tr class = "item d-none">
                         <td> 
                             <% if (user) { %>
-                                <button class = "additem" 
+                                <button class = "additem btn btn-outline-dark" 
                                 data-item-name = "<%= items[i].name %>" 
                                 data-item-name-lower = "<%= items[i].name_lower %>" 
                                 data-item-price = "<%= items[i].statdata.currentPrice.price %>"
@@ -141,8 +143,8 @@
                                     <i class = "fa fa-plus"> </i> 
                                 </button>
                             <% } %>
-                            <a href = "/item/data/<%= items[i].name_lower %>"><%= items[i].name %> </a> 
                             <img src = "/images/small/<%=items[i].id%>.gif">
+                            <a href = "/item/data/<%= items[i].name_lower %>"><%= items[i].name %> </a> 
                          </td>
                         <!-- <td> <%= items[i].id %> </td>
                         <td> <%= items[i].limit %> </td> -->
@@ -165,6 +167,9 @@
                         <% } %>
                     </tr>
                 <% } %>
+                <!-- <% for(i; i < Math.ceil((items.length) / 10) * 10; i++) {%>
+                    <tr class = "item d-none"> nothing here </tr>
+                <% }%> -->
             </table>
             <% if (items.length > 0) { %>
                 <div class = "d-flex justify-content-center">
@@ -259,9 +264,9 @@
             return false;
         }
     }
-    function toggleItems (hash, numItems)
+    function toggleItems (hash, numItemsShowed)
     {
-        for (var i = (hash - 1) * numItems; i < hash * numItems; i ++)
+        for (var i = (hash - 1) * numItemsShowed; i < hash * numItemsShowed; i ++)
         {
             $(".item:eq(" + i + ")").toggleClass("d-none");
         }
@@ -276,7 +281,14 @@
         }
     }
 
+    function updateItemNumRange(hash)
+    {
+        let itemnumrange = (numItems === 0) ? "" : ( "(" + (((hash - 1) * 10) + 1) + "-" + (((hash * 10) > numItems) ? numItems : hash * 10) + ")" );
+        $("#itemnumrange").html(itemnumrange);
+    }
+
     var numItemsShowed = 10;
+    var numItems = $(".item").length;
     var numPages = Math.ceil($(".item").length / numItemsShowed);
 
     //sanitize hash
@@ -294,7 +306,10 @@
         toggleItems(hash, numItemsShowed);
         togglePagination(hash);
         $("a[href=\"#"+ (hash) +"\"]").focus();
+        updateItemNumRange(hash);
     }
+
+    updateItemNumRange(hash); 
 
 
     $("#next").click(function ()

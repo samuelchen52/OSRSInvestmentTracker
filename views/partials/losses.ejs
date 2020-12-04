@@ -11,7 +11,7 @@
 
 <% if (user){ %>
 		<% for (var i = 0; i < losses.length; i ++) { %>
-			<div class = "container border border-danger mb-2 losses">
+			<div class = "container-fluid border border-danger mb-2 losses rounded position-relative">
 				<div class = "row justify-content-between">
 					<div class = "col-4">
 						<div style = "font-size: 12px; font-weight: 800">
@@ -21,17 +21,12 @@
 							<img src = "/images/small/<%=losses[i].id%>.gif" title = "<%=losses[i].name%>">
 						</a>
 						x<%=losses[i].numInvested%>
-						<form class = "deleteitem" method = POST data-item-id = "<%= losses[i]._id %>">
-							<button class="btn btn-dark">
-								<i class="fa fa-trash"></i>
-							</button>
-						</form>
+						<div style = "color: red; font-weight: 700"> 
+							-<%=Math.abs((losses[i].currentPricePerItem * losses[i].numInvested) - (losses[i].pricePerItemInvested * losses[i].numInvested))%>
+						</div>
 					</div>
 					<div class = "col-8" style = "font-size: 12px">
 						<div>
-							<div style = "color : red; font-weight: 700"> 
-								-<%=Math.abs((losses[i].currentPricePerItem * losses[i].numInvested) - (losses[i].pricePerItemInvested * losses[i].numInvested))%>
-							</div>
 							<div>
 								gp each: <%=losses[i].pricePerItemInvested%> -> <%=losses[i].currentPricePerItem%>
 							</div>
@@ -43,11 +38,16 @@
 							</div>
 							<div>
 								price updated:
-								<%= Math.floor((new Date().valueOf() - losses[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24)) %> d,
-								<%= Math.floor(Math.floor((new Date().valueOf() - losses[i].lastUpdated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %> h ago
+								<%= Math.floor((new Date().valueOf() - losses[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24)) %>d,
+								<%= Math.floor(Math.floor((new Date().valueOf() - losses[i].lastUpdated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %>h ago
 							</div>
 						</div>
 					</div>
+						<form class = "deleteitem" method = POST data-item-id = "<%= losses[i]._id %>">
+							<button class="btn btn-outline-dark btn-sm">
+								<i class="fa fa-trash"></i>
+							</button>
+						</form>
 				</div>
 			</div>
 		<% } %>

@@ -210,7 +210,7 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 }
 
 #footer {
-	height: 150px;
+	height: 120px;
 	position: absolute;
 	bottom: 0px;
 }
@@ -246,10 +246,24 @@ text-decoration:none !important;
 	background-color: white;
 }
 
+.deleteitem {
+	right: 5px;
+	top: 5px;
+	position: absolute;
+}
+
 #carouselTopPriceIncrease ol {
 	bottom : 25px;
 }
 
 #carouselTopPriceDecrease ol {
 	bottom : 25px;
+}
+
+#investmentContainer {
+	margin-top: 1rem !important;
+}
+
+#optionContainer {
+	margin-top: 1rem !important;
 }

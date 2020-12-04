@@ -10,7 +10,7 @@
 	<% }%>
 <% if (user){ %>
 		<% for (var i = 0; i < profits.length; i ++) { %>
-			<div class = "container border border-success mb-2 profits">
+			<div class = "container-fluid border border-success mb-2 profits rounded position-relative">
 				<div class = "row justify-content-between">
 					<div class = "col-4">
 						<div style = "font-size: 12px; font-weight: 800">
@@ -20,18 +20,12 @@
 							<img src = "/images/small/<%=profits[i].id%>.gif" title = "<%=profits[i].name%>">
 						</a>
 						x<%=profits[i].numInvested%>
-						<form class = "deleteitem" method = POST data-item-id = "<%= profits[i]._id %>">
-							<button class="btn btn-dark">
-								<i class="fa fa-trash"></i>
-							</button>
-						</form>
-						
+						<div style = "color : green; font-weight: 700"> 
+							+<%=profits[i].currentPricePerItem * profits[i].numInvested - profits[i].pricePerItemInvested * profits[i].numInvested%>
+						</div>
 					</div>
 					<div class = "col-8" style = "font-size: 12px">
 						<div>
-							<div style = "color : green; font-weight: 700"> 
-								+<%=profits[i].currentPricePerItem * profits[i].numInvested - profits[i].pricePerItemInvested * profits[i].numInvested%>
-							</div>
 							<div>
 								gp each: <%=profits[i].pricePerItemInvested%> -> <%=profits[i].currentPricePerItem%>
 							</div>
@@ -43,11 +37,16 @@
 							</div>
 							<div>
 								price updated:
-								<%= Math.floor((new Date().valueOf() - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24)) %> d,
-								<%= Math.floor(Math.floor((new Date().valueOf() - profits[i].lastUpdated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %> h ago
+								<%= Math.floor((new Date().valueOf() - profits[i].lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24)) %>d,
+								<%= Math.floor(Math.floor((new Date().valueOf() - profits[i].lastUpdated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %>h ago
 							</div>
 						</div>
 					</div>
+					<form class = "deleteitem" method = POST data-item-id = "<%= profits[i]._id %>">
+						<button class="btn btn-outline-dark btn-sm">
+							<i class="fa fa-trash"></i>
+						</button>
+					</form>
 				</div>
 			</div>
 		<% } %>

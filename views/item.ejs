@@ -23,7 +23,7 @@
                                                 Members: <%=item.members ? "True" : "False"%>
                                             </p>
                                             <p>
-                                                <a href="https://oldschool.runescape.wiki/w/Exchange:<%=item.wikiName.split(" ").join("_")%>">Wiki Page</a>
+                                                <a href="https://oldschool.runescape.wiki/w/Exchange:<%=item.wikiName[0].toUpperCase() + item.wikiName.split(" ").join("_").toLowerCase().substring(1)%>">Wiki Page</a>
                                             </p>
                                         </div>  
                                 </div>

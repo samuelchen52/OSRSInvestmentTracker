@@ -2,14 +2,14 @@
 		<div class = "row">
 			<div class = "col-3">
 			</div>
-			<div class = "col-2">
+			<div class = "col-2 pt-3">
 				<b>About</b>
 				<div style = "font-size: 10px">
 					Item data is fetched from both the <a href = "https://oldschool.runescape.wiki/">OSRS Wiki</a> and the official OSRS item database API.
 					<a href = "https://www.osrsbox.com/">OSRSBox</a> is also used for an up to date item list.
 				</div>
 			</div>
-			<div class = "col-2">
+			<div class = "col-2 pt-3">
 				<b>Disclaimer</b>
 				<div style = "font-size: 10px">
 					OSRS (Old School RuneScape) is a registered trademark of Jagex Limited. This website is not affiliated with or endorsed by Jagex Limited in any way.
@@ -21,13 +21,15 @@
 	</body>
 
 	<script> 
-		if ($("body").height() < (window.innerHeight - 150))
-		{
-			$("body").height(window.innerHeight);
-		}
-		else
-		{
-			$("body").height($("body").height() + 150);
-		}
+		$( window ).on( "load", function() {
+		    if ($("body").height() < (window.innerHeight - 150))
+				{
+					$("body").height(window.innerHeight);
+				}
+				else
+				{
+					$("body").height($("body").height() + 150);
+				}
+		});
 	</script>
 </html>
