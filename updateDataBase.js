@@ -79,6 +79,8 @@ function cloneArray(arr)
 //however, reasons 1 and 2 cant be checked, so unfortunately, we cant reset invalid status 
 //for the sole reason of the item being in the newArr (updating the graph data will just reset it back, waste of time)
 //could add a different flag in the future to differentiate
+
+//going to update members status as well, looks like it changes from time to time
 function updateItemNames(orderedArr, newArr)
 {
 	for (let itemid in newArr)
@@ -92,6 +94,13 @@ function updateItemNames(orderedArr, newArr)
 				console.log("updating " + item.name + " with id of " + item.id + " with new name " + newArr[itemid].name);
 				item.name = newArr[itemid].name;
 				item.invalid = false; //set this to false, and the item data refresh cycle will check if the new url (with the new name) is valid
+				item.save();
+			}
+
+			if (item.members !== newArr[itemid].members)
+			{
+				console.log("updating " + item.name + " with id of " + item.id + " with new members " + newArr[itemid].members);
+				item.members = !item.members;
 				item.save();
 			}
 		}
