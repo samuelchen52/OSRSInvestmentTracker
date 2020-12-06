@@ -1,12 +1,14 @@
 <% include ./partials/header.ejs %>
 
-<div class = "container-fluid">
+<div class = "container-fluid mb-5">
     <div class = "row">
         <div class = "col-3" id = "optionContainer"> 
             
         </div>
         <div class = "col-6" id = "mainContainer">
-
+            <div class = "invisible">
+                invisible
+            </div>
             <h5 class = "border-bottom">
                 Results for "<%=query%>" <span id = "itemnumrange"></span>
             </h5>   
@@ -48,6 +50,31 @@
                            <!-- <td> <%= items[i].members %> </td> -->
                        </tr>
                 <% } %>
+                <% for(i; i < Math.ceil((items.length) / 10) * 10; i++) {%>
+                    <tr class = "item d-none invisible">
+                        <td> 
+                            <% if (user) { %>
+                                <button class = "additem btn btn-outline-dark" 
+                                data-item-name = "<%= items[0].name %>" 
+                                data-item-name-lower = "<%= items[0].name_lower %>" 
+                                data-item-price = "<%= items[0].statdata.currentPrice.price %>"
+                                data-item-updated = "<%= items[0].lastUpdated.valueOf() %>"
+                                data-item-id = "<%= items[0].id %>">
+                                    <i class = "fa fa-plus"> </i> 
+                                </button>
+                            <% } %>
+                            <img src = "/images/small/<%=items[0].id%>.gif">
+                            <a href = "/item/data/<%= items[0].name_lower %>"><%= items[0].name %> </a> 
+                         </td>
+                        <!-- <td> <%= items[0].id %> </td>
+                        <td> <%= items[0].limit %> </td> -->
+                        <td> <%= items[0].statdata.currentPrice.price.toLocaleString() %> </td>
+                        <td> <%= items[0].statdata.currentVolume.volume.toLocaleString() %> </td>
+                        <td> <%= items[0].statdata.currentTrend%> </td>
+                        <!-- <td> <%= items[0].statdata.currentTrendDuration%> </td>
+                        <td> <%= items[0].members %> </td> -->
+                    </tr>
+                <% }%>
             </table>
             <% if (items.length > 0) { %>
                 <div class = "d-flex justify-content-center">
@@ -66,9 +93,17 @@
             <% } %>
             
         </div>
-        <div class = "col-3" id = "investmentContainer">
-            <% include ./partials/profits.ejs %>
-            <% include ./partials/losses.ejs %>
+        <div class = "col-3">
+            <div class = "invisible">
+                invisible
+            </div>
+            <h5 class = "border-bottom">
+                Tracked Items
+            </h5>   
+            <div id = "investmentContainer">
+                <% include ./partials/profits.ejs %>
+                <% include ./partials/losses.ejs %>
+            </div>
         </div>
     </div>
 </div>
@@ -167,8 +202,8 @@
     }
 
     var numItemsShowed = 10;
-    var numItems = $(".item").length;
-    var numPages = Math.ceil($(".item").length / numItemsShowed);
+    var numItems = <%=items.length%>;
+    var numPages = Math.ceil(numItems / numItemsShowed);
 
     //sanitize hash
     var hash = checkHash(window.location.hash) ? 1 : parseInt(window.location.hash.substring(1, window.location.hash.length));

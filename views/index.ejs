@@ -16,17 +16,11 @@
 				Top Items (based on item price and volume)
 			</h5>	
 			<div id="carouselTopItems" class="carousel slide" data-ride="carousel" data-interval="false">
-			  <ol class="carousel-indicators">
-			    <li data-target="#carouselTopItems" data-slide-to="0" class="active"></li>
-			    <% for (var i = 8; i < topScore.length; i +=8) { %>
-			    	<li data-target="#carouselTopItems" data-slide-to="<%=i/8%>"></li>
-			    <%}%>
-			  </ol>
 			  <div class="carousel-inner">
 			    <div class="carousel-item active" data-interval="false">
 			    	<div class = "container-fluid">
 				      <div class = "row justify-content-between">
-							<% for (var i = 0; i < 8; i ++) { %>
+							<% for (var i = 0; i < 4; i ++) { %>
 								<div class = "col-3">
 									<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topScore[i].name.split(" ").join("_").toLowerCase()%>">
 										<img src = "/images/small/<%=topScore[i].id%>.gif" title = "<%=topScore[i].name%>">
@@ -39,11 +33,11 @@
 							</div>
 						</div>
 			    </div>
-			    <% for (var i = 8; i < topScore.length; i +=8) { %>
+			    <% for (var i = 4; i < topScore.length; i +=4) { %>
 		    		<div class = "carousel-item" data-interval="false">
 		    			<div class = "container-fluid">
 		    				<div class = "row justify-content-between">
-		    					<% for (let p = 0; p < 8; p ++) {%>
+		    					<% for (let p = 0; p < 4; p ++) {%>
 		    						<div class = "col-3">
 											<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topScore[i + p].name.split(" ").join("_").toLowerCase()%>">
 												<img src = "/images/small/<%=topScore[i + p].id%>.gif" title = "<%=topScore[i + p].name%>">
@@ -58,6 +52,12 @@
 		    		</div>
 					<% } %>
 			  </div>
+			  <ol class="carousel-indicators">
+			    <li data-target="#carouselTopItems" data-slide-to="0" class="active"></li>
+			    <% for (var i = 4; i < topScore.length; i +=4) { %>
+			    	<li data-target="#carouselTopItems" data-slide-to="<%=i/4%>"></li>
+			    <%}%>
+			  </ol>
 			  <a class="carousel-control-prev" href="#carouselTopItems" role="button" data-slide="prev">
 			    <span class="carousel-control-prev-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
 			    <span class="sr-only">Previous</span>
@@ -73,17 +73,11 @@
 				Top Price Increases
 			</h5>	
 			<div id="carouselTopPriceIncrease" class="carousel slide" data-ride="carousel" data-interval="false">
-			  <ol class="carousel-indicators">
-			    <li data-target="#carouselTopPriceIncrease" data-slide-to="0" class="active"></li>
-			    <% for (var i = 8; i < topPriceIncrease.length; i +=8) { %>
-			    	<li data-target="#carouselTopPriceIncrease" data-slide-to="<%=i/8%>"></li>
-			    <%}%>
-			  </ol>
 			  <div class="carousel-inner">
 			    <div class="carousel-item active" data-interval="false">
 			    	<div class = "container-fluid">
 				      <div class = "row justify-content-between">
-							<% for (var i = 0; i < 8; i ++) { %>
+							<% for (var i = 0; i < 4; i ++) { %>
 								<div class = "col-3">
 									<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceIncrease[i].name.split(" ").join("_").toLowerCase()%>">
 										<img src = "/images/small/<%=topPriceIncrease[i].id%>.gif" title = "<%=topPriceIncrease[i].name%>">
@@ -95,11 +89,11 @@
 							</div>
 						</div>
 			    </div>
-			    <% for (var i = 8; i < topPriceIncrease.length; i +=8) { %>
+			    <% for (var i = 4; i < topPriceIncrease.length; i +=4) { %>
 		    		<div class = "carousel-item" data-interval="false">
 		    			<div class = "container-fluid">
 		    				<div class = "row justify-content-between">
-		    					<% for (let p = 0; p < 8; p ++) {%>
+		    					<% for (let p = 0; p < 4; p ++) {%>
 		    						<div class = "col-3">
 											<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceIncrease[i + p].name.split(" ").join("_").toLowerCase()%>">
 												<img src = "/images/small/<%=topPriceIncrease[i + p].id%>.gif" title = "<%=topPriceIncrease[i + p].name%>">
@@ -113,6 +107,12 @@
 		    		</div>
 					<% } %>
 			  </div>
+			  <ol class="carousel-indicators">
+			    <li data-target="#carouselTopPriceIncrease" data-slide-to="0" class="active"></li>
+			    <% for (var i = 4; i < topPriceIncrease.length; i +=4) { %>
+			    	<li data-target="#carouselTopPriceIncrease" data-slide-to="<%=i/4%>"></li>
+			    <%}%>
+			  </ol>
 			  <a class="carousel-control-prev" href="#carouselTopPriceIncrease" role="button" data-slide="prev">
 			    <span class="carousel-control-prev-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
 			    <span class="sr-only">Previous</span>
@@ -128,17 +128,11 @@
 				Top Price Decreases
 			</h5>	
 			<div id="carouselTopPriceDecrease" class="carousel slide" data-ride="carousel" data-interval="false">
-			  <ol class="carousel-indicators">
-			    <li data-target="#carouselTopPriceDecrease" data-slide-to="0" class="active"></li>
-			    <% for (var i = 8; i < topPriceDecrease.length; i +=8) { %>
-			    	<li data-target="#carouselTopPriceDecrease" data-slide-to="<%=i/8%>"></li>
-			    <%}%>
-			  </ol>
 			  <div class="carousel-inner">
 			    <div class="carousel-item active" data-interval="false">
 			    	<div class = "container-fluid">
 				      <div class = "row justify-content-between">
-							<% for (var i = 0; i < 8; i ++) { %>
+							<% for (var i = 0; i < 4; i ++) { %>
 								<div class = "col-3">
 									<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceDecrease[i].name.split(" ").join("_").toLowerCase()%>">
 										<img src = "/images/small/<%=topPriceDecrease[i].id%>.gif" title = "<%=topPriceDecrease[i].name%>">
@@ -150,11 +144,11 @@
 							</div>
 						</div>
 			    </div>
-			    <% for (var i = 8; i < topPriceDecrease.length; i +=8) { %>
+			    <% for (var i = 4; i < topPriceDecrease.length; i +=4) { %>
 		    		<div class = "carousel-item" data-interval="false">
 		    			<div class = "container-fluid">
 		    				<div class = "row justify-content-between">
-		    					<% for (let p = 0; p < 8; p ++) {%>
+		    					<% for (let p = 0; p < 4; p ++) {%>
 		    						<div class = "col-3">
 											<a class="btn btn-secondary" style = "font-size: 10px; color: #eeebe4; width: 100%" href = "/item/data/<%=topPriceDecrease[i + p].name.split(" ").join("_").toLowerCase()%>">
 												<img src = "/images/small/<%=topPriceDecrease[i + p].id%>.gif" title = "<%=topPriceDecrease[i + p].name%>">
@@ -168,6 +162,12 @@
 		    		</div>
 					<% } %>
 			  </div>
+			  <ol class="carousel-indicators">
+			    <li data-target="#carouselTopPriceDecrease" data-slide-to="0" class="active"></li>
+			    <% for (var i = 4; i < topPriceDecrease.length; i +=4) { %>
+			    	<li data-target="#carouselTopPriceDecrease" data-slide-to="<%=i/4%>"></li>
+			    <%}%>
+			  </ol>
 			  <a class="carousel-control-prev" href="#carouselTopPriceDecrease" role="button" data-slide="prev">
 			    <span class="carousel-control-prev-icon rounded" aria-hidden="true" style="background-color:#6c757d"></span>
 			    <span class="sr-only">Previous</span>
@@ -181,220 +181,19 @@
 		
 			
 		</div>
-		<div class = "col-3" id = "investmentContainer">
-			<% include ./partials/profits.ejs %>
-			<% include ./partials/losses.ejs %>
+		<div class = "col-3">
+			<div class = "invisible">
+				invisible
+			</div>
+			<h5 class = "border-bottom">
+				Tracked Items
+			</h5>	
+			<div id = "investmentContainer">
+				<% include ./partials/profits.ejs %>
+				<% include ./partials/losses.ejs %>
+			</div>
 		</div>
 	</div>
 </div>
 
 <% include ./partials/footer.ejs %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- <div class = "container-fluid">
-	<div class = "row justify-content-around">
-		<div id = "featurecontainer" class = "col-8 mt-4">
-			<div class = "container-fluid">
-				<div class = "row justify-content-around">
-					<div class ="col-5 border mainfeature">
-						<div class = "container-fluid">
-							<div class = "row justify-content-center">
-								<i class="fa fa-search fa-3x"></i>
-							</div>
-						</div>
-						<div class = "container" id = "searchfeature">
-							<div id = "searchform">
-								<h3 class = "text-center"> search </h3>
-								<form action = "./item/search" method = "POST">
-									<div class = "d-flex justify-content-center">
-										<input class = "text-center" type = "text" name = "searchQuery" placeholder= "enter item name" minlength="3"required>
-										<button  type="submit">
-											<i class="fa fa-search"></i>
-										</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-					<div class ="col-5 border mainfeature">
-						<div class = "container-fluid position-absolute" style = "left : 0px; z-index : 1">
-							<div class = "row justify-content-end">
-								<div class = "col-2 mt-3">
-									<button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#filterform" aria-expanded="false" aria-controls="filterform">
-										<i class="fa fa-cog"></i>
-									</button>
-								</div>
-							</div>
-							<div class="collapse container-fluid" id="filterform">
-								<div id = "filteroptions">
-										<h4 class = "text-center"> filters </h4>
-										<br>
-										<p> 
-											<input type="checkbox" name="filterByPosition" class = "filterdata" checked = "true"> show the first
-											<input type="number" name="position" class = "filterdata" value= "500">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByTrend" class = "filterdata"> price trend
-											<select name = "trendType" class = "filterdata">
-												<option value="none">none</option>
-												<option value="filterByPositiveTrend">positive</option>
-												<option value="filterByNegativeTrend">negative</option>
-												<option value="filterByNeutralTrend">neutral</option>
-											</select>
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByTrendDuration" class = "filterdata"> minimum price trend duration
-											<input type="number" name="trendDuration" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
-											<input type="number" name="priceLowerBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
-											<input type="number" name="priceUpperBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
-											<input type="number" name="volumeLowerBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
-											<input type="number" name="volumeUpperBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
-											<input type="number" name="itemLimitUpperBound" class = "filterdata">
-										</p>
-										<p> 
-											<input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
-											<input type="number" name="itemLimitLowerBound" class = "filterdata">
-										</p>
-							  	</div>
-							</div>
-						</div>
-						<div class ="container-fluid" id = "sortfeature">
-							<div class = "container-fluid">
-								<div class = "row justify-content-center">
-									<i class="fa fa-line-chart fa-3x"></i>
-								</div>
-							</div>
-							<form id = "sortform" action = "./item/sort" method = "GET">
-								<h3 class = "text-center"> sort </h3>
-								<p> 
-									<input type="radio" name = "typeSort" value="roundedSort"> rounded values
-									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="values are rounded down before comparison e.g. 123 -> 100, 4321 -> 1000">
-										<i class="fa fa-info-circle"></i>
-									</button>
-								</p>
-								<p> 
-									<input type="radio" name = "typeSort" value="weightedSort"> weighted values
-									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="weighted values (adjusted by you) are compared instead of the raw value, must select a value to sort by before toggling">
-										<i class="fa fa-info-circle"></i>
-									</button>
-								</p>
-								<div class = "sortoptions">
-									<select class = "sortby" id = "firstselect" name = "sortby[0]">
-										<option value="sortByNone">none</option>
-										<option value="sortByPrice">by current price</option>
-										<option value="sortByVolume">by current volume</option>
-									</select>
-									<button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
-									<button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="select a value to sort by">
-										<i class="fa fa-info-circle"></i>
-									</button>
-									<div class="progress position-relative d-none">
-										<div class="progress-bar" role="progressbar" style="width: 1%; color:black">1x</div>
-										<input name = "weight[0]" min = 0 max = 100000 value = 1 class = "position-absolute weightrange" type = "range">
-									</div>
-								</div>
-								<div class = "d-flex justify-content-center mt-2">
-									<button id = "sortsubmit" class = "btn btn-light">sort</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div> -->

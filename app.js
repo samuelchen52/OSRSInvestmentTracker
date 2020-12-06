@@ -32,9 +32,9 @@ var app = express();
 var allitems = null;
 var allitemsOrdered = null;
 
-var topPriceIncrease = new Array(128);
-var topPriceDecrease = new Array(128);
-var topScore = new Array(128);
+var topPriceIncrease = new Array(100);
+var topPriceDecrease = new Array(100);
+var topScore = new Array(100);
 var dateCalculated;
 
 var appUpdating = true;
@@ -397,69 +397,38 @@ function populateFilterArr(req, filterby)
 	{
 		filterby.push(filterFunctions.filterByNonMember);
 	}
-	if (req.query.filterByTrend)
+	if (filterFunctions[req.query.trendType] !== undefined)
 	{
-		if (filterFunctions[req.query.trendType] !== undefined)
-		{
-			filterby.push(filterFunctions[req.query.trendType]);
-		}
+		filterby.push(filterFunctions[req.query.trendType]);
 	}
-	if (req.query.filterByPriceLowerBound)
+	if (parseInt(req.query.priceLowerBound))
 	{
-		if (parseInt(req.query.priceLowerBound))
-		{
-			filterby.push(filterFunctions["filterByPriceLowerBound"](parseInt(req.query.priceLowerBound)));
-		}
+		filterby.push(filterFunctions["filterByPriceLowerBound"](parseInt(req.query.priceLowerBound)));
 	}
-	if (req.query.filterByPriceUpperBound)
+	if (parseInt(req.query.priceUpperBound))
 	{
-		if (parseInt(req.query.priceUpperBound))
-		{
-			filterby.push(filterFunctions["filterByPriceUpperBound"](parseInt(req.query.priceUpperBound)));
-		}
+		filterby.push(filterFunctions["filterByPriceUpperBound"](parseInt(req.query.priceUpperBound)));
 	}
-	if (req.query.filterByVolumeLowerBound)
+	if (parseInt(req.query.volumeLowerBound))
 	{
-		if (parseInt(req.query.volumeLowerBound))
-		{
-			filterby.push(filterFunctions["filterByVolumeLowerBound"](parseInt(req.query.volumeLowerBound)));
-		}
+		filterby.push(filterFunctions["filterByVolumeLowerBound"](parseInt(req.query.volumeLowerBound)));
 	}
-	if (req.query.filterByVolumeUpperBound)
+	if (parseInt(req.query.volumeUpperBound))
 	{
-		if (parseInt(req.query.volumeUpperBound))
-		{
-			filterby.push(filterFunctions["filterByVolumeUpperBound"](parseInt(req.query.volumeUpperBound)));
-		}
+		filterby.push(filterFunctions["filterByVolumeUpperBound"](parseInt(req.query.volumeUpperBound)));
 	}
-	if (req.query.filterByItemLimitUpperBound)
+	if (parseInt(req.query.itemLimitLowerBound))
 	{
-		if (parseInt(req.query.itemLimitUpperBound))
-		{
-			filterby.push(filterFunctions["filterByItemLimitUpperBound"](parseInt(req.query.itemLimitUpperBound)));
-		}
+		filterby.push(filterFunctions["filterByItemLimitLowerBound"](parseInt(req.query.itemLimitLowerBound)));
 	}
-	if (req.query.filterByItemLimitLowerBound)
+	if (parseInt(req.query.position))
 	{
-		if (parseInt(req.query.itemLimitLowerBound))
-		{
-			filterby.push(filterFunctions["filterByItemLimitLowerBound"](parseInt(req.query.itemLimitLowerBound)));
-		}
+		filterby.position = req.query.position;
+		//filterby.push(filterFunctions["filterByPosition"](parseInt(req.query.position)));
 	}
-	if (req.query.filterByPosition)
+	if (parseInt(req.query.trendDuration))
 	{
-		if (parseInt(req.query.position))
-		{
-			filterby.position = req.query.position;
-			//filterby.push(filterFunctions["filterByPosition"](parseInt(req.query.position)));
-		}
-	}
-	if (req.query.filterByTrendDuration)
-	{
-		if (parseInt(req.query.trendDuration))
-		{
-			filterby.push(filterFunctions["filterByTrendDuration"](parseInt(req.query.trendDuration)));
-		}
+		filterby.push(filterFunctions["filterByTrendDuration"](parseInt(req.query.trendDuration)));
 	}
 }
 //fetches all docs and assigns it to allitems
@@ -559,19 +528,19 @@ async function updateDailyBest ()
 
 	quicksort(allitems, 0, allitems.length - 1, [sortByScore]);
 	filteredArr = filter(allitems, [filterByScore]);
-	for (let i = 0; i < Math.min(filteredArr.length, 128); i ++)
+	for (let i = 0; i < Math.min(filteredArr.length, 100); i ++)
 	{
 		topScore[i] = filteredArr[i];
 	}
 
 	quicksort(allitems, 0, 1000, [sortByPriceIncrease]);
-	for (let i = 0; i < 128; i ++)
+	for (let i = 0; i < 100; i ++)
 	{
 		topPriceIncrease[i] = allitems[i];
 	}
 
 	quicksort(allitems, 0, 1000, [sortByPriceDecrease]);
-	for (let i = 0; i < 128; i ++)
+	for (let i = 0; i < 100; i ++)
 	{
 		topPriceDecrease[i] = allitems[i];
 	}
@@ -913,7 +882,7 @@ app.post("/register", function(req, res)
 			}
 			else if (newuser)
 			{
-				res.render("register.ejs", {message : "that username is already taken!", border : "border border-danger"})
+				res.render("register.ejs", {message : "that username is already taken!", textColor: "text-danger"})
 			}
 			else
 			{
@@ -932,7 +901,7 @@ app.post("/register", function(req, res)
 							}
 							else
 							{
-								res.render("register.ejs", {message: "succesfully registered!", border: "border border-success"});
+								res.render("register.ejs", {message: "succesfully registered!", textColor: "text-success"});
 							}
 						});
 			    }

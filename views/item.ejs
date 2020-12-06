@@ -1,5 +1,10 @@
 <% include ./partials/header.ejs %>
 
+<div class = "invisible">
+    invisible
+</div>
+
+
 <div class = "container-fluid">
     <div class = "row justify-content-around">
         <div class = "col-8 mt-4" id = "itemdata">
@@ -23,7 +28,7 @@
                                                 Members: <%=item.members ? "True" : "False"%>
                                             </p>
                                             <p>
-                                                <a href="https://oldschool.runescape.wiki/w/Exchange:<%=item.wikiName[0].toUpperCase() + item.wikiName.split(" ").join("_").toLowerCase().substring(1)%>">Wiki Page</a>
+                                                <a href="https://oldschool.runescape.wiki/w/Exchange:<%=item.name[0].toUpperCase() + item.name.split(" ").join("_").toLowerCase().substring(1)%>">Wiki Page</a>
                                             </p>
                                         </div>  
                                 </div>

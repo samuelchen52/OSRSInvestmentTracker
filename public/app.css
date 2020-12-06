@@ -209,10 +209,10 @@ courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
 	top : -20px;
 }
 
-#footer {
-	height: 120px;
+#fakesortsubmit {
 	position: absolute;
-	bottom: 0px;
+	right: 0px;
+	top: 0px;
 }
 
 a:-webkit-any-link{
@@ -225,9 +225,13 @@ text-decoration:none !important;
 	height: 4px;
 }
 
-.carousel {
-	height: 250px;	
+.carousel-indicators {
+	position: static;
 }
+
+/*.carousel {
+	height: 250px;	
+}*/
 
 .carousel-inner {
 	padding-left: 20px;
@@ -246,6 +250,17 @@ text-decoration:none !important;
 	background-color: white;
 }
 
+.nav-link {
+	padding: 0px;
+	font-weight: 500; 
+	line-height: 1.2; 
+	font-size: 1.25rem;
+}
+
+.nav-tabs {
+	border-bottom: 0px;
+}
+
 .deleteitem {
 	right: 5px;
 	top: 5px;
@@ -261,9 +276,6 @@ text-decoration:none !important;
 }
 
 #investmentContainer {
-	margin-top: 1rem !important;
-}
-
-#optionContainer {
-	margin-top: 1rem !important;
+	height: 450px;
+	overflow-y: scroll;
 }

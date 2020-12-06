@@ -1,118 +1,104 @@
 <% include ./partials/header.ejs %>
 
-<div class = "container-fluid">
+<div class = "container-fluid pb-5">
     <div class = "row">
         <div class = "col-3" id = "optionContainer"> 
-
-            <div class = "container-fluid">
-                <div class = "row justify-content-around">
-                    <div class ="col-12 border mainfeature">
-                        <div class = "container-fluid position-absolute" style = "left : 0px; z-index : 1">
-                            <div class = "row justify-content-end">
-                                <div class = "col-2 mt-3">
-                                    <button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#filterform" aria-expanded="false" aria-controls="filterform">
-                                        <i class="fa fa-cog"></i>
-                                    </button>
+            <div class = "invisible">
+                invisible
+            </div>
+            <ul class="nav nav-tabs position-relative" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active px-2" id="sort-tab" data-toggle="tab" href="#sort" role="tab" aria-controls="sort" aria-selected="true">Sort</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link px-2" id="filter-tab" data-toggle="tab" href="#filter" role="tab" aria-controls="filter" aria-selected="false">Filter</a>
+              </li>
+            </ul>
+            <form id = "sortform" action = "/item/sort" method = "GET">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active mt-3" id="sort" role="tabpanel" aria-labelledby="sort-tab">
+                            <p> 
+                                <input type="radio" name = "typeSort" value="roundedSort"> rounded values
+                                <button type="button" class="btn btn-light btn-sm" data-container="body" data-toggle="tooltip" data-placement="right" title="values are rounded down before comparison e.g. 123 -> 100, 4321 -> 1000" style="border:none; background-color: white">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                            </p>
+                            <p> 
+                                <input type="radio" name = "typeSort" value="weightedSort"> weighted values
+                                <button type="button" class="btn btn-light btn-sm" data-container="body" data-toggle="tooltip" data-placement="right" title="weighted values (adjusted by you) are compared instead of the raw value, must select a value to sort by before toggling" style="border:none; background-color: white">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                            </p>
+                            <div class = "sortoptions">
+                                <select class = "sortby" id = "firstselect" name = "sortby[0]">
+                                    <option value="sortByNone">none</option>
+                                    <option value="sortByPrice">by current price</option>
+                                    <option value="sortByVolume">by current volume</option>
+                                </select>
+                                <button type = "button" class = "btn btn-outline-dark btn-sm" id = "addoption"> <i class="fa fa-plus"></i></button>
+                                <button type="button" class="btn btn-light btn-sm" data-container="body" data-toggle="tooltip" data-placement="right" title="select a value to sort by" style="border:none; background-color: white">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                                <div class="progress position-relative d-none">
+                                    <div class="progress-bar" role="progressbar" style="width: 1%; color:black">1x</div>
+                                    <input name = "weight[0]" min = 0 max = 100000 value = 1 class = "position-absolute weightrange" type = "range">
                                 </div>
                             </div>
-                            <div class="collapse container-fluid" id="filterform">
-                                <div id = "filteroptions">
-                                        <h4 class = "text-center"> filters </h4>
-                                        <br>
-                                        <p> 
-                                            <input type="checkbox" name="filterByPosition" class = "filterdata" checked = "true"> show the first
-                                            <input type="number" name="position" class = "filterdata" value= "500">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByNonMember" class = "filterdata"> f2p only
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByTrend" class = "filterdata"> price trend
-                                            <select name = "trendType" class = "filterdata">
-                                                <option value="none">none</option>
-                                                <option value="filterByPositiveTrend">positive</option>
-                                                <option value="filterByNegativeTrend">negative</option>
-                                                <option value="filterByNeutralTrend">neutral</option>
-                                            </select>
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByTrendDuration" class = "filterdata"> minimum price trend duration
-                                            <input type="number" name="trendDuration" class = "filterdata">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByPriceLowerBound" class = "filterdata"> minimum price
-                                            <input type="number" name="priceLowerBound" class = "filterdata">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByPriceUpperBound" class = "filterdata"> maximum price
-                                            <input type="number" name="priceUpperBound" class = "filterdata">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByVolumeLowerBound" class = "filterdata"> minimum volume
-                                            <input type="number" name="volumeLowerBound" class = "filterdata">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByVolumeUpperBound" class = "filterdata"> maximum volume
-                                            <input type="number" name="volumeUpperBound" class = "filterdata">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByItemLimitUpperBound" class = "filterdata"> maximum item limit
-                                            <input type="number" name="itemLimitUpperBound" class = "filterdata">
-                                        </p>
-                                        <p> 
-                                            <input type="checkbox" name="filterByItemLimitLowerBound" class = "filterdata"> minimum item limit
-                                            <input type="number" name="itemLimitLowerBound" class = "filterdata">
-                                        </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class ="container-fluid" id = "sortfeature">
-                            <div class = "container-fluid">
-                                <div class = "row justify-content-center">
-                                    <i class="fa fa-line-chart fa-3x"></i>
-                                </div>
-                            </div>
-                            <form id = "sortform" action = "/item/sort" method = "GET">
-                                <h3 class = "text-center"> sort </h3>
-                                <p> 
-                                    <input type="radio" name = "typeSort" value="roundedSort"> rounded values
-                                    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="values are rounded down before comparison e.g. 123 -> 100, 4321 -> 1000">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                </p>
-                                <p> 
-                                    <input type="radio" name = "typeSort" value="weightedSort"> weighted values
-                                    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="weighted values (adjusted by you) are compared instead of the raw value, must select a value to sort by before toggling">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                </p>
-                                <div class = "sortoptions">
-                                    <select class = "sortby" id = "firstselect" name = "sortby[0]">
-                                        <option value="sortByNone">none</option>
-                                        <option value="sortByPrice">by current price</option>
-                                        <option value="sortByVolume">by current volume</option>
-                                    </select>
-                                    <button type = "button" id = "addoption"> <i class="fa fa-plus"></i></button>
-                                    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="select a value to sort by">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                    <div class="progress position-relative d-none">
-                                        <div class="progress-bar" role="progressbar" style="width: 1%; color:black">1x</div>
-                                        <input name = "weight[0]" min = 0 max = 100000 value = 1 class = "position-absolute weightrange" type = "range">
-                                    </div>
-                                </div>
-                                <div class = "d-flex justify-content-center mt-2">
-                                    <button id = "sortsubmit" class = "btn btn-light">sort</button>
-                                </div>
-                            </form>
+                    </div>
+                    <div class="tab-pane fade" id="filter" role="tabpanel" aria-labelledby="filter-tab">
+                        <div id = "filteroptions">
+                            <p> 
+                                <input type="checkbox" name="filterByNonMember" class = "filterdata float-right"> free-to-play only
+                            </p>
+                            <p> 
+                                Items shown 
+                                <input type="number" name="position" class = "filterdata float-right" value= "500">
+                            </p>
+                            <p> 
+                                Trend Type
+                                <select name = "trendType" class = "filterdata float-right ">
+                                    <option value="none">none</option>
+                                    <option value="filterByPositiveTrend">positive</option>
+                                    <option value="filterByNegativeTrend">negative</option>
+                                    <option value="filterByNeutralTrend">neutral</option>
+                                </select>
+                            </p>
+                            <p> 
+                                Trend Duration <input type="number" name="trendDuration" class = "filterdata float-right">
+                            </p>
+                            <p> 
+                                Price (min.)
+                                <input type="number" name="priceLowerBound" class = "filterdata float-right">
+                            </p>
+                            <p>
+                                Price (max)
+                                <input type="number" name="priceUpperBound" class = "filterdata float-right">
+                            </p>
+                            <p> 
+                                Volume (min.)
+                                <input type="number" name="volumeLowerBound" class = "filterdata float-right">
+                            </p>
+                            <p>
+                                Volume (max)
+                                <input type="number" name="volumeUpperBound" class = "filterdata float-right">
+                            </p>
+                            <p> 
+                                Item Limit (min.)
+                                <input type="number" name="itemLimitLowerBound" class = "filterdata float-right">
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class = "d-flex justify-content-center mt-2">
+                    <button id = "sortsubmit" class = "btn btn-outline-dark">Apply</button>
+                </div>
+            </form>
 
         </div>
         <div class = "col-6" id = "mainContainer">
-
+            <div class = "invisible">
+                invisible
+            </div>
             <h5 class = "border-bottom">
                 Sorted Results <span id = "itemnumrange"></span>
             </h5>   
@@ -167,9 +153,43 @@
                         <% } %>
                     </tr>
                 <% } %>
-                <!-- <% for(i; i < Math.ceil((items.length) / 10) * 10; i++) {%>
-                    <tr class = "item d-none"> nothing here </tr>
-                <% }%> -->
+                <% for(i; i < Math.ceil((items.length) / 10) * 10; i++) {%>
+                    <tr class = "item d-none invisible">
+                        <td> 
+                            <% if (user) { %>
+                                <button class = "additem btn btn-outline-dark" 
+                                data-item-name = "<%= items[0].name %>" 
+                                data-item-name-lower = "<%= items[0].name_lower %>" 
+                                data-item-price = "<%= items[0].statdata.currentPrice.price %>"
+                                data-item-updated = "<%= items[0].lastUpdated.valueOf() %>"
+                                data-item-id = "<%= items[0].id %>">
+                                    <i class = "fa fa-plus"> </i> 
+                                </button>
+                            <% } %>
+                            <img src = "/images/small/<%=items[0].id%>.gif">
+                            <a href = "/item/data/<%= items[0].name_lower %>"><%= items[0].name %> </a> 
+                         </td>
+                        <!-- <td> <%= items[0].id %> </td>
+                        <td> <%= items[0].limit %> </td> -->
+                        <td> <%= items[0].statdata.currentPrice.price.toLocaleString() %> </td>
+                        <td> <%= items[0].statdata.currentVolume.volume.toLocaleString() %> </td>
+                        <td> <%= items[0].statdata.currentTrend%> </td>
+                        <!-- <td> <%= items[0].statdata.currentTrendDuration%> </td>
+                        <td> <%= items[0].members %> </td> -->
+                        <% if (progressbars) { %>
+                            <td>
+                                 <div class="progress">
+                                <%  for (var q = 0; q < progressbars.length; q ++) { %>
+                                  <div class="progress-bar" role="progressbar" 
+                                  style="width:<%=progressbars[q].percentages[i]%>%; background-color:<%=progressbars[q].color%>">
+                                    <%=Math.floor(progressbars[q].scores[i] * 1000) / 1000%>
+                                  </div>
+                                <% } %>
+                                </div>
+                            </td>
+                        <% } %>
+                    </tr>
+                <% }%>
             </table>
             <% if (items.length > 0) { %>
                 <div class = "d-flex justify-content-center">
@@ -188,9 +208,17 @@
             <% } %>
       
         </div>
-        <div class = "col-3" id = "investmentContainer">
-            <% include ./partials/profits.ejs %>
-            <% include ./partials/losses.ejs %>
+        <div class = "col-3">
+            <div class = "invisible">
+                invisible
+            </div>
+            <h5 class = "border-bottom">
+                Tracked Items
+            </h5>   
+            <div id = "investmentContainer">
+                <% include ./partials/profits.ejs %>
+                <% include ./partials/losses.ejs %>
+            </div>
         </div>
     </div>
 </div>
@@ -288,8 +316,8 @@
     }
 
     var numItemsShowed = 10;
-    var numItems = $(".item").length;
-    var numPages = Math.ceil($(".item").length / numItemsShowed);
+    var numItems = <%=items.length%>;
+    var numPages = Math.ceil(numItems / numItemsShowed);
 
     //sanitize hash
     var hash = checkHash(window.location.hash) ? 1 : parseInt(window.location.hash.substring(1, window.location.hash.length));
@@ -417,7 +445,7 @@
 
             $(".sortoptions").last().after(
                 "<div class = \"sortoptions\">" +
-                    "<h6> then by </h6>" +
+                    "<h6> then </h6>" +
                     "<select class = \"sortby\"name = \"sortby[" + optionIndex + "]\">" +
                         optionString +
                     "</select>" +
@@ -495,21 +523,6 @@
         {
             $(".progress").last().children(".progress-bar").css("background-color", colors[$(this).children("option:selected").val()]);
         }
-    });
-
-    sortsubmit.click(function ()
-    {
-        let checkboxes = $(".filterdata[type='checkbox']");
-        for (let i = 0; i < checkboxes.length; i++)
-        {
-            let checkbox = checkboxes[i];
-            if (!checkbox.checked)
-            {
-                $(checkbox).attr("disabled", true);
-                $(checkbox).siblings().attr("disabled", true);
-            }
-        };
-        sortform.append($(".filterdata").toggleClass("d-none"));
     });
 
 
