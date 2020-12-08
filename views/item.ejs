@@ -1,91 +1,118 @@
 <% include ./partials/header.ejs %>
 
-<div class = "invisible">
-    invisible
-</div>
-
 
 <div class = "container-fluid">
-    <div class = "row justify-content-around">
-        <div class = "col-8 mt-4" id = "itemdata">
-            <div class = "row mt-4">
-                <div class = "col-4 px-0">
-                    <div class = "container-fluid">
-                        <div class = "row">
-                            <div class = "col-6 pl-2">
-                                <div class="card">
-                                    <h6 class="card-header text-center border-bottom border-dark"><%= item.name %></h6>
-                                    <img class = "card-img-top" alt= "<%= item.name %>" src= "/images/big/<%=item.id%>.gif">
-                                        <div class="card-body">
-                                            <p class="card-text border-bottom"><i>"<%=item.description%>"</i></p>
-                                            <p class = "border-bottom"> 
-                                                Item ID : <%=item.id%>
-                                            </p>
-                                            <p>
-                                                Item Limit: <%=item.limit%>
-                                            </p>
-                                            <p>
-                                                Members: <%=item.members ? "True" : "False"%>
-                                            </p>
-                                            <p>
-                                                <a href="https://oldschool.runescape.wiki/w/Exchange:<%=item.name[0].toUpperCase() + item.name.split(" ").join("_").toLowerCase().substring(1)%>">Wiki Page</a>
-                                            </p>
-                                        </div>  
-                                </div>
-                            </div>
-                            <div class = "col-6 px-0">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item label border-0">Current Price / Price Change</li>
-                                    <li class="list-group-item">
-                                        <%=item.statdata.currentPrice.price != -1 ? item.statdata.currentPrice.price.toLocaleString() : "N/A" %> gp / <%=change != null ? (change >= 0 ? "+" : "") + change.toLocaleString() : ""%>
-                                    </li>
-                                    <li class="list-group-item label border-0">Avg. Positive / Avg. Negative Price Change</li>
-                                    <li class="list-group-item">
-                                        <%=(Math.floor(item.statdata.averagePositivePriceChange * 1000) / 1000).toLocaleString()%> / <%=(Math.floor(item.statdata.averageNegativePriceChange * 1000) / 1000).toLocaleString()%>
-                                    </li>
-                                    <li class="list-group-item label border-0">Min. / Max / Avg. Price</li>
-                                    <li class="list-group-item">
-                                        <%=item.statdata.minPrice.toLocaleString()%> / <%=item.statdata.maxPrice.toLocaleString()%> / <%=(Math.floor(item.statdata.averagePrice * 1000) / 1000).toLocaleString()%>
-                                    </li>
-                                    <li class="list-group-item label border-0">Current Volume</li>
-                                    <li class="list-group-item"><%=item.statdata.currentVolume.volume.toLocaleString()%></li>
-                                    <li class="list-group-item label border-0">Avg. Positive / Avg. Negative / Avg. Neutral Price Trend Duration</li>
-                                    <li class="list-group-item"><%=Math.floor(item.statdata.averagePositiveTrendDuration * 1000) / 1000%> / <%=Math.floor(item.statdata.averageNegativeTrendDuration * 1000) / 1000%> / <%=Math.floor(item.statdata.averageNeutralTrendDuration * 1000) / 1000%></li>
-                                </ul>
-                            </div>
-                            <div class = "col-12">
-                            </div>
+    <div class = "row">
+        <div class = "col-3" id = "optionContainer"> 
+            
+        </div>
+        <div class = "col-6" id = "mainContainer">
+            <div class = "text-right">
+                <small class="text-muted">
+                    last updated:
+                    <%= Math.floor((new Date().valueOf() - item.lastUpdated.valueOf() ) / (1000 * 60 * 60 * 24)) %>d,
+                    <%= Math.floor(Math.floor((new Date().valueOf() - item.lastUpdated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %>h ago
+                    <form class = "d-inline" action = "/item/data/<%=item.id%>" method = "POST">
+                        <button type = "submit" class="btn btn-outline-dark btn-sm"> <i class = "fa fa-refresh"> </i> </button>
+                    </form>
+                </small>
+            </div>
+            <h5 class = "border-bottom">
+                <%=item.name%>
+            </h5>   
+            <div>
+                <div style="float: left;">
+                <img class = "border rounded-circle" alt= "<%= item.name %>" src= "/images/big/<%=item.id%>.gif">
+                </div>
+                <div class = "container-fluid pl-5">
+                    <div class = "row pl-4">
+                        <div class = "col-12">
+                            <small class = "text-muted"><i>"<%=item.description%>"</i></small>
+                        </div>
+                        <div class = "col-4">
+                            <span class = "font-weight-bold border-bottom">Item ID</span>
+                            <p><%=item.id%></p>
+                        </div>
+                        <div class = "col-4">
+                            <span class = "font-weight-bold border-bottom">Item Limit</span>
+                            <p><%=item.limit%></p>
+                        </div>
+                        <div class = "col-4">
+                            <span class = "font-weight-bold border-bottom">Free-to-play</span>
+                            <p><%=!item.members%></p>
                         </div>
                     </div>
-                </div>
-                <div class = "col-8">
-                    <div class = "container-fluid">
-                        <div class = "row justify-content-center mt-2">  
-                            <div class = "col-6">
-                                <form class = "d-inline" action = "/item/data/<%=item.id%>" method = "POST">
-                                    <button type = "submit"> <i class = "fa fa-refresh"> </i> </button>
-                                </form>
-                                Last Updated: <%= item.lastUpdated.toDateString().substring(3) %>
-                            </div>
-                            <div class = "col-12">
-                                <canvas id= "myChart" width="225" height="100"></canvas>
-                            </div>
-                            <div class = "col-5">
-                                <input id = "daterangeindicator" class = "text-center" type = "text" disabled> 
-                            </div>
+                    <div class = "row pl-4">
+                        <div class = "col-4">
+                            <span class = "font-weight-bold border-bottom">Current Price</span>
+                            <p>
+                                <%=item.statdata.currentPrice.price != -1 ? item.statdata.currentPrice.price.toLocaleString() : "N/A" %> <%=change != null ? (change >= 0 ? "(+" : "(") + change.toLocaleString() + ")" : ""%> 
+                            </p>
                         </div>
-                        <div class = "row justify-content-between mt-3">
-                            <button id = "decrease"> <i class = "fa fa-minus"> </i> </button>
-                            <input id = "daterange" type="range" min="1" max="1500" value="1">
-                            <button id = "increase"> <i class = "fa fa-plus"> </i> </button>
+                        <div class = "col-4">
+                            <span class = "font-weight-bold border-bottom">Min. / Max Price</span>
+                            <p>
+                                <%=item.statdata.minPrice.toLocaleString()%> / <%=item.statdata.maxPrice.toLocaleString()%>
+                            </p>
+                        </div>
+                        <div class = "col-4">
+                            <span class = "font-weight-bold border-bottom">Avg. Price Change</span>
+                            <p>
+                                +<%=(Math.floor(item.statdata.averagePositivePriceChange * 1000) / 1000).toLocaleString()%> / <%=(Math.floor(item.statdata.averageNegativePriceChange * 1000) / 1000).toLocaleString()%>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class = "container-fluid">
+                <div class = "row justify-content-center mt-2">  
+                    <div class = "col-12">
+                        <canvas id= "myChart" width="225" height="100"></canvas>
+                    </div>
+                    <div class = "col-5">
+                        <small class = "text-muted">
+                        <input id = "daterangeindicator" class = "text-center" type = "text" disabled> 
+                    </small>
+                    </div>
+                </div>
+                <div class = "row justify-content-between mt-3">
+                    <button id = "decrease" class = "btn-outline-dark btn-sm btn"> <i class = "fa fa-angle-left"> </i> </button>
+                    <input id = "daterange" type="range" min="1" max="1500" value="1">
+                    <button id = "increase" class = "btn-outline-dark btn-sm btn"> <i class = "fa fa-angle-right"> </i> </button>
+                </div>
+            </div>
+            <div class = "text-center">
+                <small class = "text-muted">
+                    <a href="https://oldschool.runescape.wiki/w/Exchange:<%=item.name[0].toUpperCase() + item.name.split(" ").join("_").toLowerCase().substring(1)%>">OSRS Wiki Page</a>
+                </small>
+            </div>
+            <div class= "text-center">
+                <small class = "text-muted">
+                    <a href="https://secure.runescape.com/m=itemdb_oldschool/<%=item.name[0].toUpperCase() + item.name.split(" ").join("+").toLowerCase().substring(1)%>/viewitem?obj=<%=item.id%>">Offical OSRS GE Page</a>
+                </small>
+            </div>
+        </div> 
+            
+
+        
+            
+        <div class = "col-3">
+            <% if (user){ %>
+                <div class = "invisible">
+                    invisible
+                </div>
+                <h5 class = "border-bottom">
+                    Tracked Items
+                </h5>   
+                <div id = "investmentContainer">
+                    <% include ./partials/profits.ejs %>
+                    <% include ./partials/losses.ejs %>
+                </div>
+            <% } %>
         </div>
     </div>
-</div> 
+</div>
+
 
 
 <script>

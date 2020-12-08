@@ -7,9 +7,11 @@
 		</div>
 		<div class = "col-6" id = "mainContainer">
 			<div class = "text-right">
-				last updated:
-				<%= Math.floor((new Date().valueOf() - dateCalculated.valueOf() ) / (1000 * 60 * 60 * 24)) %>d,
-				<%= Math.floor(Math.floor((new Date().valueOf() - dateCalculated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %>h ago
+				<small class="text-muted">
+					last updated:
+					<%= Math.floor((new Date().valueOf() - dateCalculated.valueOf() ) / (1000 * 60 * 60 * 24)) %>d,
+					<%= Math.floor(Math.floor((new Date().valueOf() - dateCalculated.valueOf() ) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) %>h ago
+				</small>
 			</div>
 
 			<h5 class = "border-bottom">
@@ -83,7 +85,7 @@
 										<img src = "/images/small/<%=topPriceIncrease[i].id%>.gif" title = "<%=topPriceIncrease[i].name%>">
 										<%=topPriceIncrease[i].name%>
 									</a>
-									<div class = "text-center"> <span style="color:green">+</span><%=topPriceIncrease[i].statdata.currentPrice.change.toLocaleString()%></div>
+									<div class = "text-center"> <span style="color:green">+<%=topPriceIncrease[i].statdata.currentPrice.change.toLocaleString()%></span></div>
 								</div>
 							<% } %>
 							</div>
@@ -99,7 +101,7 @@
 												<img src = "/images/small/<%=topPriceIncrease[i + p].id%>.gif" title = "<%=topPriceIncrease[i + p].name%>">
 												<%=topPriceIncrease[i + p].name%>
 											</a>
-											<div class = "text-center"> <span style="color:green">+</span><%=topPriceIncrease[i].statdata.currentPrice.change.toLocaleString()%></div>
+											<div class = "text-center"> <span style="color:green">+<%=topPriceIncrease[i].statdata.currentPrice.change.toLocaleString()%></span></div>
 										</div>
 		    					<%}%>
 		    				</div>
@@ -138,7 +140,7 @@
 										<img src = "/images/small/<%=topPriceDecrease[i].id%>.gif" title = "<%=topPriceDecrease[i].name%>">
 										<%=topPriceDecrease[i].name%>
 									</a>
-									<div class = "text-center"> <span style="color:red">-</span><%=Math.abs(topPriceDecrease[i].statdata.currentPrice.change).toLocaleString()%></div>
+									<div class = "text-center"> <span style="color:red">-<%=Math.abs(topPriceDecrease[i].statdata.currentPrice.change).toLocaleString()%></span></div>
 								</div>
 							<% } %>
 							</div>
@@ -154,7 +156,7 @@
 												<img src = "/images/small/<%=topPriceDecrease[i + p].id%>.gif" title = "<%=topPriceDecrease[i + p].name%>">
 												<%=topPriceDecrease[i + p].name%>
 											</a>
-											<div class = "text-center"> <span style="color:red">-</span><%=Math.abs(topPriceDecrease[i].statdata.currentPrice.change).toLocaleString()%></div>
+											<div class = "text-center"> <span style="color:red">-<%=Math.abs(topPriceDecrease[i].statdata.currentPrice.change).toLocaleString()%></span></div>
 										</div>
 		    					<%}%>
 		    				</div>
@@ -182,16 +184,18 @@
 			
 		</div>
 		<div class = "col-3">
-			<div class = "invisible">
-				invisible
-			</div>
-			<h5 class = "border-bottom">
-				Tracked Items
-			</h5>	
-			<div id = "investmentContainer">
-				<% include ./partials/profits.ejs %>
-				<% include ./partials/losses.ejs %>
-			</div>
+			<% if (user){ %>
+				<div class = "invisible">
+					invisible
+				</div>
+				<h5 class = "border-bottom">
+					Tracked Items
+				</h5>	
+				<div id = "investmentContainer">
+					<% include ./partials/profits.ejs %>
+					<% include ./partials/losses.ejs %>
+				</div>
+			<% } %>
 		</div>
 	</div>
 </div>

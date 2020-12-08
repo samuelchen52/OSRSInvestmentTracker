@@ -37,14 +37,14 @@ body {
 	transition-delay : .5s;
 }
 
-.itemtab
+/*.itemtab
 {
 	position: absolute;
 	top : 300px;
 	left : 500px;
 	width : 400px;
 	background-color: gray;
-}
+}*/
 
 .progress-bar
 {
@@ -61,15 +61,6 @@ body {
 	width: 100%;
 	opacity: 0;
 }
-
-/*******************************************************************
-courtesy of https://www.w3schools.com/howto/howto_css_flip_card.asp
-*******************************************************************/
-.flip-card {
-  width: 100%;
-   /* Remove this if you don't want the 3D effect */
-}
-
 
 
 #iconcontainer {
@@ -250,7 +241,7 @@ text-decoration:none !important;
 	background-color: white;
 }
 
-.nav-link {
+li .nav-link {
 	padding: 0px;
 	font-weight: 500; 
 	line-height: 1.2; 

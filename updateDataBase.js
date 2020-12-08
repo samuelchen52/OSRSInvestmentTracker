@@ -340,14 +340,14 @@ async function refreshDataBase(callback)
 	for (let i = 0; i < allitems.length; i ++)
 	{
 		console.log("updating item at index " +  i + "...")
-		// await new Promise (function (resolve ,reject)
-		// {
-		// 	initGraphData(0, [allitems[i]], resolve, getPriceOnly);
-		// });
-		// await new Promise (function (resolve ,reject)
-		// {
-		// 	initStatData([allitems[i]], resolve);
-		// });
+		await new Promise (function (resolve ,reject)
+		{
+			initGraphData(0, [allitems[i]], resolve, getPriceOnly);
+		});
+		await new Promise (function (resolve ,reject)
+		{
+			initStatData([allitems[i]], resolve);
+		});
 		allitems[i] = null;
 
 		await new Promise (function (resolve, reject)

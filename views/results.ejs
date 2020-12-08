@@ -1,5 +1,36 @@
 <% include ./partials/header.ejs %>
 
+<div class="modal fade" id="trackItemModal" tabindex="-1" aria-labelledby="trackItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="trackItemModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class = "container itemtab">
+            <form id = "investmentForm" method = 'POST'>
+                <div>
+                    <span>x</span> <input name = 'quantity' type = 'number' min = 1 required value = 1><span id = "investmentName"></span>
+                </div>
+                <div>
+                    <span style="font-size: .8rem">@</span><input name = 'pricePerItem' type = 'number' value = '' min = 1 required> <span>gp each</span>
+                </div>
+                <div>
+                    Total Price: <span id = 'totalPrice'> 0 gp </span>
+                </div>
+                <button class = "btn-outline-dark btn">Track</button>
+                <input class = 'd-none' name = 'lastUpdated'>
+                <input class = 'd-none' name = 'itemPrice'>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class = "container-fluid mb-5">
     <div class = "row">
         <div class = "col-3" id = "optionContainer"> 
@@ -29,7 +60,7 @@
                        <tr class = "item d-none">
                            <td> 
                                <% if (user) { %>
-                                <button class = "additem btn btn-outline-dark" 
+                                <button class = "additem btn btn-outline-dark btn-sm" 
                                 data-item-name = "<%= items[i].name %>" 
                                 data-item-name-lower = "<%= items[i].name_lower %>" 
                                 data-item-price = "<%= items[i].statdata.currentPrice.price %>"
@@ -94,16 +125,18 @@
             
         </div>
         <div class = "col-3">
-            <div class = "invisible">
-                invisible
-            </div>
-            <h5 class = "border-bottom">
-                Tracked Items
-            </h5>   
-            <div id = "investmentContainer">
-                <% include ./partials/profits.ejs %>
-                <% include ./partials/losses.ejs %>
-            </div>
+            <% if (user){ %>
+                <div class = "invisible">
+                    invisible
+                </div>
+                <h5 class = "border-bottom">
+                    Tracked Items
+                </h5>   
+                <div id = "investmentContainer">
+                    <% include ./partials/profits.ejs %>
+                    <% include ./partials/losses.ejs %>
+                </div>
+            <% } %>
         </div>
     </div>
 </div>
@@ -117,24 +150,15 @@
         var itemPrice = $(this).data().itemPrice;
         var lastUpdated = $(this).data().itemUpdated;
         var itemId = $(this).data().itemId;
+        
+        $("#trackItemModalLabel").html("<img src = /images/small/" + itemId + ".gif> " + itemName);
+        $("input[name='pricePerItem']").val(itemPrice);
+        $("input[name='lastUpdated']").val(lastUpdated);
+        $("input[name='itemPrice']").val(itemPrice);
+        $("#totalPrice").text(itemPrice);
+        $("#investmentName").text(itemName + "(s)");
+        $("#investmentForm").attr("action", "/item/add/" + itemId + "/" + window.location.href.split("/").join("_").split("?").join("-"));
 
-
-       var form = $(
-                    "<div class = 'container itemtab'>" +
-                        "<form method = 'POST' action = '/item/add/" + itemId + "/" + window.location.href.split("/").join("_").split("?").join("-") + "'>" +
-                            "<h1>" + itemName + " (" + itemPrice + "gp each)</h1>" +
-                            "<h3> quantity </h3>" +
-                            "<input name = 'quantity' type = 'number' min = 1 required>" +
-                            "<h3> price per item</h3>" +
-                            "<input name = 'pricePerItem' type = 'number' value = '" + itemPrice + "' min = 1 required>" +
-                            "<h3> Total Price </h3>" +
-                            "<span id = 'totalPrice'> 0 gp </span>" +
-                            "<input class = 'd-block' type = 'submit'>" +
-                            "<input class = 'd-none' name = 'lastUpdated' value = '" + lastUpdated + "''>" +
-                            "<input class = 'd-none' name = 'itemPrice' value = '" + itemPrice + "''>" +
-                        "</form>" +
-                    "</div>"
-                    ).appendTo($("body"));
 
         $(".itemtab input").on("input", function()
         {
@@ -146,22 +170,8 @@
             }
         });
 
-        form.focusout(function (event)
-        {
-            var form = $(this);
-            setTimeout(function () {
-                if (form.find(':focus').length === 0)
-                {
-                    form.remove();
-                }
-            }); 
-        });
-
-        $("input[name='quantity']").focus();
-
+        $('#trackItemModal').modal('show');
     });
-
-
 </script>
 
 
