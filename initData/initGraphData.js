@@ -122,17 +122,17 @@ async function pullFromWiki(start, documentarr, resolve)
 		if (statusCode !== 404)
 		{
 			console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "!");
-			// await new Promise(function (resolve, reject) 
-			// 	{
-			// 		setTimeout(resolve, 60000);
-			// 	});
+			await new Promise(function (resolve, reject) 
+			{
+				setTimeout(resolve, 600000);
+			});
 			// console.log("60 seconds up, trying again...");
-			return;
 		}
-		else
-		{
-			documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
-		}
+		// else
+		// {
+		// 	documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+		// }
+		documentarr[start] = null;
 	}
 	else
 	{
@@ -214,7 +214,7 @@ async function pullFromOSRSAPI(itemDocument, resolve)
 			{
 				if (response.statusCode === 404)
 				{
-					console.log("can't pull wiki graph data for item with id of "  + itemDocument.id + "!");
+					console.log("can't pull api graph data for item with id of "  + itemDocument.id + "!");
 					itemDocument.invalid = true;
 					itemDocument.save();
 			  }
@@ -235,9 +235,17 @@ async function pullFromOSRSAPI(itemDocument, resolve)
 	{
 		if (statusCode !== 404)
 		{
-			console.log("request was rejected for item with id of " + itemDocument.id + "!");
-			return;
+			console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "!");
+			await new Promise(function (resolve, reject) 
+			{
+				setTimeout(resolve, 600000);
+			});
 		}
+		// else
+		// {
+		// 	documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
+		// }
+		documentarr[start] = null;
 	}
 	else
 	{
@@ -246,7 +254,14 @@ async function pullFromOSRSAPI(itemDocument, resolve)
 			await item.populate(itemDocument, [{path: "graphdata"}]);
 		}
 		
-		reqbody = JSON.parse(reqbody);
+		try {
+			reqbody = JSON.parse(reqbody)
+		}
+		catch (e) {
+			console.log("API returned unparseable JSON?!");
+			resolve();
+			return;
+		}
 
 		let priceData = itemDocument.graphdata.priceData;
 		let newPriceData = reqbody.daily;
