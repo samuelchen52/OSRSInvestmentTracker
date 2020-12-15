@@ -93,8 +93,10 @@ async function pullFromWiki(start, documentarr, resolve)
 		{
 			if (error)
 			{
-				console.log("error:" +  error);
-				process.exit();
+				console.log("request error:" +  error);
+
+				reqbody = null;
+				resolve();
 			}
 			else if (response.statusCode !== 200)
 			{
@@ -207,8 +209,10 @@ async function pullFromOSRSAPI(itemDocument, resolve)
 		{
 			if (error)
 			{
-				console.log("error:" +  error);
-				process.exit();
+				console.log("request error:" +  error);
+
+				reqbody = null;
+				resolve();
 			}
 			else if (response.statusCode !== 200)
 			{
