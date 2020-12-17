@@ -239,17 +239,12 @@ async function pullFromOSRSAPI(itemDocument, resolve)
 	{
 		if (statusCode !== 404)
 		{
-			console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "!");
+			console.log("request was rejected for item with id of " + itemDocument.id + "!");
 			await new Promise(function (resolve, reject) 
 			{
 				setTimeout(resolve, 600000);
 			});
 		}
-		// else
-		// {
-		// 	documentarr[start] = null; // allow garbage collector to clean up the space being used up by the daily and average arrays
-		// }
-		documentarr[start] = null;
 	}
 	else
 	{
@@ -318,6 +313,7 @@ async function makeRequests(start, documentarr, callback, getPriceOnly)
 		//fetch price data from osrs api
 		await new Promise (function (resolve, reject)
 		{
+			documentarr[start] = null;
 			pullFromOSRSAPI(itemDocument, resolve);
 		});
 		start ++;
