@@ -325,6 +325,14 @@ async function updateDataBase (oldArr, orderedArr, callback)
 	}
 }
 
+//https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 //goes through entire database, and fetches graphdata for each
 async function refreshDataBase(callback)
 {
@@ -336,6 +344,8 @@ async function refreshDataBase(callback)
 	{
 		fetchAllDocuments(resolve, {invalid : false});
 	}).then(function(alldocs){allitems = alldocs;});
+
+	shuffleArray(allitems);
 
 	for (let i = 0; i < allitems.length; i ++)
 	{
