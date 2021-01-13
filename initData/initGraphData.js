@@ -126,7 +126,7 @@ async function pullFromWiki(start, documentarr, resolve)
 			console.log("request was rejected for item with id of " + documentarr[start].id + " at index " + start + "!");
 			await new Promise(function (resolve, reject) 
 			{
-				setTimeout(resolve, 600000);
+				setTimeout(resolve, 60 * 1000);
 			});
 			// console.log("60 seconds up, trying again...");
 		}
@@ -264,7 +264,7 @@ async function pullFromOSRSAPI(itemDocument, resolve)
 
 		let priceData = itemDocument.graphdata.priceData;
 		let newPriceData = reqbody.daily;
-		let lastUpdated = (priceData.length - 1) ? priceData[priceData.length - 1].date.getTime() : 0;
+		let lastUpdated = (priceData.length) ? priceData[priceData.length - 1].date.getTime() : new Date();
 
 
 		if (newPriceData[lastUpdated])
