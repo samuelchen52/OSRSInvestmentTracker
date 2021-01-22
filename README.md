@@ -1,1 +1,1 @@
-https://osrstracker.herokuapp.com/
+An item price and profit tracker for the Old School Runescape game. Deployed at https://osrstracker.herokuapp.com/.
